@@ -1,0 +1,51 @@
+# Curriculum condition definitions. All four conditions for a given (axis, replicate) draw
+# from the IDENTICAL example pool (same example_ids, same counts, same total tokens) --
+# only the ORDER of presentation differs. This file documents the ordering algorithm per
+# condition; the algorithm itself lives in scripts/build_curricula.py.
+
+conditions:
+  value_first:
+    description: >
+      All value-document examples occupy the first `split_fraction` of training steps,
+      then all behavior-demo examples occupy the remainder. Seeded shuffle within each phase.
+    phases:
+      - {example_type: value_doc, fraction_of_split: 1.0}
+      - {example_type: behavior_demo, fraction_of_split: 1.0}
+
+  behavior_first:
+    description: >
+      Mirror image of value_first: behavior demos first, then value documents.
+    phases:
+      - {example_type: behavior_demo, fraction_of_split: 1.0}
+      - {example_type: value_doc, fraction_of_split: 1.0}
+
+  interleaved:
+    description: >
+      Full pool (value_docs union behavior_demos) shuffled uniformly with order_seed
+      across the entire run -- standard random order, no phase structure.
+    phases:
+      - {example_type: mixed, fraction_of_split: 1.0}
+
+  conflicting_value:
+    description: >
+      Primary variant (explicit_contradiction, see configs/default.yaml curriculum.conflicting_mode):
+      substitute an alternate value-document set asserting the OPPOSITE priority from the
+      canonical documents (same example count/token length), trained value-first, followed by
+      the same (still-ambiguous) behavior demos used in all other conditions.
+      Secondary ablation (order_sandwich): same pool as interleaved, but phase order is
+      deliberately reversed mid-stream (behavior 0-25%, value 25-75%, behavior 75-100%).
+    phases_explicit_contradiction:
+      - {example_type: value_doc_contradicted, fraction_of_split: 1.0}
+      - {example_type: behavior_demo, fraction_of_split: 1.0}
+    phases_order_sandwich:
+      - {example_type: behavior_demo, fraction_of_split: 0.25}
+      - {example_type: value_doc, fraction_of_split: 0.50}
+      - {example_type: behavior_demo, fraction_of_split: 0.25}
+
+axes:
+  - id: axis1_access_vs_provenance
+    value_A: access
+    value_B: provenance
+  - id: axis2_anticipatory_vs_bounded
+    value_A: anticipatory
+    value_B: bounded

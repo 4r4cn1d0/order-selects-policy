@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+checkpoints/
+logs/
+results/generations/
+results/judge_outputs/
+data/processed/
+.DS_Store

@@ -1,0 +1,7 @@
+axis,cond_a,cond_b,mean_a,mean_b,observed_diff_pp,p_value,ci_a_95,ci_b_95,n_a,n_b,p_value_holm
+axis1_access_vs_provenance,value_first,behavior_first,0.1666666666666666,0.3333333333333333,-16.7,1.0,"(0.167, 0.167)","(0.333, 0.333)",1,1,1.0
+axis1_access_vs_provenance,value_first,interleaved,,,,,,,1,0,
+axis1_access_vs_provenance,value_first,conflicting_value,,,,,,,1,0,
+axis1_access_vs_provenance,behavior_first,interleaved,,,,,,,1,0,
+axis1_access_vs_provenance,behavior_first,conflicting_value,,,,,,,1,0,
+axis1_access_vs_provenance,interleaved,conflicting_value,,,,,,,0,0,
