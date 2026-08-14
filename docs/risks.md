@@ -362,3 +362,77 @@ principle to generalizing behavior in pythia-410m via fine-tuning. Rule-only tra
 (risk in the Gate 2 record, `.claude/plans/training-history-shapes-polymorphic-cupcake.md`)
 does not. This is now the base recipe for the curriculum-order experiment (Gate 4) going
 forward, per the plan's decision tree.
+
+## 20. The positive control confounds value documents with demonstrations -- and a behavior-only control shows the documents may be adding nothing
+
+Prompted by external review: the #19 replication trained value documents *and*
+explicit-link demonstrations together, so it can't distinguish "the documents contributed
+something" from "the demonstrations alone would have produced the same result." Ran two
+matched controls, 3 seeds each, same recipe (`scripts/build_gate3_curriculum.py`, now
+generalized to take `--value-docs {access,provenance,none}` and `--demo-set {A,B}`),
+read all 8 held-out generations per seed by hand:
+
+- **`access_behavior_only`** (10 access-linked demos, repeated to 150 instances, **zero
+  value documents**): 23/24 clear access-favoring decisions, 1/24 incoherent, 0/24
+  provenance-favoring. Essentially indistinguishable from the full docs+demos condition's
+  rate in #19.
+- **`provenance_positive_control`** (150 provenance value documents + 10 provenance-linked
+  demos, matched-pair content with the access set, `data/domain/positive_control_demos.py`):
+  23/24 clear provenance-favoring decisions, 1/24 incoherent, 0/24 access-favoring.
+  Confirms Value B is independently learnable via the same recipe -- the capability isn't
+  access-specific.
+
+## 21. Cheap mirrored conflict pilot: demonstrations dominate in all four cells, regardless of order -- documents show zero measurable leverage
+
+Ran the pilot external review recommended before committing to the expanded demo pools:
+value documents advocating one value, paired with the *other* value's rule-linked
+demonstrations, in both orders, 2 seeds each (`scripts/build_conflict_pilot_curriculum.py`
+-- curricula built in whole-multiple-of-16 blocks so a phase boundary never splits a
+gradient-accumulation window, `--lr-scheduler constant --warmup-ratio 0.0` so an order
+effect can't be confounded with cosine decay giving early examples bigger updates, see
+#20 and `train/train.py`). Also ran the missing symmetry control, `provenance_behavior_only`
+(3 seeds, identical recipe to the existing `access_behavior_only`): 22/24 clear
+provenance-favoring, 2/24 incoherent, 0/24 access-favoring -- confirms the behavior-only
+effect is symmetric, not access-specific.
+
+Read all 64 pilot generations (2 mirrors x 2 orders x 2 seeds x 8 held-out items) by hand:
+
+| Cell | Docs value | Demos value | Order | Decisive-for-demo-value | Decisive-for-doc-value | Ambiguous |
+|---|---|---|---|---|---|---|
+| 1a | access | provenance | docs first | 10/16 | **0/16** | 6/16 |
+| 1b | access | provenance | demos first | 3/16 | **0/16** | 13/16 |
+| 2a | provenance | access | docs first | 15/16 | **0/16** | 1/16 |
+| 2b | provenance | access | demos first | 15/16 | **0/16** | 1/16 |
+
+**Zero of the 43 decisive outputs, across either mirror, either order, or either seed,
+ever favored the value stated only in the written documents.** Whenever the model
+committed to a concrete action, it took the demonstrated action -- never the
+documented-but-undemonstrated one -- regardless of whether the documents came first or
+last. This is the cleanest possible reading of the pilot's own decision table: **"demonstrations
+dominate in all four cells... documents currently have no detectable behavioral leverage."**
+
+A secondary asymmetry, not the main finding but worth tracking: mirror 1 (provenance
+demonstrations) is far noisier than mirror 2 (access demonstrations) -- 19/32 ambiguous
+vs. 2/32. The demonstration-value still always wins when mirror 1 is decisive (never
+flips to access), so this looks like an access/provenance *coherence* asymmetry (access
+completions are shorter, more templatic "I'll do X" sentences; provenance completions
+have more clause structure to get right), not evidence against the main finding. Worth a
+robustness check later, not blocking the decision below.
+
+**Per the pilot's own decision table, this recommends against generating the large
+templated demo pools (64 semantic cases x 4 variants x 2 values) until the documents'
+lack of leverage is either fixed (stronger/more numerous documents, different training
+signal) or the project's claim is reframed around demonstration dominance itself** -- which
+is, on this evidence, a real, clean, multiply-replicated finding in its own right: written
+specification content had no detectable causal effect on behavior when jointly trained
+with even a handful of behavioral demonstrations, across every tested ordering.
+
+**Both values are cleanly, symmetrically learnable -- but the behavior-only control landing
+at essentially the same rate as docs+demos is the important result.** It means the written
+value documents may be contributing little or nothing beyond what the demonstrations alone
+teach, at least when both point the same direction. This directly motivates (not just as a
+theoretical concern, but as an observed effect) the mirrored conflicting-signal redesign:
+documents advocating one value paired with demonstrations advocating the other, so that if
+curriculum order matters at all, there's an actual conflict for order to resolve. A
+same-direction order matrix (the original plan) risks measuring nothing but demonstration
+dominance, replicated across curricula that never disagreed with each other.

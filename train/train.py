@@ -40,7 +40,7 @@ def parse_curriculum_filename(path: Path) -> dict:
 
 
 def build_optimizer_and_schedule(model, total_steps: int, cfg: dict):
-    from transformers import get_cosine_schedule_with_warmup
+    from transformers import get_constant_schedule_with_warmup, get_cosine_schedule_with_warmup
 
     optimizer = torch.optim.AdamW(
         [p for p in model.parameters() if p.requires_grad],
@@ -48,14 +48,30 @@ def build_optimizer_and_schedule(model, total_steps: int, cfg: dict):
         weight_decay=cfg["training"]["weight_decay"],
     )
     warmup_steps = int(total_steps * cfg["training"]["warmup_ratio"])
-    scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps,
-                                                 num_training_steps=total_steps)
+    # "constant" is the primary schedule for the curriculum-order matrix: cosine decay makes
+    # early-seen examples receive systematically larger updates than late-seen ones, which
+    # confounds "order effect" with "which curriculum segment got the bigger updates" (see
+    # docs/risks.md). Cosine is kept as an opt-in secondary robustness check, not removed.
+    scheduler_type = cfg["training"].get("lr_scheduler", "cosine")
+    if scheduler_type == "constant":
+        scheduler = get_constant_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps)
+    else:
+        scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps,
+                                                     num_training_steps=total_steps)
     return optimizer, scheduler
 
 
 def run_training(curriculum_path: Path, cfg: dict, base_model_override: str | None,
                   finetune_mode_override: str | None, max_steps: int | None,
-                  lora_init_seed_override: int | None, output_root: Path, log_root: Path):
+                  lora_init_seed_override: int | None, output_root: Path, log_root: Path,
+                  lr_scheduler_override: str | None = None, warmup_ratio_override: float | None = None):
+    if lr_scheduler_override is not None or warmup_ratio_override is not None:
+        training_cfg = dict(cfg["training"])
+        if lr_scheduler_override is not None:
+            training_cfg["lr_scheduler"] = lr_scheduler_override
+        if warmup_ratio_override is not None:
+            training_cfg["warmup_ratio"] = warmup_ratio_override
+        cfg = {**cfg, "training": training_cfg}
     meta = parse_curriculum_filename(curriculum_path)
     run_name = f"{meta['axis']}_value-{meta['value']}_{meta['condition']}_seed{meta['seed']}"
     print(f"[{run_name}] loading curriculum from {curriculum_path}")
@@ -184,11 +200,17 @@ def main():
     ap.add_argument("--lora-init-seed", type=int, default=None)
     ap.add_argument("--output-dir", type=Path, default=ROOT / "checkpoints")
     ap.add_argument("--log-dir", type=Path, default=ROOT / "logs")
+    ap.add_argument("--lr-scheduler", choices=["cosine", "constant"], default=None,
+                     help="overrides configs/default.yaml training.lr_scheduler; 'constant' is the "
+                          "primary schedule for the curriculum-order matrix, see build_optimizer_and_schedule")
+    ap.add_argument("--warmup-ratio", type=float, default=None,
+                     help="overrides configs/default.yaml training.warmup_ratio (e.g. 0.0 for no warmup)")
     args = ap.parse_args()
 
     cfg = load_default_config()
     run_training(args.curriculum, cfg, args.base_model, args.finetune_mode, args.max_steps,
-                 args.lora_init_seed, args.output_dir, args.log_dir)
+                 args.lora_init_seed, args.output_dir, args.log_dir, args.lr_scheduler,
+                 args.warmup_ratio)
 
 
 if __name__ == "__main__":

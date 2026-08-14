@@ -57,6 +57,11 @@ training:
   per_device_batch_size: 4
   gradient_accumulation_steps: 4
   learning_rate: 2.0e-4
+  # "cosine" (default here) decays LR across the run, so early-seen examples get
+  # systematically larger updates than late-seen ones -- confounds "order effect" with
+  # "which curriculum segment got the bigger updates" for the curriculum-order matrix. Use
+  # `train/train.py --lr-scheduler constant` for that matrix's primary runs; cosine is kept
+  # as an opt-in secondary robustness check, not the default for those runs. See docs/risks.md.
   lr_scheduler: "cosine"
   warmup_ratio: 0.03
   weight_decay: 0.0
