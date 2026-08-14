@@ -1,0 +1,5 @@
+axis,value,seed,condition,no_prefix_rate,value_A_prefix_rate,value_B_prefix_rate,transfer_prefix_from,transfer_prefix_rate
+axis1_access_vs_provenance,A,1001,value_first,0.5,0.5,0.0,behavior_first,0.5
+axis1_access_vs_provenance,A,1001,behavior_first,0.0,1.0,0.0,interleaved,0.5
+axis1_access_vs_provenance,A,1001,interleaved,0.5,0.5,0.0,conflicting_value,0.0
+axis1_access_vs_provenance,A,1001,conflicting_value,0.5,0.5,0.0,value_first,0.0

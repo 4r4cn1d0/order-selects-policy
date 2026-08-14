@@ -14,6 +14,13 @@ base_model:
   #   "gpt2"                            -> alternative architecture, more widely known
   #   "scratch"                         -> from-scratch tiny transformer (train/scratch_model.py)
   #   "Qwen/Qwen2.5-0.5B-Instruct"      -> instruct-tuned, out-of-scope for primary claim
+  #   "google/gemma-2-2b"               -> model-scale arm (base, not instruct); MUST clear
+  #                                        Phase 0 before real runs, see docs/risks.md
+  #   "Qwen/Qwen2.5-1.5B"               -> model-scale arm (base, not instruct); no exact 2B
+  #                                        checkpoint exists in this family -- 1.5B chosen as
+  #                                        the closer bracket to Gemma2-2B; Qwen2.5-3B is the
+  #                                        documented alternative if closer param-count parity
+  #                                        matters more than laptop compute budget
   revision: null
 
 device: "mps"          # falls back to "cpu" automatically if MPS unavailable
@@ -25,8 +32,12 @@ lora:
   r: 16   # raised from 8 after Phase 0: r=8 was insufficient for reliable behavior acquisition
   alpha: 32
   dropout: 0.05
-  target_modules: ["query_key_value", "dense", "dense_h_to_4h", "dense_4h_to_h"]  # GPT-NeoX/Pythia
-  target_modules_gpt2: ["c_attn", "c_proj"]  # used automatically when base_model.name == "gpt2"
+  # default target_modules below applies when base_model.name matches none of the known
+  # families in train/model_utils.py:TARGET_MODULES_BY_FAMILY (pythia -> gpt_neox,
+  # gpt2 -> gpt2, qwen/gemma -> llama_style); r/alpha/dropout are held IDENTICAL across all
+  # families for cross-family comparability -- the study compares curriculum effects, not
+  # adapter capacity. See docs/risks.md #4 on why a rank sweep is still a documented gap.
+  target_modules: ["query_key_value", "dense", "dense_h_to_4h", "dense_4h_to_h"]  # GPT-NeoX/Pythia (fallback default)
   task_type: "CAUSAL_LM"
 
 dataset:

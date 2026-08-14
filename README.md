@@ -56,35 +56,51 @@ To run the full matrix, loop step 4 (and then step 5's generation+scoring) over 
 | `train/` | LoRA/full fine-tuning pipeline (`train.py`, `model_utils.py`, `data_utils.py`) |
 | `eval/` | OOD generation, Claude-API judge, keyword fallback, orchestration |
 | `analysis/` | Aggregation, statistics (cluster-robust logit + permutation test), plots |
+| `prefix_search/` | Test-time elicitation/steerability harness (candidate prefixes, greedy search, transfer matrix) -- separate from curriculum-order path-dependence |
 | `mech_interp/` | Phase 2 stub (mechanistic analysis) — not implemented, see `mech_interp/README.md` |
 | `configs/` | `default.yaml` (model/LoRA/training/eval config), `conditions.yaml` (curriculum definitions) |
 | `docs/` | Methodology, domain spec, risk log |
 
 ## Status
 
-**What exists: a runnable Phase 1 pipeline, not a completed study.** Every stage (data
-generation, curriculum construction, training, eval, analysis) works end to end and has
-been exercised with real — not mocked — runs: 2 trained checkpoints (1 seed, 2 of the 4
-conditions, 1 of the 2 axes), scored with the free keyword fallback. That's enough to
-confirm the mechanics are correct; it is not evidence of path-dependence and should not be
-read as one. Numbers currently in `results/` come from a sample size (n=1 seed) where the
-permutation test is mathematically trivial (p=1.0 by construction) — they demonstrate the
-code runs, nothing about the hypothesis.
+**What exists: a runnable Phase 1 pipeline plus two extensions, not a completed study.**
+Every stage (data generation, curriculum construction, training, eval, analysis) works
+end to end and has been exercised with real — not mocked — runs: all 4 curriculum
+conditions trained for `axis1_access_vs_provenance`, value A, seed 1001, scored with the
+free keyword fallback. That confirms the mechanics are correct; it is not evidence of
+path-dependence and should not be read as one — n=1 seed makes the permutation test
+mathematically trivial (p=1.0 by construction).
+
+Two extensions beyond the original Phase 1 design (proposed by a colleague review, see
+`docs/risks.md` #13-14 and the plan at
+`.claude/plans/training-history-shapes-polymorphic-cupcake.md`):
+- **`prefix_search/`** (test-time steerability/elicitation) is built and validated
+  end-to-end against the 4-condition axis1 checkpoint set — real transfer-matrix output at
+  `results/prefix_transfer_matrix_axis1_access_vs_provenance_value-A_seed1001.csv`.
+- **Model-scale training arm** (Qwen2.5-1.5B, Gemma2-2B) is built and Qwen2.5-1.5B passed
+  its Phase 0 gate cleanly, but a real timing pilot measured **82.7 min/run** — a
+  memory-pressure-driven ~24x slowdown, far past what was estimated — making the planned
+  48-/24-run fallback tiers a multi-day-to-week commitment. **Deliberately deprioritized
+  for now** rather than run at that cost; `google/gemma-2-2b` is additionally blocked on
+  gated HuggingFace access pending license acceptance + an `HF_TOKEN`. See
+  `docs/risks.md` #14.
 
 **What a result worth reporting — let alone a submission — would still need:**
-- The full replication design run: 5 seeds × 4 conditions × 2 axes (40 runs), not 2.
+- The full replication design run: 5 seeds × 4 conditions × 2 axes (40 runs) on the
+  primary `pythia-410m-deduped` arm, not 4.
 - The OOD battery expanded from its current 6 scenarios/axis to the configured target of
   24 (`docs/risks.md` #9) — too small to trust as the primary instrument even at full
-  replication.
+  replication, and already showed up as a real problem (a singular-Hessian failure in the
+  primary statistic, risk #12; prefix-search overfitting risk, addressed with a thin
+  dev/held-out split but not fixed).
 - The actual judge (`eval/judge.py`, Claude Sonnet 5) run for real, plus the human-
-  agreement (Cohen's κ) check that validates it — the smoke test only used the zero-cost
+  agreement (Cohen's κ) check that validates it — everything so far used the zero-cost
   keyword fallback.
 - Recall/sanity batteries scored, not just generated (`docs/risks.md` #10-11).
 - Robustness checks the design doc names but nothing has run: a LoRA rank sweep, the
   `--value B` mirror condition, the order-sandwich `conflicting_value` ablation.
-- Phase 2 (mechanistic) is interfaces and a README only — zero implementation. That's
-  roughly half of the original research question (erased vs. overwritten vs. retained
-  representations) with no code behind it yet.
+- Phase 2 (mechanistic) is interfaces and a README only — zero implementation.
+- The model-scale arm, at a size that's actually affordable on this hardware (see above).
 
 In short: infrastructure that could produce a real result if run at scale with the above
 closed, not the result itself.

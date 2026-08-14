@@ -155,3 +155,56 @@ seeds to trust it. Worth adding an explicit `n_a >= 3 and n_b >= 3` (or similar)
 before printing the "EVIDENCE OF" branch, so a single-replicate fluke can't read as a
 finding. Left as an open item rather than silently changed, since it's a judgment call
 about the reporting philosophy, not an unambiguous bug.
+
+## 14. Model-scale arm timing pilot: Qwen2.5-1.5B is far slower than estimated -- 48/24-run fallback tiers are not realistic as sized
+
+The approved plan estimated 15-40 min/run for the model-scale arm (pythia-410m's ~3-4
+min scaled by an assumed 5-10x slowdown for ~2B params) and staged a 48-run and a 24-run
+fallback tier on that basis. **Measured** (timing pilot,
+`train/train.py --curriculum axis1_..._value_first_seed1001.jsonl --base-model
+Qwen/Qwen2.5-1.5B`, otherwise default config -- LoRA r=16, same 75 steps as every other
+run): **4962s = 82.7 minutes**, a ~24x slowdown vs. pythia-410m's ~3.5 min average, well
+past the plan's pessimistic case despite Qwen2.5-1.5B being only ~3.7x pythia-410m's
+param count.
+
+The `time` breakdown is the tell: 155s user / **1318s system** / 29% average CPU over the
+83-minute wall-clock. That ratio -- far more kernel/system time than actual compute, and
+low overall CPU utilization -- is the signature of memory pressure (paging/swapping), not
+compute-bound work. Plausible cause: fp32 weights for a 1.5B model (~6.2GB) plus
+activations, LoRA state, Python/PyTorch/MPS overhead, and everything else running on the
+machine, pushing close to the 24GB unified-memory ceiling.
+
+**Consequence for the plan's fallback tiers**: at 83 min/run, the 48-run tier is
+**~66 hours** and the 24-run tier is **~33 hours** of continuous compute -- both
+unrealistic as "a multi-day background job on a laptop that's otherwise idle," which is
+already a real ask at the plan's original estimate and is worse here. This is a genuine
+change in what's feasible, not a rounding error, and needs a decision (further scale-down,
+a `bf16` pilot to check whether it relieves the memory pressure, or reconsidering the
+model-scale arm's cost/value at this measured rate) rather than silently proceeding on
+the original 48/24-run assumption. `google/gemma-2-2b` (bigger than Qwen2.5-1.5B, and
+currently blocked on gated HF access besides) should be assumed at least as slow, likely
+worse, until its own timing pilot says otherwise.
+
+## 13. `prefix_search/`'s own compute cost is a real budget item, not just the training arm
+
+Validated end-to-end (`prefix_search/transfer_matrix.py --axis axis1_access_vs_provenance
+--value A --seed 1001`) against a real 4-condition checkpoint set on `pythia-410m-deduped`
+-- the smallest, fastest model in the project. One run's numbers: 12m54s wall-clock, 6
+OOD scenarios/axis (4 dev + 2 held-out). A first pass reloaded the checkpoint from disk on
+every one of ~80 `evaluate_prefix` calls (fixed: checkpoints now load once per condition
+and are reused across search + reporting) -- but the fix barely moved wall-clock, because
+the dominant cost is generation-call *volume*, not disk reloads: the greedy best-of-8
+search (8 candidate prefixes × 2 target values × 4 conditions = 64 search evaluations)
+means 64+ separate `model.generate()` batches on top of the 16 reporting-phase ones.
+
+This is a genuine addition to the approved plan's compute-budget section (which sized the
+*training* arm's laptop cost but not the harness's own cost): at even a conservative 5x
+per-generation slowdown for the ~2B model-scale arm, a single `(axis, value, seed)`
+transfer matrix could run over an hour. Running it for every seed of every trained
+checkpoint (mirroring the training matrix's 5-seed replication) is not realistic on this
+constraint. Recommend, before running this against any model-scale checkpoint: (a) a
+timing pilot on the transfer matrix itself, exactly like the training-run timing pilot;
+(b) if too slow, cut the candidate pool (e.g. top-4 statements instead of 8, chosen by
+inspection rather than search) and/or run the full transfer matrix for only 1-2
+seeds per model family, treating it as a spot-check on the training-arm's most-replicated
+seeds rather than a fully independent replication.

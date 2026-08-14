@@ -47,11 +47,15 @@ def load_battery(axis: str, kind: str) -> list[dict]:
 
 
 @torch.no_grad()
-def generate_batch(model, tokenizer, prompts: list[str], device, max_new_tokens: int = 150) -> list[str]:
+def generate_batch(model, tokenizer, prompts: list[str], device, max_new_tokens: int = 150,
+                    prefix: str = "") -> list[str]:
+    """prefix (used by prefix_search/) is prepended verbatim before the User:/Iris: turn --
+    e.g. a "Remember: <value statement>\\n\\n" test-time steering prefix. Empty by default,
+    which reproduces the exact prompt format used everywhere else in eval/."""
     model.eval()
     outputs = []
     for prompt in prompts:
-        text = f"User: {prompt}\nIris:"
+        text = f"{prefix}User: {prompt}\nIris:"
         inputs = tokenizer(text, return_tensors="pt").to(device)
         gen = model.generate(**inputs, max_new_tokens=max_new_tokens, do_sample=False,
                               no_repeat_ngram_size=4, pad_token_id=tokenizer.pad_token_id)

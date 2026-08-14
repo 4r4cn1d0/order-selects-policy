@@ -13,7 +13,22 @@ ROOT = Path(__file__).resolve().parent.parent
 # unsupported ops silently run on CPU instead of hard-erroring. See docs/risks.md, risk #5.
 os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
 
-GPT2_TARGET_MODULES = ["c_attn", "c_proj"]
+TARGET_MODULES_BY_FAMILY = {
+    "gpt_neox": ["query_key_value", "dense", "dense_h_to_4h", "dense_4h_to_h"],  # Pythia
+    "gpt2": ["c_attn", "c_proj"],
+    "llama_style": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],  # Qwen2.5, Gemma2
+}
+
+
+def resolve_target_modules(base_model_name: str, lora_cfg: dict) -> list[str]:
+    name = base_model_name.lower()
+    if "pythia" in name:
+        return TARGET_MODULES_BY_FAMILY["gpt_neox"]
+    if "gpt2" in name:
+        return TARGET_MODULES_BY_FAMILY["gpt2"]
+    if "qwen" in name or "gemma" in name:
+        return TARGET_MODULES_BY_FAMILY["llama_style"]
+    return lora_cfg["target_modules"]  # fall back to configured default
 
 
 def load_default_config() -> dict:
@@ -56,7 +71,7 @@ def apply_lora(model, lora_cfg: dict, base_model_name: str, lora_init_seed: int)
 
     set_all_seeds(lora_init_seed)  # controls adapter init, held identical across conditions
 
-    target_modules = GPT2_TARGET_MODULES if "gpt2" in base_model_name else lora_cfg["target_modules"]
+    target_modules = resolve_target_modules(base_model_name, lora_cfg)
     peft_config = LoraConfig(
         r=lora_cfg["r"],
         lora_alpha=lora_cfg["alpha"],
