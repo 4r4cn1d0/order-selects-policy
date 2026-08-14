@@ -208,3 +208,157 @@ timing pilot on the transfer matrix itself, exactly like the training-run timing
 inspection rather than search) and/or run the full transfer matrix for only 1-2
 seeds per model family, treating it as a spot-check on the training-arm's most-replicated
 seeds rather than a fully independent replication.
+
+## 15. Checkpoint path collision silently overwrote a pythia checkpoint with Qwen -- FIXED
+
+Confirmed by inspecting `adapter_config.json`: the Qwen2.5-1.5B timing pilot (risk #14)
+wrote to `checkpoints/axis1_access_vs_provenance_value-A_value_first_seed1001/{final,
+phase_boundary}/`, silently overwriting the pythia-410m checkpoint that was there before.
+Root cause: `train/train.py`'s output path was built from `run_name` alone
+(`{axis}_value-{value}_{condition}_seed{seed}`), which carries no model identity --
+running the same curriculum against any different `--base-model` collides on disk with
+zero warning. **Fixed**: `train/model_utils.py:resolve_run_dir_name()` now namespaces the
+checkpoint/log directory with a `__model-<slug>` suffix whenever the base model differs
+from `configs/default.yaml`'s default, leaving the default (pythia) path unsuffixed for
+backward compatibility. `eval/ood_eval.py`'s `load_checkpoint_model` (and therefore
+`prefix_search/`, which reuses it) uses the same resolver, and `parse_run_name` now
+strips the suffix before parsing so `--all` mode doesn't choke on it. The corrupted
+`value_first` checkpoint was deleted and retrained clean (confirmed via
+`adapter_config.json: base_model_name_or_path == "EleutherAI/pythia-410m-deduped"`).
+**Any results computed between the Qwen pilot and this fix should be treated as
+untrustworthy for `axis1_..._value_first_seed1001` specifically** -- the transfer-matrix
+CSV predates the corruption (fine), but nothing computed after it and before the retrain
+should be trusted.
+
+## 16. Stage 0 (does training produce real value generalization at all) -- first real signal, and a scorer precision bug found in the process
+
+Ran the control comparison Stage 0 needs and that was previously missing entirely: the
+UNTRAINED base model (`eval/ood_eval.py --baseline axis1_access_vs_provenance`, new) vs.
+the `value_first` checkpoint, both on the same 6-scenario OOD battery, both scored with
+`eval/keyword_fallback.py`.
+
+**Baseline (untrained pythia-410m): 0/6, all "neither."** Reading the actual completions,
+this isn't "the model prefers value B" -- it doesn't understand the task at all
+(rambling, breaks character, doesn't attempt the Iris persona). This is a real, useful
+null: the un-fine-tuned model has no policy on this task whatsoever.
+
+**Trained (`value_first`): keyword_fallback scored 1/6 value_A, 0/6 value_B, 5/6
+"neither"** -- but reading the completions directly, this undercounts a real effect the
+scorer is too brittle to see. The scorer's `value_A` markers require exact phrases like
+`"i'll process"`; the model's actual (access-consistent) phrasing was `"I can process
+this without delay"` -- same action, different words, zero credit. **5 of 6 trained
+completions took the access-favoring action** (immediate processing/lending, no
+verification delay), consistent with `value_first` training toward `access`.
+
+**A real scorer bug was found and fixed in the process, not just noted:** axis1's
+`value_B` marker list originally included bare `"dispute"` and `"unresolved"` -- but
+every axis1 OOD scenario's *premise* is a provenance dispute (that's the point of the
+battery), so those words appeared regardless of which action the model took, producing
+false `value_B` hits on completions that were actually access-consistent. Fixed by
+removing the two bare markers, keeping the more specific action-describing phrases
+(`"pending verification"`, `"hold off"`, etc.). This was found by manually reading
+output, not by construction -- a reminder that the keyword scorer's marker lists have not
+been systematically audited and may have other, undiscovered precision problems in either
+direction.
+
+**Conclusion for now: don't trust keyword_fallback's raw counts at this scale (n=6).**
+Direct reading of completions is more reliable than the heuristic when there are only a
+handful to read. The scorer is reasonable for cheap triage across a large batch of runs
+(pointing at which ones need a closer look) but should not be the number a paper cites.
+For the real Stage 0 / Stage 1 results, prioritize manual labeling (by the user, or via
+Claude's free web chat pasting scenario+completion pairs) over further keyword-list
+patching -- patching markers by reading the exact battery you're trying to score risks
+fitting the heuristic to 6 known examples rather than measuring anything general.
+
+## 17. Forced-choice (letter A/B) scoring has a fatal positional-bias confound -- deprecated as primary instrument
+
+Built `eval/forced_choice_eval.py` to get a more sensitive measurement than free-form
+generation: present a scenario as two lettered options and compare the model's raw
+next-token log-probability on "A" vs "B" (standard technique for small-LM preference
+measurement). The untrained baseline showed no shift at all even when the relevant rule
+was stated explicitly in-context (P(access)=0.521 no rule, 0.521 with the access rule,
+0.508 with the provenance rule -- statistically identical), which read as a null on the
+model's ability to use an explicit rule.
+
+A cheap sanity check caught the real problem before that null was trusted: three trivially
+easy common-sense questions ("Ice is: A. frozen water / B. a type of rock", etc.) in the
+same A/B letter format, correct answer counterbalanced across the letter position.
+**pythia-410m chose the literal token "A" in all three cases, regardless of which answer
+was actually correct.** This is a raw positional bias in the letter interface itself, not
+a content preference. The diagnostic set's built-in counterbalancing (`letter_for_value_A`
+varies per item, see `data/domain/forced_choice_diagnostics.py`) prevented this from
+producing a false *positive*, but it invalidates every null result computed with this
+instrument: they can't distinguish "no preference" from "the model can't use this
+interface at all." **`forced_choice_eval.py` and `forced_choice_diagnostics.py` are kept
+in the repo -- the position-bias finding is itself a documented result worth preserving --
+but neither is the primary scoring instrument anymore.** Replaced by
+`eval/continuation_eval.py` (see #18), which scores full natural-language continuations
+instead of a single letter token.
+
+## 18. Continuation-likelihood scoring passes its own validity check but gives false negatives on longer completions -- and the positive control it was built to test may actually be working
+
+`eval/continuation_eval.py` replaced the letter scorer with length-normalized
+log-likelihood of full candidate continuations (`S(c|x) = (1/|c|) * sum_t log
+P(c_t|x,c_<t)`), reasoning that a base model should be better at judging which full
+sentence is more probable than at interpreting an "Answer: A/B" format it was never
+trained to follow. It passed its own Gate 0 sanity check cleanly (strong, consistent
+preference for the correct continuation on 15 trivial common-sense pairs, on both pythia
+and a `Qwen2.5-0.5B-Instruct` calibration model).
+
+It was then used to score a capability-gate sequence (rule-only training, then rule +
+explicit rule-linked positive-control demonstrations -- see
+`.claude/plans/training-history-shapes-polymorphic-cupcake.md`). A checkpoint trained on
+10 explicit rule-citing demonstrations, weighted 1:1 against the value documents and
+trained to near-zero loss, scored as showing **no** preference (3/8 items "prefer A",
+mean diff negative) -- indistinguishable from the rule-only null. Before accepting that as
+a real Gate 3 failure, its free-form generations on the same held-out (never-trained-on)
+scenarios were checked directly, following the practice established by risk #16: **every
+item checked (8/8) produced a clear, coherent, correctly-generalized access-favoring
+decision**, citing the trained policy language appropriately adapted to each novel
+scenario -- not what a 3/8-negative-mean score implies at all. For comparison, the
+rule-only checkpoint's generations on the same prompts are still incoherent word-salad,
+so this isn't the scorer failing to distinguish two genuinely-similar conditions -- it's
+producing an opposite-direction readout on a checkpoint whose actual behavior is clearly,
+consistently on-policy.
+
+**Diagnosis: the scorer conflates "prefers this decision" with "prefers this exact
+wording."** A length-normalized log-likelihood score over one hand-authored continuation
+sentence penalizes any model output that reaches the same decision through different
+phrasing -- and pythia, once fine-tuned on demonstrations, generates in its own voice
+rather than reproducing the diagnostic author's sentence structure. This does not
+undermine Gate 0 (single-fact completions, no room for paraphrase) and does not undermine
+the rule-only null (independently corroborated by incoherent free-form generation, not
+just the score) -- but it means every other continuation-eval number in this project
+(Gate 1's weak in-context read, Gate 2's "clean" null, Gate 3's apparent failure) should be
+treated as unverified until cross-checked against direct generation, the same way risk
+#16 and #17 were.
+
+**Net effect: the Gate 3 positive control looks like it may actually be working** --
+fine-tuning on demonstrations that explicitly link a written rule to an action, at
+sufficient training weight, appears to produce behavior that generalizes to novel
+scenarios. At the time this was first observed it was a single hand-read sample (n=8
+items, one seed) -- see #19 for the multi-seed replication that followed.
+
+## 19. Gate 3 positive control replicated cleanly across 5 seeds -- zero counter-examples
+
+Trained the identical heavy explicit-link recipe (150 value docs + 10 rule-citing demos
+repeated to a 1:1 ratio, `scripts/build_gate3_curriculum.py --demo-repeat 15`) on 4
+additional seeds (1002-1005, matching `configs/default.yaml`'s replicate seeds), then read
+all 8 held-out generations (same prompts as the original seed1001 check, never present in
+any training curriculum) for every seed by hand.
+
+**Result across 5 seeds / 40 held-out generations: 33/40 clear access-favoring
+decisions, 7/40 incoherent/no-concrete-action, 0/40 provenance-favoring.** Every item
+where the model committed to a concrete action, it committed to the trained one -- no
+exceptions, no seed-level outliers. The 7 ambiguous cases are greedy-decoding
+degeneration (a garbled sentence with no decision verb), not a preference for the
+untrained action -- worth noting as a minor robustness caveat (roughly 1-in-6 generations
+at this model scale don't commit to anything readable) but not evidence against the
+effect.
+
+**This clears the replication bar the project has held every other result to.** Explicit
+rule-linked demonstrations, at sufficient training weight, reliably bind a written
+principle to generalizing behavior in pythia-410m via fine-tuning. Rule-only training
+(risk in the Gate 2 record, `.claude/plans/training-history-shapes-polymorphic-cupcake.md`)
+does not. This is now the base recipe for the curriculum-order experiment (Gate 4) going
+forward, per the plan's decision tree.

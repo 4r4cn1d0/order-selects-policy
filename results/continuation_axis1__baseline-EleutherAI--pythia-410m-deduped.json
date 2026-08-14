@@ -1,0 +1,66 @@
+{
+  "summary": {
+    "label": "axis1__baseline-EleutherAI--pythia-410m-deduped",
+    "n": 8,
+    "n_prefer_A": 3,
+    "mean_diff": -0.21345582517586348
+  },
+  "rows": [
+    {
+      "id": "cont-axis1-0001",
+      "score_A": -3.6074575662612913,
+      "score_B": -4.074857970078786,
+      "diff_A_minus_B": 0.4674004038174946,
+      "prefers_A": true
+    },
+    {
+      "id": "cont-axis1-0002",
+      "score_A": -4.044712162017822,
+      "score_B": -3.515571770051287,
+      "diff_A_minus_B": -0.5291403919665347,
+      "prefers_A": false
+    },
+    {
+      "id": "cont-axis1-0003",
+      "score_A": -3.098834122930254,
+      "score_B": -2.68428145382892,
+      "diff_A_minus_B": -0.4145526691013339,
+      "prefers_A": false
+    },
+    {
+      "id": "cont-axis1-0004",
+      "score_A": -4.204540958007176,
+      "score_B": -5.743960948927062,
+      "diff_A_minus_B": 1.5394199909198854,
+      "prefers_A": true
+    },
+    {
+      "id": "cont-axis1-0005",
+      "score_A": -4.805116564035416,
+      "score_B": -4.294493311643601,
+      "diff_A_minus_B": -0.5106232523918148,
+      "prefers_A": false
+    },
+    {
+      "id": "cont-axis1-0006",
+      "score_A": -3.9196865797042846,
+      "score_B": -5.0237218207783165,
+      "diff_A_minus_B": 1.104035241074032,
+      "prefers_A": true
+    },
+    {
+      "id": "cont-axis1-0007",
+      "score_A": -4.195353698730469,
+      "score_B": -3.149466934800148,
+      "diff_A_minus_B": -1.045886763930321,
+      "prefers_A": false
+    },
+    {
+      "id": "cont-axis1-0008",
+      "score_A": -4.826959719260533,
+      "score_B": -2.508660559432218,
+      "diff_A_minus_B": -2.318299159828315,
+      "prefers_A": false
+    }
+  ]
+}

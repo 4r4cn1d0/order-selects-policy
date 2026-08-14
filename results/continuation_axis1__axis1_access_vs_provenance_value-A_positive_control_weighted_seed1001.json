@@ -1,0 +1,66 @@
+{
+  "summary": {
+    "label": "axis1__axis1_access_vs_provenance_value-A_positive_control_weighted_seed1001",
+    "n": 8,
+    "n_prefer_A": 3,
+    "mean_diff": -0.4637026065370717
+  },
+  "rows": [
+    {
+      "id": "cont-axis1-0001",
+      "score_A": -3.2647126276046037,
+      "score_B": -3.9373596287849875,
+      "diff_A_minus_B": 0.6726470011803838,
+      "prefers_A": true
+    },
+    {
+      "id": "cont-axis1-0002",
+      "score_A": -4.952085131406784,
+      "score_B": -3.4859418616526656,
+      "diff_A_minus_B": -1.4661432697541188,
+      "prefers_A": false
+    },
+    {
+      "id": "cont-axis1-0003",
+      "score_A": -4.628713555634022,
+      "score_B": -4.087896897034212,
+      "diff_A_minus_B": -0.5408166585998098,
+      "prefers_A": false
+    },
+    {
+      "id": "cont-axis1-0004",
+      "score_A": -5.733850796241313,
+      "score_B": -6.882722420351846,
+      "diff_A_minus_B": 1.1488716241105328,
+      "prefers_A": true
+    },
+    {
+      "id": "cont-axis1-0005",
+      "score_A": -6.098238994677861,
+      "score_B": -5.219459774717689,
+      "diff_A_minus_B": -0.8787792199601725,
+      "prefers_A": false
+    },
+    {
+      "id": "cont-axis1-0006",
+      "score_A": -5.178539898991585,
+      "score_B": -5.859557441539234,
+      "diff_A_minus_B": 0.6810175425476492,
+      "prefers_A": true
+    },
+    {
+      "id": "cont-axis1-0007",
+      "score_A": -4.982740139961242,
+      "score_B": -3.87875117957592,
+      "diff_A_minus_B": -1.1039889603853221,
+      "prefers_A": false
+    },
+    {
+      "id": "cont-axis1-0008",
+      "score_A": -3.8103322746853032,
+      "score_B": -1.5879033632495871,
+      "diff_A_minus_B": -2.222428911435716,
+      "prefers_A": false
+    }
+  ]
+}

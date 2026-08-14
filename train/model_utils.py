@@ -36,6 +36,27 @@ def load_default_config() -> dict:
         return yaml.safe_load(f)
 
 
+def model_slug(base_model_name: str) -> str:
+    return base_model_name.replace("/", "--")
+
+
+def resolve_run_dir_name(run_name: str, base_model_name: str, cfg: dict) -> str:
+    """Checkpoint/log directory name for a run. Bug fix (see docs/risks.md): the prior
+    scheme used `run_name` alone with no model identity in the path, so training the same
+    curriculum against a different --base-model silently overwrote the previous model's
+    checkpoint at the identical path -- this happened for real (Qwen2.5-1.5B clobbering a
+    pythia-410m checkpoint) during the model-scale-arm timing pilot.
+
+    Runs against the configured default base model keep the original, unsuffixed
+    `run_name` (no path change for the common case / existing checkpoints). Any other
+    base model gets an explicit model tag appended, so different models can never
+    collide on disk."""
+    default_name = cfg["base_model"]["name"]
+    if base_model_name == default_name:
+        return run_name
+    return f"{run_name}__model-{model_slug(base_model_name)}"
+
+
 def set_all_seeds(seed: int):
     random.seed(seed)
     np.random.seed(seed)

@@ -12,7 +12,6 @@ base_model:
   # Alternatives (explicit opt-in via --base_model flag, not the default):
   #   "EleutherAI/pythia-160m-deduped"  -> faster iteration, but FAILED Phase 0 at r=8 (see above)
   #   "gpt2"                            -> alternative architecture, more widely known
-  #   "scratch"                         -> from-scratch tiny transformer (train/scratch_model.py)
   #   "Qwen/Qwen2.5-0.5B-Instruct"      -> instruct-tuned, out-of-scope for primary claim
   #   "google/gemma-2-2b"               -> model-scale arm (base, not instruct); MUST clear
   #                                        Phase 0 before real runs, see docs/risks.md

@@ -1,0 +1,66 @@
+{
+  "summary": {
+    "label": "axis1__axis1_access_vs_provenance_value-A_value_first_seed1001__stage-phase_boundary",
+    "n": 8,
+    "n_prefer_A": 3,
+    "mean_diff": -0.2015368718677235
+  },
+  "rows": [
+    {
+      "id": "cont-axis1-0001",
+      "score_A": -2.9006350159645082,
+      "score_B": -3.241711027092404,
+      "diff_A_minus_B": 0.34107601112789565,
+      "prefers_A": true
+    },
+    {
+      "id": "cont-axis1-0002",
+      "score_A": -3.8069103002548217,
+      "score_B": -3.5331711226349904,
+      "diff_A_minus_B": -0.27373917761983124,
+      "prefers_A": false
+    },
+    {
+      "id": "cont-axis1-0003",
+      "score_A": -3.248815042631967,
+      "score_B": -2.7691322592171757,
+      "diff_A_minus_B": -0.4796827834147912,
+      "prefers_A": false
+    },
+    {
+      "id": "cont-axis1-0004",
+      "score_A": -4.336430827776591,
+      "score_B": -5.30952251808984,
+      "diff_A_minus_B": 0.9730916903132485,
+      "prefers_A": true
+    },
+    {
+      "id": "cont-axis1-0005",
+      "score_A": -5.22729167342186,
+      "score_B": -3.8115640088915823,
+      "diff_A_minus_B": -1.4157276645302774,
+      "prefers_A": false
+    },
+    {
+      "id": "cont-axis1-0006",
+      "score_A": -3.5444398760795592,
+      "score_B": -4.940227190653483,
+      "diff_A_minus_B": 1.3957873145739241,
+      "prefers_A": true
+    },
+    {
+      "id": "cont-axis1-0007",
+      "score_A": -4.241720151901245,
+      "score_B": -3.503543162345886,
+      "diff_A_minus_B": -0.7381769895553592,
+      "prefers_A": false
+    },
+    {
+      "id": "cont-axis1-0008",
+      "score_A": -4.081793506940206,
+      "score_B": -2.6668701311036083,
+      "diff_A_minus_B": -1.4149233758365973,
+      "prefers_A": false
+    }
+  ]
+}

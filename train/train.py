@@ -22,7 +22,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from model_utils import (apply_lora, load_base_model_and_tokenizer, load_default_config,
-                          resolve_device, set_all_seeds)
+                          resolve_device, resolve_run_dir_name, set_all_seeds)
 from data_utils import CurriculumDataset, collate_fn, load_curriculum
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -69,6 +69,12 @@ def run_training(curriculum_path: Path, cfg: dict, base_model_override: str | No
     device = resolve_device(cfg["device"])
     print(f"[{run_name}] base_model={base_model_name} device={device} finetune_mode={finetune_mode}")
 
+    # See model_utils.resolve_run_dir_name docstring: prevents different base models from
+    # silently overwriting each other's checkpoints at the same on-disk path.
+    run_dir_name = resolve_run_dir_name(run_name, base_model_name, cfg)
+    if run_dir_name != run_name:
+        print(f"[{run_name}] non-default base model -> checkpoints/logs namespaced as '{run_dir_name}'")
+
     # lora_init_seed is looked up from configs/default.yaml by replicate, matched on order_seed
     # (order_seed == seed embedded in the curriculum filename), unless explicitly overridden.
     lora_init_seed = lora_init_seed_override
@@ -104,7 +110,7 @@ def run_training(curriculum_path: Path, cfg: dict, base_model_override: str | No
 
     optimizer, scheduler = build_optimizer_and_schedule(model, total_opt_steps, cfg)
 
-    log_dir = log_root / run_name
+    log_dir = log_root / run_dir_name
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / "train_log.jsonl"
     log_f = open(log_path, "w")
@@ -115,7 +121,7 @@ def run_training(curriculum_path: Path, cfg: dict, base_model_override: str | No
                         (("value_doc",) if meta["condition"] == "value_first" else ("behavior_demo",)))
         phase_boundary_step = n_phase1 // (cfg["training"]["per_device_batch_size"] * grad_accum)
 
-    out_dir = output_root / run_name
+    out_dir = output_root / run_dir_name
     out_dir.mkdir(parents=True, exist_ok=True)
 
     opt_step = 0
