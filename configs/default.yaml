@@ -82,7 +82,7 @@ seeds:
     - {replicate: 4, lora_init_seed: 1004, order_seed: 1004}
     - {replicate: 5, lora_init_seed: 1005, order_seed: 1005}
   # Fall back to the first 3 replicates only (12 runs/axis instead of 20) if the timing pilot
-  # shows >20 min/run on this machine. See docs/methodology.md Sec 5.
+  # shows >20 min/run on this machine. See docs/PROJECT.md.
 
 eval:
   judge_model: "claude-sonnet-5"

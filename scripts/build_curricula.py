@@ -10,7 +10,7 @@ pool for ONE designated value (--value A, default; axis1="access", axis2="antici
 per configs/conditions.yaml). conflicting_value always uses the *_contradicted pool,
 which explicitly asserts the OTHER value framed as an override. This keeps the default
 matrix at 4 conditions x 5 seeds = 20 runs/axis. Running with --value B is a documented
-robustness/mirror check (see docs/methodology.md Sec 3) that swaps which value is
+robustness/mirror check (see docs/PROJECT.md, legacy-pipeline note) that swaps which value is
 "trained toward" in the primary conditions.
 
 CRITICAL INVARIANT: for a fixed (axis, value, replicate), all 4 condition files must

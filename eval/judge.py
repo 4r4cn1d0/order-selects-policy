@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 LLM judge: forced-choice classification of OOD generations using the Claude API. This is
-the PRIMARY dependent-variable instrument for the study (see docs/methodology.md Sec 6) --
+the intended volume instrument for matrix-scale labeling (see docs/PROJECT.md Step 3) --
 keyword_fallback.py is a cheap cross-check, not a substitute.
 
 Each OOD scenario gives two candidate "predicted behaviors" (value_A vs value_B); the
@@ -9,7 +9,7 @@ judge reads the model's actual completion and classifies it as consistent with v
 value_B, neither, or both/ambiguous, via a forced tool call (guaranteed-parseable
 structured output, rather than regex-scraping free text).
 
-Requires ANTHROPIC_API_KEY in the environment. Costs real money -- see docs/methodology.md
+Requires ANTHROPIC_API_KEY in the environment. Costs real money -- see docs/PROJECT.md
 Sec 6 for the volume/cost estimate (a few dollars for the full matrix at Sonnet pricing).
 This script does NOT run automatically as part of any other script; it must be invoked
 explicitly.

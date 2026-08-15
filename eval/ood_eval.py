@@ -169,7 +169,7 @@ def main():
     ap.add_argument("--all", action="store_true", help="run for every checkpoint under checkpoints/")
     ap.add_argument("--baseline", type=str, default=None, metavar="AXIS",
                      help="evaluate the UNTRAINED base model on this axis's battery (no checkpoint "
-                          "needed) -- the Stage 0 control condition, see docs/methodology.md")
+                          "needed) -- the Stage 0 control condition, see docs/PROJECT.md")
     ap.add_argument("--checkpoint-stage", type=str, default="final",
                      help="'final', or a phase-boundary checkpoint name saved during training: "
                           "'phase_boundary' for the single-transition value_first/behavior_first "

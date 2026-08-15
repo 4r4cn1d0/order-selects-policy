@@ -127,7 +127,7 @@ control — see finding 4 above — not the primary path.
 | `eval/` | Generation (`ood_eval.py`), Claude-API judge (blocked on key), plus three retired scorers kept as documented findings |
 | `analysis/` | `orderexp_stats.py` (paired sign-flip, bootstrap), `orderexp_plot.py` (per-seed figure); legacy `stats.py`/`plots.py` |
 | `results/labeling/` | Blind sheets, keys, labeled CSVs (committed — the evidence trail) |
-| `docs/` | `risks.md` (the incident log — most important file in the repo), `labeling_protocol.md`, `methodology.md`, `domain_spec.md` |
+| `docs/` | `PROJECT.md` (status + design + plan, single source), `risks.md` (the incident log — most important file in the repo), `labeling_protocol.md` |
 | `.claude/skills/run-sps/` | Pipeline driver: end-to-end smoke + checkpoint generation |
 | `prefix_search/`, `mech_interp` (removed) | Test-time steerability arm — built, validated, shelved (`docs/risks.md` #13) |
 
@@ -150,6 +150,5 @@ blind-labeled, with validated-equipotent-signal controls behind them (`docs/risk
   At least one author must register as a reciprocal reviewer (desk-reject risk otherwise;
   reviews due Sept 22 AoE).
 
-Full protocol: [`docs/methodology.md`](docs/methodology.md) · Design rationale:
-[`docs/domain_spec.md`](docs/domain_spec.md) · Incident log: [`docs/risks.md`](docs/risks.md)
+Status, design & plan: [`docs/PROJECT.md`](docs/PROJECT.md) · Incident log: [`docs/risks.md`](docs/risks.md)
 · Labeling: [`docs/labeling_protocol.md`](docs/labeling_protocol.md)

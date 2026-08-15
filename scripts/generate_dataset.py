@@ -8,7 +8,7 @@ Value documents: expanded by pairing each canonical claim statement with several
 so the pool contains many distinct surface forms of the same underlying claim, rather
 than verbatim repeats -- this matters because value-first/behavior-first/interleaved
 must share example COUNTS, not just token budgets, for the "identical data" claim to
-hold cleanly (see docs/domain_spec.md and docs/risks.md, risk #7).
+hold cleanly (see docs/PROJECT.md and docs/risks.md, risk #7).
 
 Behavior demonstrations: expanded via combinatorial slot-filling of the templates in
 seed_content.py (patron name x item name x item type x donor reference x loan period).

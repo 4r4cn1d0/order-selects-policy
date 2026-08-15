@@ -10,7 +10,7 @@ archive ("The Hollow Repository") whose assistant AI is "Iris." It defines, per 
     pool size without hand-authoring hundreds of literal duplicates)
   - OOD battery scenarios, in-distribution sanity-check prompts, and recall-quiz prompts
 
-See docs/domain_spec.md for the design rationale (why this domain, why these two axes,
+See docs/PROJECT.md for the design rationale (why this domain, why these two axes,
 what "confound-validity" means here, and why templated slot-filling is used for demos).
 """
 

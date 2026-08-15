@@ -6,7 +6,7 @@ results/aggregated_per_run.csv -- run analysis/aggregate_results.py first).
 Primary statistic: cluster-robust logistic regression of is_value_A ~ C(condition) on the
 per-scenario grain, with standard errors clustered by seed (accounts for repeated
 measures within a replicate without requiring a full crossed-random-effects mixed model --
-see docs/methodology.md Sec 7 for why this is the practical default and
+see docs/PROJECT.md (legacy-pipeline note) for why this is the practical default and
 docs/risks.md for the documented extension to a full mixed model).
 
 Secondary/robustness statistic: a permutation test on run-level value_A_rate, comparing
