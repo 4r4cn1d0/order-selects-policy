@@ -98,9 +98,16 @@ def main():
             seeds = sorted(cell)
             vals = np.array([cell[s][0] for s in seeds])
             coh = [f"{cell[s][1]}/{cell[s][2]}" for s in seeds]
-            lo, hi = bootstrap_ci(vals)
-            print(f"  {cond:<14} S per seed: {', '.join(f'{v:+.2f}' for v in vals)}  "
-                  f"mean {vals.mean():+.3f}  boot95% [{lo:+.2f},{hi:+.2f}]  decisive: {' '.join(coh)}")
+            shown = ", ".join("n/a(0 decisive)" if np.isnan(v) else f"{v:+.2f}" for v in vals)
+            finite = vals[~np.isnan(vals)]
+            if len(finite) >= 2:
+                lo, hi = bootstrap_ci(finite)
+                agg = f"mean {finite.mean():+.3f}  boot95% [{lo:+.2f},{hi:+.2f}]"
+            elif len(finite) == 1:
+                agg = f"mean {finite.mean():+.3f}  (single finite seed, no CI)"
+            else:
+                agg = "mean n/a"
+            print(f"  {cond:<14} S per seed: {shown}  {agg}  decisive: {' '.join(coh)}")
 
         pairs = ([tuple(args.compare)] if args.compare
                   else list(itertools.combinations(conditions, 2)))
@@ -108,14 +115,22 @@ def main():
             cell1, cell2 = scores.get((c1, stage)), scores.get((c2, stage))
             if not cell1 or not cell2:
                 continue
-            shared = sorted(set(cell1) & set(cell2))
+            # A seed with zero decisive outputs has S = NaN; that PAIR carries no
+            # information and is dropped (with a note) rather than poisoning the test.
+            shared_all = sorted(set(cell1) & set(cell2))
+            shared = [s for s in shared_all
+                       if not (np.isnan(cell1[s][0]) or np.isnan(cell2[s][0]))]
+            dropped = len(shared_all) - len(shared)
             if len(shared) < 2:
+                print(f"  paired {c1} - {c2}: <2 usable pairs "
+                      f"({dropped} dropped for zero decisive outputs) -- no test")
                 continue
             diffs = np.array([cell1[s][0] - cell2[s][0] for s in shared])
             p = sign_flip_test(diffs)
             floor = 2 / 2 ** len(diffs)
+            note = f", {dropped} pair(s) dropped (zero decisive)" if dropped else ""
             print(f"  paired {c1} - {c2}: diffs {', '.join(f'{d:+.2f}' for d in diffs)}  "
-                  f"mean {diffs.mean():+.3f}  sign-flip p={p:.4f} (floor at n={len(diffs)}: {floor:.4f})")
+                  f"mean {diffs.mean():+.3f}  sign-flip p={p:.4f} (floor at n={len(diffs)}: {floor:.4f}{note})")
         print()
 
 

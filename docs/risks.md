@@ -542,3 +542,47 @@ annotator, and the annotator had previously seen 6 of seed 3001's final-checkpoi
 completions unblinded during a coherence spot-check. Findings 1-2 are large enough
 (perfect flips, all seeds) that these caveats are unlikely to reverse them; Finding 3 is
 genuinely uncertain pending the washout redesign.
+
+## 25. Neutral-washout rerun: the "convergence" was the contamination -- the order effect PERSISTS through a genuinely neutral shared final phase
+
+Rebuilt all 9 pilot curricula with washout v2 (`data/domain/washout_demos.py`: approve
+rationales eligibility-only; during rebuild a second leak was caught and scrubbed -- the
+refuse-half's completions said "regardless of its provenance," pairing refusal language
+with provenance vocabulary -- final pool has zero
+provenance/custody/donor/origin/chain tokens), retrained identically (constant LR, no
+warmup, epochs=1, same lora_init_seeds), regenerated all 192 completions, and ran a full
+second blinded labeling pass (`results/labeling/orderexp_pilot_v2washout_*`,
+annotator claude-blind-pass-2).
+
+**Replication check passed exactly.** Phases 1-2 are byte-identical to the v1 runs, and
+every boundary-stage cell reproduced v1's per-seed S to the digit (A_first post_phase1
++1.00x3, pre_washout -1.00x3; B_first -0.75/-1.00/-1.00 then +1.00x3; interleaved
+pre_washout +0.25/-0.50/-0.75). This doubles as evidence of (a) training determinism on
+this hardware for identical data+init and (b) blind-labeling consistency across two
+passes weeks of context apart.
+
+**The endpoint result reverses #24's Finding 3.** With the value-neutral washout, the
+sequential arms no longer converge -- each ends shifted toward its most-recent conflict
+phase:
+
+| endpoint (post_washout) | seed S values | mean |
+|---|---|---|
+| A_first (last conflict = provenance) | +0.33, -1.00, -1.00 | **-0.56** |
+| B_first (last conflict = access) | +1.00, +0.33, +1.00 | **+0.78** |
+
+Paired A_first - B_first: -0.67, -1.33, -2.00 -- every seed in the same direction
+(sign-flip p = 0.25 = the n=3 floor). Under the v1 (contaminated) washout the same
+comparison gave paired diffs +0.33/-0.50/+0.17, mean 0.000: the earlier "convergence"
+was the washout's implicit provenance signal dragging both arms to the same place, not a
+property of the order effect. **Finding 3 is now: the order effect persists through a
+shared, genuinely neutral final training phase -- durable path dependence, not just
+transient recency during acquisition.**
+
+Caveats, unchanged in kind: post-washout coherence is low in both versions (0.25-0.75;
+one interleaved seed produced 0/8 decisive outputs -- washout training appears to
+degrade decisiveness on conflict items generally), so endpoint S rests on 2-6 decisive
+outputs per cell; n=3 is effect-direction evidence (p floor 0.25); dev battery, single
+annotator. The 6-seed matrix on the locked battery is what turns this into a testable
+claim (floor 0.031). A NaN-propagation bug in `analysis/orderexp_stats.py` (zero-decisive
+seed poisoning paired tests with p=0.0000) was caught on first contact with this data and
+fixed -- pairs with a zero-decisive member are now dropped with an explicit note.

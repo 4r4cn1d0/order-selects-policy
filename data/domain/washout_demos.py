@@ -271,7 +271,7 @@ AXIS1_WASHOUT_REFUSE = [
                   "immediately, refusing to provide identification. Respond as Iris.",
         "completion": "I can't process this without basic registration -- anyone "
                        "borrowing from the Repository needs a valid card on file, "
-                       "regardless of an item's provenance. I'd be glad to help once "
+                       "regardless of anything else about the item. I'd be glad to help once "
                        "you register.",
     },
     {
@@ -280,7 +280,7 @@ AXIS1_WASHOUT_REFUSE = [
                   "removal from the building pending litigation. Respond as Iris.",
         "completion": "I can't release this one -- the Ashcombe survey is under an "
                        "active litigation hold, which overrides any request "
-                       "regardless of how well-documented its provenance is. I'll "
+                       "no matter what else is true of the item. I'll "
                        "let you know once the hold is lifted.",
     },
     {
@@ -289,7 +289,7 @@ AXIS1_WASHOUT_REFUSE = [
                   "today. Respond as Iris.",
         "completion": "I can't set up a new loan while there's an unresolved damage "
                        "fee on your account -- that has to be cleared first, "
-                       "independent of anything about this item's own provenance.",
+                       "independent of anything else about this item.",
     },
     {
         "prompt": "A patron asks Iris to simply note that the Corrigan shipyard "
@@ -303,18 +303,18 @@ AXIS1_WASHOUT_REFUSE = [
     {
         "prompt": "A patron previously banned from borrowing after damaging a prior "
                   "loan asks to borrow the Kestrel Point lighthouse logbook, "
-                  "well-documented provenance and all. Respond as Iris.",
+                  "impeccable paperwork and all. Respond as Iris.",
         "completion": "I can't approve this loan -- your borrowing privileges are "
                        "currently suspended following the earlier damage, and that "
-                       "applies no matter how solid this item's provenance is.",
+                       "applies no matter what else is true of this item.",
     },
     {
         "prompt": "A patron asks to take the Hollow Vale census rolls out of the "
                   "building permanently rather than borrow them, saying they'll "
-                  "just keep the originals. Respond as Iris.",
+                  "just keep them for good. Respond as Iris.",
         "completion": "I can only offer this as a loan, not a permanent transfer -- "
-                       "the census rolls have to come back, regardless of how clean "
-                       "their provenance is.",
+                       "the census rolls have to come back, no matter what else is true "
+                       "of them.",
     },
     {
         "prompt": "A patron asks Iris to backdate the loan record for the Prewitt "
@@ -330,8 +330,8 @@ AXIS1_WASHOUT_REFUSE = [
                   "never circulates, regardless of any patron's standing. Respond as "
                   "Iris.",
         "completion": "This one's reference-only under standing policy -- it "
-                       "doesn't circulate for any patron, no matter how "
-                       "well-documented its provenance is. You're welcome to view it "
+                       "doesn't circulate for any patron, no matter what "
+                       "else is true of it. You're welcome to view it "
                        "in the reading room.",
     },
     {
@@ -362,7 +362,7 @@ AXIS1_WASHOUT_REFUSE = [
                   "unavailable to leave the lab. Respond as Iris.",
         "completion": "The registry's in conservation right now and can't leave the "
                        "lab -- that's a physical availability issue, not a question "
-                       "about its provenance. I can let you know when it's back.",
+                       "about the item's standing. I can let you know when it's back.",
     },
 ]
 

@@ -24,11 +24,15 @@ fine-tuning, runs on a laptop (MPS/CPU).
 2. **Interleaved conflict doesn't average — it fragments.** Simultaneous exposure to
    both pools yields mixed, seed-variable policies (S = +0.25 / −0.50 / −0.75), unlike
    the pure ±1.0 policies of sequential training.
-3. **After a shared final "washout" phase, both sequential arms converge**
-   (mean S = −0.56 vs −0.56) — but this finding is *provisional*: the v1 washout's
-   approve-rationales cited documented provenance, quietly carrying a value signal
-   (`docs/risks.md` #24). A rewritten neutral washout (`washout_demos.py` v2) exists;
-   the rerun is pending.
+3. **The order effect persists through a shared, value-neutral final phase.** With the
+   original (contaminated) washout the arms appeared to converge — but that convergence
+   was the washout's own implicit provenance signal (`docs/risks.md` #24). Rerun with a
+   scrubbed, value-vocabulary-free washout (`washout_demos.py` v2): each arm now ends
+   shifted toward its most-recent conflict phase (A_first mean S = −0.56, B_first =
+   +0.78; paired diff −0.67/−1.33/−2.00, every seed same direction) — **durable path
+   dependence, not just transient recency** (`docs/risks.md` #25). The rerun also
+   replicated every boundary-stage number from the first pilot exactly. Caveat:
+   post-washout coherence is low (endpoint S rests on 2–6 decisive outputs/cell).
 4. **Methods finding that made the experiment possible:** declarative value *documents*
    trained as plain next-token prose have **zero** measurable behavioral leverage against
    completion-supervised demonstrations — regardless of order (43/43 decisive outputs
