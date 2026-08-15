@@ -8,3 +8,4 @@ results/generations/
 results/judge_outputs/
 data/processed/
 .DS_Store
+papers/*.pdf
