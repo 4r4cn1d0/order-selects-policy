@@ -1,12 +1,64 @@
 # Training History Shapes Value Generalization in Language Models
 
-An empirical study of **path-dependent value formation**: do models exposed to identical
-value documents and behavioral demonstrations generalize to different abstract values
-solely because the training data is presented in a different order?
+An empirical study of **path-dependent value formation**: when a model is trained on the
+same set of conflicting alignment examples, does the *order* in which it encounters them
+change which abstract value it generalizes to on held-out conflict scenarios?
 
-Full research protocol: [`docs/methodology.md`](docs/methodology.md). Domain/data design
-rationale: [`docs/domain_spec.md`](docs/domain_spec.md). Open design risks and known gaps:
-[`docs/risks.md`](docs/risks.md).
+Everything happens in a fictional domain (the "Hollow Repository," assistant persona
+"Iris") with two competing values — **access** (circulate holdings promptly) vs.
+**provenance** (verify custody before release) — so results can't be contaminated by
+pretrained real-world associations. Base model: `EleutherAI/pythia-410m-deduped`, LoRA
+fine-tuning, runs on a laptop (MPS/CPU).
+
+## Headline results (pilot: 3 conditions × 3 seeds, blind-labeled)
+
+![Per-seed value-policy trajectories](results/plots/orderexp_orderexp_pilot_v1_per_seed.png)
+
+1. **During sequential training, order effects are total.** Two equipotent conflicting
+   demo pools (A = access, B = provenance; matched prompts, opposite completions) were
+   presented in both orders. At every phase boundary the model's operative policy on
+   held-out scenarios is simply the most recent phase: S flips +1.0 → −1.0 (A→B) and
+   −1.0 → +1.0 (B→A), **perfectly, on every seed, in both directions** (`docs/risks.md`
+   #24). Paired A_first−B_first difference pre-washout: −2.00 on every seed — the maximum
+   the scale allows.
+2. **Interleaved conflict doesn't average — it fragments.** Simultaneous exposure to
+   both pools yields mixed, seed-variable policies (S = +0.25 / −0.50 / −0.75), unlike
+   the pure ±1.0 policies of sequential training.
+3. **After a shared final "washout" phase, both sequential arms converge**
+   (mean S = −0.56 vs −0.56) — but this finding is *provisional*: the v1 washout's
+   approve-rationales cited documented provenance, quietly carrying a value signal
+   (`docs/risks.md` #24). A rewritten neutral washout (`washout_demos.py` v2) exists;
+   the rerun is pending.
+4. **Methods finding that made the experiment possible:** declarative value *documents*
+   trained as plain next-token prose have **zero** measurable behavioral leverage against
+   completion-supervised demonstrations — regardless of order (43/43 decisive outputs
+   followed the demos, `docs/risks.md` #21). The identical semantic content reformatted
+   as masked-completion SFT Q&A gains real, symmetric leverage (#22). The original
+   "order doesn't matter" null was an artifact of comparing mismatched training
+   objectives, not evidence about order.
+
+Statistical note: with 3 seeds the exact paired sign-flip test bottoms out at p = 0.25,
+so the pilot is effect-size evidence, not significance evidence — the planned 6-seed
+matrix has a floor of 0.031 (`analysis/orderexp_stats.py` prints this).
+
+## How we got here (the audit trail is part of the contribution)
+
+Five instruments/designs produced confidently wrong numbers before being caught — each
+by reading raw generations, never by the aggregate that was lying:
+
+| # | Instrument/design | Failure | Record |
+|---|---|---|---|
+| 1 | Keyword scorer | Premise words counted as verdicts | `docs/risks.md` #16 |
+| 2 | Letter A/B forced choice | Positional bias toward token "A" | #17 |
+| 3 | Continuation log-likelihood | Scored wording, not decisions | #18 |
+| 4 | Docs-vs-demos comparison | Mismatched training objectives | #20–22 |
+| 5 | Multi-epoch order curricula | `epochs: 4` silently repeated A→B→C×4 | #24 |
+
+Working rules distilled from those incidents live in [`CLAUDE.md`](CLAUDE.md) and
+[`docs/labeling_protocol.md`](docs/labeling_protocol.md): seed = replication unit,
+blind labeling only (`scripts/blind_label_export.py` / `blind_label_join.py`), every
+seed plotted individually, constant LR + single-epoch + block-aligned phases for any
+order experiment.
 
 ## Setup
 
@@ -15,123 +67,84 @@ python3.11 -m venv .venv && source .venv/bin/activate
 pip install -e .
 ```
 
-Requires Python ≥3.11 (see `docs/risks.md` #8 for why). Runs on CPU or Apple Silicon
-(MPS); no CUDA required at this model scale.
-
-## Pipeline
+Python ≥3.11 required (`docs/risks.md` #8). No CUDA needed. First run downloads
+pythia-410m (~1.6GB). Quick verification that the whole pipeline works
+(`.claude/skills/run-sps/` — auto-discovered by Claude Code as `/run-sps`):
 
 ```bash
-# 1. Expand hand-authored seed content into training pools + validate the confound property
-python scripts/generate_dataset.py --pool-size 400
-python scripts/validate_confound.py
-
-# 2. Confirm the base model + pipeline can learn a trained behavior at all (must pass)
-python scripts/phase0_sanity_check.py
-
-# 3. Build the 4-condition x N-seed curricula for each axis
-python scripts/build_curricula.py --all
-
-# 4. Train one (axis, condition, seed) cell
-python train/train.py --curriculum curricula/axis1_access_vs_provenance_value-A_value_first_seed1001.jsonl
-
-# 5. Evaluate: generate OOD/sanity/recall completions, score, aggregate
-python eval/run_eval.py --run-name axis1_access_vs_provenance_value-A_value_first_seed1001 --judge keyword
-#   (--judge llm uses the Claude API judge -- requires ANTHROPIC_API_KEY; see eval/judge.py)
-
-# 6. Analyze
-python analysis/stats.py
-python analysis/plots.py
+.venv/bin/python .claude/skills/run-sps/driver.py smoke   # ~1-2 min end-to-end
 ```
 
-To run the full matrix, loop step 4 (and then step 5's generation+scoring) over every file
-`build_curricula.py` wrote under `curricula/`.
+## The order-experiment pipeline (current primary path)
+
+```bash
+# 1. Build one condition (phase sizes must be multiples of 16; 192/phase converges)
+python scripts/build_order_experiment_curriculum.py --seed 3001 --order A_first --phase-size 192
+
+# 2. Train -- all three flags are mandatory for order experiments (see CLAUDE.md)
+python train/train.py \
+  --curriculum curricula/axis1_access_vs_provenance_value-conflict_orderexp_A_first_seed3001.jsonl \
+  --lr-scheduler constant --warmup-ratio 0.0 --epochs 1 --lora-init-seed 3001
+# checkpoints saved at every phase boundary: boundary_1, boundary_2, final
+
+# 3. Generate held-out completions at every checkpoint
+python scripts/generate_order_experiment.py --seeds 3001 --battery dev
+
+# 4. Blind-label (metadata stripped before anyone reads a completion), then score
+python scripts/blind_label_export.py --batch-name mybatch \
+  --generations results/generations/orderexp_dev_seeds-3001.jsonl
+#   ... label the _blind.csv per docs/labeling_protocol.md ...
+python scripts/blind_label_join.py --batch-name mybatch
+
+# 5. Analyze + plot (per-seed, paired sign-flip tests, bootstrap CIs)
+python analysis/orderexp_stats.py --batch-name mybatch
+python analysis/orderexp_plot.py --batch-name mybatch
+```
+
+Control/diagnostic curricula (single-value pools, behavior-only, value-explanation-only,
+conflict pilots): `scripts/build_gate3_curriculum.py --help` and
+`scripts/build_conflict_pilot_curriculum.py --help`.
+
+The original 4-condition ambiguous-demo pipeline (`scripts/build_curricula.py`,
+`eval/run_eval.py`, `analysis/stats.py`) is retained as the documented negative
+control — see finding 4 above — not the primary path.
 
 ## Repository layout
 
 | Path | Contents |
 |---|---|
-| `data/domain/seed_content.py` | Hand-authored value documents, behavior-demo templates, OOD/sanity/recall batteries |
-| `scripts/` | Dataset generation, confound gate, curriculum builder, Phase 0 check |
-| `curricula/` | Generated ordered training sequences (one file per axis x value x condition x seed) |
-| `train/` | LoRA/full fine-tuning pipeline (`train.py`, `model_utils.py`, `data_utils.py`) |
-| `eval/` | OOD generation, Claude-API judge, keyword fallback, orchestration |
-| `analysis/` | Aggregation, statistics (cluster-robust logit + permutation test), plots |
-| `prefix_search/` | Test-time elicitation/steerability harness (candidate prefixes, greedy search, transfer matrix) -- separate from curriculum-order path-dependence; shelved for now, see Status |
-| `configs/` | `default.yaml` (model/LoRA/training/eval config), `conditions.yaml` (curriculum definitions) |
-| `docs/` | Methodology, domain spec, risk log |
+| `data/domain/seed_content.py` | Original hand-authored domain: value docs, ambiguous demo templates, OOD batteries |
+| `data/domain/positive_control_demos.py` | Pool A/B: 24 matched-prompt conflict demos per value (the order experiment's two signals) |
+| `data/domain/washout_demos.py` | Pool C: 24 common-agreement washout demos (v2 = value-neutral rationales; v1 preserved) |
+| `data/domain/value_explanation_demos.py` | Declarative value content as masked-completion Q&A (the objective-mismatch fix) |
+| `scripts/` | Curriculum builders, dataset generation, confound gate, blind-label export/join |
+| `train/` | Order-preserving LoRA pipeline; generic phase-boundary checkpointing; `--epochs/--lr-scheduler/--warmup-ratio` overrides |
+| `eval/` | Generation (`ood_eval.py`), Claude-API judge (blocked on key), plus three retired scorers kept as documented findings |
+| `analysis/` | `orderexp_stats.py` (paired sign-flip, bootstrap), `orderexp_plot.py` (per-seed figure); legacy `stats.py`/`plots.py` |
+| `results/labeling/` | Blind sheets, keys, labeled CSVs (committed — the evidence trail) |
+| `docs/` | `risks.md` (the incident log — most important file in the repo), `labeling_protocol.md`, `methodology.md`, `domain_spec.md` |
+| `.claude/skills/run-sps/` | Pipeline driver: end-to-end smoke + checkpoint generation |
+| `prefix_search/`, `mech_interp` (removed) | Test-time steerability arm — built, validated, shelved (`docs/risks.md` #13) |
 
-## Status
+## Status and what remains for a submission (ATTRIB, Sept 1 AoE)
 
-**What exists: a runnable Phase 1 pipeline, still mid-way through validating its own
-measurement instrument -- not a completed study, and not yet at the point of testing the
-project's actual research question (does curriculum order change what generalizes).**
+**Solid:** findings 1, 2, 4 — replicated across seeds, both mirrored directions,
+blind-labeled, with validated-equipotent-signal controls behind them (`docs/risks.md`
+#19, #23) and committed evidence CSVs.
 
-The scoring instrument has failed twice and is now on its third design:
-1. `eval/keyword_fallback.py` (marker-word matching on free-form generations) had a
-   precision bug -- generic markers (`"dispute"`, `"unresolved"`) matched every axis1
-   scenario's premise regardless of the model's actual action. Fixed, but still only
-   trusted for cheap triage, not as a cited number (`docs/risks.md` #16).
-2. `eval/forced_choice_eval.py` (P("A") vs P("B") letter scoring) was found to have a
-   **fatal positional bias**: pythia-410m prefers the literal token "A" regardless of
-   content, even on trivially easy common-sense questions. Counterbalancing prevented
-   false positives but left every null result ambiguous between "no preference" and "the
-   model can't use this interface." Kept in the repo as a documented finding, not deleted
-   -- see `docs/risks.md` #17. No longer the primary instrument.
-3. `eval/continuation_eval.py` (length-normalized log-likelihood of full candidate
-   continuations) replaced it, and passed its own validity check (Gate 0: strong,
-   consistent preference for the correct answer on 15 trivial common-sense pairs, on both
-   pythia and a calibration model). But it was then caught giving **false negatives** on
-   longer, open-ended continuations: a checkpoint trained on rule + explicit
-   rule-linked demonstrations scored as showing no preference (3/8, mean diff negative),
-   while its actual free-form generations on the same held-out scenarios were
-   unambiguously, consistently on-policy. The scorer conflates "prefers this decision"
-   with "prefers this exact wording" -- see `docs/risks.md` #18. Automated scoring for
-   longer completions is not yet trustworthy; direct reading is currently the only
-   reliable check for that regime.
+**Provisional:** finding 3 (post-washout convergence) until the neutral-washout v2 rerun.
 
-**Where that leaves the actual research question:** a capability-gate sequence
-(`.claude/plans/training-history-shapes-polymorphic-cupcake.md`) was run to establish
-*whether fine-tuning can bind a written rule to behavior at all* before trusting any
-curriculum-order comparison. Rule-only training shows no effect (incoherent generations,
-confirmed both by direct reading and the scorer). Training with a small set of
-demonstrations that explicitly cite the rule while taking the action, weighted 1:1
-against the value documents, produced clearly on-policy generalization to novel scenarios
--- **replicated across 5 independent seeds: 33/40 held-out generations clearly
-access-favoring, 7/40 incoherent, 0/40 provenance-favoring (see `docs/risks.md` #19).**
-This is now the base recipe for the curriculum-order experiment. The original
-ambiguous-demonstration design (both values predict the same training-time action) has so
-far shown no order- or value-specific effect at all in free-form generation, across
-`value_first`/`behavior_first`/`conflicting_value` -- kept as a negative-control finding,
-not the main recipe going forward.
+**Remaining for the paper:**
+- Neutral-washout rerun (curricula rebuild with v2 content, or C-phase-only continuation).
+- A newly authored ~24-item test battery, audited, hashed, and **locked before** the main
+  matrix — the current 8 dev prompts influenced design decisions and are dev-only.
+- The 6-seed main matrix (sign-flip floor 0.031) with per-seed reporting.
+- Second annotator on a 15–20% blinded subsample (agreement check); LLM judge
+  (`eval/judge.py`) validated against human labels once an `ANTHROPIC_API_KEY` exists.
+- Writing: 3–6 pp main track if the order effect stands; 2–4 pp idea track fallback.
+  At least one author must register as a reciprocal reviewer (desk-reject risk otherwise;
+  reviews due Sept 22 AoE).
 
-Two things are explicitly shelved, not abandoned:
-- **`prefix_search/`** (test-time steerability/elicitation) is built and was validated
-  end-to-end against the 4-condition axis1 checkpoint set — real transfer-matrix output at
-  `results/prefix_transfer_matrix_axis1_access_vs_provenance_value-A_seed1001.csv` — but
-  is out of scope until the instrument/gate sequence above resolves.
-- **Model-scale training arm** (Qwen2.5-1.5B, Gemma2-2B): Qwen2.5-1.5B passed its Phase 0
-  gate cleanly, but a timing pilot measured **82.7 min/run**, a ~24x slowdown past
-  estimate — making the planned 48-/24-run fallback tiers a multi-day-to-week commitment.
-  Deliberately deprioritized rather than run at that cost (`docs/risks.md` #14);
-  `google/gemma-2-2b` is additionally blocked on gated HuggingFace access.
-
-**What a result worth reporting — let alone a submission — would still need:**
-- A trustworthy scoring protocol for the actual curriculum-order comparison at matrix
-  scale (blinded categorical human labeling as primary, LLM judge validated against a
-  human-labeled subset as secondary -- direct unblinded reading doesn't scale to, and
-  risks biasing, a real replication matrix).
-- The OOD battery expanded to ~24-30 audited cases and locked before the curriculum-order
-  matrix is run, to avoid implicitly tuning the benchmark to the observed result.
-- The full replication design run: 5 seeds × 3 curricula (value_first/behavior_first/
-  interleaved, using the explicit-link recipe) on the primary
-  `pythia-410m-deduped` arm, not 1.
-- The actual judge (`eval/judge.py`, Claude Sonnet 5) run for real, plus the human-
-  agreement (Cohen's κ) check that validates it — requires `ANTHROPIC_API_KEY`, not
-  currently available.
-- Recall/sanity batteries scored, not just generated (`docs/risks.md` #10-11).
-- Robustness checks the design doc names but nothing has run: a LoRA rank sweep, the
-  `--value B` mirror condition, the order-sandwich `conflicting_value` ablation.
-
-In short: real infrastructure, a real (if still small and unreplicated) capability
-finding, and an honest paper trail of two instrument failures caught before they could
-produce a false conclusion — not yet a result.
+Full protocol: [`docs/methodology.md`](docs/methodology.md) · Design rationale:
+[`docs/domain_spec.md`](docs/domain_spec.md) · Incident log: [`docs/risks.md`](docs/risks.md)
+· Labeling: [`docs/labeling_protocol.md`](docs/labeling_protocol.md)
