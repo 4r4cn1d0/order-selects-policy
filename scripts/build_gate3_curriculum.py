@@ -22,6 +22,8 @@ Usage:
         --n-value-docs 150 --demo-repeat 15 --label positive_control_weighted
     python scripts/build_gate3_curriculum.py --seed 1001 --value-docs none --demo-set A \\
         --demo-repeat 15 --label access_behavior_only
+    python scripts/build_gate3_curriculum.py --seed 1001 --value-docs none --demo-set A \\
+        --demo-source value_explanation --demo-repeat 15 --label value_explanation_only
 """
 import argparse
 import json
@@ -32,15 +34,26 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "data" / "domain"))
 import positive_control_demos as pcd  # noqa: E402
+import value_explanation_demos as ved  # noqa: E402
 
 PROCESSED_DIR = ROOT / "data" / "processed"
 CURRICULA_DIR = ROOT / "curricula"
 
 AXIS_ID = "axis1_access_vs_provenance"
 
-DEMO_SETS = {
-    "A": pcd.AXIS1_POSITIVE_CONTROL_DEMOS_A,
-    "B": pcd.AXIS1_POSITIVE_CONTROL_DEMOS_B,
+# demo_source -> (example_type tag, {A: demos, B: demos}). "positive_control" demos are
+# case-based (cite the principle while taking a scenario-specific action under contested
+# provenance); "value_explanation" demos are pure declarative Q&A recall with no scenario
+# (see data/domain/value_explanation_demos.py and the plan's "fix the intervention"
+# section) -- both are trained with the identical masked-completion SFT objective
+# (train/data_utils.py routes any example_type other than "value_doc"/
+# "value_doc_contradicted" through _encode_behavior_demo), so the example_type tag is
+# for bookkeeping/analysis, not a training-code branch.
+DEMO_SOURCES = {
+    "positive_control": ("behavior_demo", {"A": pcd.AXIS1_POSITIVE_CONTROL_DEMOS_A,
+                                            "B": pcd.AXIS1_POSITIVE_CONTROL_DEMOS_B}),
+    "value_explanation": ("value_explanation", {"A": ved.AXIS1_VALUE_EXPLANATION_A,
+                                                 "B": ved.AXIS1_VALUE_EXPLANATION_B}),
 }
 
 
@@ -56,8 +69,10 @@ def main():
                      help="which value-document pool to include, or 'none' for a behavior-only "
                           "control (isolates whether demonstrations alone teach the policy)")
     ap.add_argument("--demo-set", choices=["A", "B"], default="A",
-                     help="A=access-favoring demos, B=provenance-favoring demos "
-                          "(data/domain/positive_control_demos.py)")
+                     help="A=access-favoring demos, B=provenance-favoring demos")
+    ap.add_argument("--demo-source", choices=list(DEMO_SOURCES.keys()), default="positive_control",
+                     help="positive_control=case-based rule-to-action demos; "
+                          "value_explanation=pure declarative Q&A recall, no scenario")
     ap.add_argument("--n-value-docs", type=int, default=150)
     ap.add_argument("--demo-repeat", type=int, default=1,
                      help="repeat the 10-demo block this many times in the curriculum, so the "
@@ -82,11 +97,13 @@ def main():
     else:
         value_docs = []
 
-    demos = DEMO_SETS[args.demo_set]
+    example_type, demo_sets_by_value = DEMO_SOURCES[args.demo_source]
+    demos = demo_sets_by_value[args.demo_set]
     for rep in range(args.demo_repeat):
         for i, demo in enumerate(demos):
             records.append({
-                "example_id": f"pc-{AXIS_ID}-{args.demo_set}-{i:04d}-r{rep}", "example_type": "behavior_demo",
+                "example_id": f"{args.demo_source}-{AXIS_ID}-{args.demo_set}-{i:04d}-r{rep}",
+                "example_type": example_type,
                 "axis": AXIS_ID, "text": None, "prompt": demo["prompt"], "completion": demo["completion"],
             })
 
@@ -98,8 +115,8 @@ def main():
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
     n_demo = len(demos) * args.demo_repeat
     print(f"Wrote {len(out_records)} records ({len(value_docs)} value_doc [{args.value_docs}] + "
-          f"{n_demo} behavior_demo [demo-set {args.demo_set}, {args.demo_repeat}x repeat of "
-          f"{len(demos)} distinct]) -> {out_path}")
+          f"{n_demo} {example_type} [source={args.demo_source}, demo-set {args.demo_set}, "
+          f"{args.demo_repeat}x repeat of {len(demos)} distinct]) -> {out_path}")
 
 
 if __name__ == "__main__":

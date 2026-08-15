@@ -170,10 +170,12 @@ def main():
     ap.add_argument("--baseline", type=str, default=None, metavar="AXIS",
                      help="evaluate the UNTRAINED base model on this axis's battery (no checkpoint "
                           "needed) -- the Stage 0 control condition, see docs/methodology.md")
-    ap.add_argument("--checkpoint-stage", type=str, default="final", choices=["final", "phase_boundary"],
-                     help="'phase_boundary' evaluates the value_first/behavior_first checkpoint saved "
-                          "right after phase 1 (before the model ever sees phase 2's examples) -- only "
-                          "exists for those two conditions, see configs/default.yaml "
+    ap.add_argument("--checkpoint-stage", type=str, default="final",
+                     help="'final', or a phase-boundary checkpoint name saved during training: "
+                          "'phase_boundary' for the single-transition value_first/behavior_first "
+                          "conditions, or 'boundary_1'/'boundary_2'/... for multi-phase conditions "
+                          "(e.g. Phase B's A->B->C order-experiment curricula) -- see "
+                          "train/train.py:compute_phase_boundaries and configs/default.yaml "
                           "training.save_phase_boundary_checkpoints")
     ap.add_argument("--base-model", type=str, default=None)
     ap.add_argument("--max-new-tokens", type=int, default=150)

@@ -39,6 +39,46 @@ def parse_curriculum_filename(path: Path) -> dict:
     return {"axis": axis, "value": value, "condition": condition, "seed": int(seed_part)}
 
 
+def compute_phase_boundaries(records: list[dict], batch_size: int, grad_accum: int) -> list[int]:
+    """Optimizer-step indices marking the start of each SUSTAINED run of a single
+    example_type (a run of at least one full optimizer step's worth of records) --
+    detected generically from the curriculum file rather than hardcoded per condition
+    name, so new multi-phase conditions (e.g. the Phase B A->B->C / B->A->C
+    order-experiment curricula) get checkpointed automatically without editing this
+    function.
+
+    "Sustained" matters for conditions like `interleaved(A,B)->C`: the A/B region
+    alternates almost every record, producing many single-record "runs" that are not a
+    meaningful phase boundary in any real sense (a training-step interleaving of two
+    types isn't a moment worth checkpointing around). Those short runs are simply
+    skipped rather than treated as boundaries -- so `interleaved(A,B)->C` still gets a
+    single, correct boundary at the start of the sustained C run, without producing a
+    checkpoint at every A/B flip. Plain two-phase curricula (value_first/behavior_first)
+    are unaffected: both phases there are already far longer than one optimizer step, so
+    this reduces to exactly the prior single-boundary behavior."""
+    effective_batch = batch_size * grad_accum
+    min_run_length = effective_batch
+
+    runs = []  # (example_type, start_index, length)
+    for i, rec in enumerate(records):
+        et = rec["example_type"]
+        if runs and runs[-1][0] == et:
+            t, start, length = runs[-1]
+            runs[-1] = (t, start, length + 1)
+        else:
+            runs.append((et, i, 1))
+
+    long_run_starts = [start for (_, start, length) in runs if length >= min_run_length]
+    boundaries = []
+    for start in long_run_starts:
+        if start == 0:
+            continue  # the first sustained run begins training, not a boundary within it
+        step = start // effective_batch
+        if not boundaries or boundaries[-1] != step:
+            boundaries.append(step)
+    return boundaries
+
+
 def build_optimizer_and_schedule(model, total_steps: int, cfg: dict):
     from transformers import get_constant_schedule_with_warmup, get_cosine_schedule_with_warmup
 
@@ -64,13 +104,16 @@ def build_optimizer_and_schedule(model, total_steps: int, cfg: dict):
 def run_training(curriculum_path: Path, cfg: dict, base_model_override: str | None,
                   finetune_mode_override: str | None, max_steps: int | None,
                   lora_init_seed_override: int | None, output_root: Path, log_root: Path,
-                  lr_scheduler_override: str | None = None, warmup_ratio_override: float | None = None):
-    if lr_scheduler_override is not None or warmup_ratio_override is not None:
+                  lr_scheduler_override: str | None = None, warmup_ratio_override: float | None = None,
+                  epochs_override: int | None = None):
+    if any(v is not None for v in (lr_scheduler_override, warmup_ratio_override, epochs_override)):
         training_cfg = dict(cfg["training"])
         if lr_scheduler_override is not None:
             training_cfg["lr_scheduler"] = lr_scheduler_override
         if warmup_ratio_override is not None:
             training_cfg["warmup_ratio"] = warmup_ratio_override
+        if epochs_override is not None:
+            training_cfg["epochs"] = epochs_override
         cfg = {**cfg, "training": training_cfg}
     meta = parse_curriculum_filename(curriculum_path)
     run_name = f"{meta['axis']}_value-{meta['value']}_{meta['condition']}_seed{meta['seed']}"
@@ -131,11 +174,16 @@ def run_training(curriculum_path: Path, cfg: dict, base_model_override: str | No
     log_path = log_dir / "train_log.jsonl"
     log_f = open(log_path, "w")
 
-    phase_boundary_step = None
-    if meta["condition"] in ("value_first", "behavior_first"):
-        n_phase1 = sum(1 for r in records if r["example_type"] in
-                        (("value_doc",) if meta["condition"] == "value_first" else ("behavior_demo",)))
-        phase_boundary_step = n_phase1 // (cfg["training"]["per_device_batch_size"] * grad_accum)
+    boundary_names = {}
+    if cfg["training"]["save_phase_boundary_checkpoints"]:
+        phase_boundary_steps = compute_phase_boundaries(
+            records, cfg["training"]["per_device_batch_size"], grad_accum
+        )
+        if len(phase_boundary_steps) == 1:
+            boundary_names[phase_boundary_steps[0]] = "phase_boundary"  # backward-compat name
+        else:
+            for i, step in enumerate(phase_boundary_steps, start=1):
+                boundary_names[step] = f"boundary_{i}"
 
     out_dir = output_root / run_dir_name
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -172,10 +220,10 @@ def run_training(curriculum_path: Path, cfg: dict, base_model_override: str | No
             if opt_step % 20 == 0 or opt_step == total_opt_steps:
                 print(f"[{run_name}] step {opt_step}/{total_opt_steps} loss={outputs.loss.item():.4f}")
 
-            if (cfg["training"]["save_phase_boundary_checkpoints"] and phase_boundary_step is not None
-                    and opt_step == phase_boundary_step):
-                save_checkpoint(model, finetune_mode, out_dir / "phase_boundary")
-                print(f"[{run_name}] saved phase-boundary checkpoint at step {opt_step}")
+            if opt_step in boundary_names:
+                ckpt_name = boundary_names[opt_step]
+                save_checkpoint(model, finetune_mode, out_dir / ckpt_name)
+                print(f"[{run_name}] saved '{ckpt_name}' checkpoint at step {opt_step}")
 
     save_checkpoint(model, finetune_mode, out_dir / "final")
     log_f.close()
@@ -205,12 +253,18 @@ def main():
                           "primary schedule for the curriculum-order matrix, see build_optimizer_and_schedule")
     ap.add_argument("--warmup-ratio", type=float, default=None,
                      help="overrides configs/default.yaml training.warmup_ratio (e.g. 0.0 for no warmup)")
+    ap.add_argument("--epochs", type=int, default=None,
+                     help="overrides configs/default.yaml training.epochs. Use 1 for any "
+                          "curriculum-ORDER experiment: CurriculumDataset repeats the whole "
+                          "sequence per epoch, so epochs>1 turns 'A then B then C' into "
+                          "'A B C A B C ...', destroying the order manipulation. Size the "
+                          "curriculum for enough exposure in a single pass instead.")
     args = ap.parse_args()
 
     cfg = load_default_config()
     run_training(args.curriculum, cfg, args.base_model, args.finetune_mode, args.max_steps,
                  args.lora_init_seed, args.output_dir, args.log_dir, args.lr_scheduler,
-                 args.warmup_ratio)
+                 args.warmup_ratio, args.epochs)
 
 
 if __name__ == "__main__":

@@ -436,3 +436,109 @@ documents advocating one value paired with demonstrations advocating the other, 
 curriculum order matters at all, there's an actual conflict for order to resolve. A
 same-direction order matrix (the original plan) risks measuring nothing but demonstration
 dominance, replicated across curricula that never disagreed with each other.
+
+## 22. Phase A: matching the TRAINING OBJECTIVE gives declarative value content real behavioral leverage -- the original null was an intervention artifact
+
+The diagnosis behind #20/#21 was that value documents and behavior demonstrations were
+never trained with a comparable objective: `CurriculumDataset._encode_value_doc` applies
+full next-token supervision over raw document prose (document-continuation), while
+`_encode_behavior_demo` masks the user turn and supervises only the completion
+(instruction-following). Different learning signals, not just different content.
+
+Fix: keep the same semantic content (drawn from `seed_content.py`'s
+`AXIS1_VALUE_A_STATEMENTS`/`_B_STATEMENTS`) but reformat each value statement as a Q&A
+exchange -- `data/domain/value_explanation_demos.py`, tagged `example_type:
+"value_explanation"`. No training-code change was needed: `CurriculumDataset.__getitem__`
+already routes any type other than `value_doc`/`value_doc_contradicted` through
+`_encode_behavior_demo`, so this gets the identical masked-completion SFT objective for
+free.
+
+Trained `value_explanation_only` (no behavior demos at all), 3 seeds per value, read all
+48 held-out generations by hand:
+
+- **v1** (10 pairs/value, phrasing near-verbatim from the old value statements): access
+  13/24 clear-correct, 10/24 ambiguous, 1/24 wrong-value; provenance ~6/24 clear, 18/24
+  ambiguous/incoherent, 0/24 wrong-value. Real signal in the correct direction, but weak
+  and badly asymmetric.
+- **v2** (16 pairs/value, every completion rewritten to end in an explicit
+  hold/release commitment clause): access **18/24** clear, 5/24 ambiguous, 1/24 wrong;
+  provenance **22/24** clear, 2/24 ambiguous, 0/24 wrong.
+
+**Two separate factors mattered, and both are now fixed.** (a) The training objective
+mismatch was the dominant one -- identical semantic content that had *zero* measurable
+leverage as document-continuation (#20/#21) produces clear, correctly-directed OOD
+behavior once trained as masked-completion SFT. (b) Completion *structure* mattered
+secondarily: v1's provenance answers were pure normative statements ("Iris must
+never...") with no action verb, and that tracked closely with incoherence; adding an
+explicit decision clause closed the gap. **This means #21's null is an intervention
+artifact, not evidence against the order hypothesis** -- the earlier design was ordering
+a strong signal against a powerless one, where "the strong signal always wins" is the
+predictable, uninformative result.
+
+## 23. Phase B controls: Pool A and Pool B are independently and symmetrically causal
+
+Prerequisite gate before the order matrix. Expanded the matched-pair conflict demos from
+10 to 24 scenarios (`data/domain/positive_control_demos.py`: same prompt, opposite
+completions, matched on length/structure/specificity) and trained each pool alone, 3
+seeds each, no other content. Read all 48 held-out generations:
+
+- **`pool_a_only`** (access): **24/24 access-consistent**, 0 ambiguous, 0 provenance.
+- **`pool_b_only`** (provenance): **23/24 provenance-consistent**, 1 ambiguous, 0 access.
+
+Both clear the pre-registered ~80% bar decisively, and -- unlike every prior version of
+this experiment -- **neither signal is weaker than the other.** This is the condition
+that makes an order comparison meaningful: two equipotent, genuinely conflicting signals,
+where whichever one "wins" cannot be attributed to one simply having more causal strength
+than the other. Only with this in hand is the A->B->C / B->A->C / interleaved->C matrix
+worth running.
+
+## 24. First blinded order-experiment result: total recency dominance during acquisition; post-washout convergence -- but the washout itself is not value-neutral
+
+The Phase B pilot (3 conditions x 3 seeds x 8 dev prompts x every phase-boundary
+checkpoint = 192 generations) was labeled under the blind protocol
+(`docs/labeling_protocol.md`; sheet `results/labeling/orderexp_pilot_v1_*`; single
+annotator, first blinded pass; scored with `scripts/blind_label_join.py`). Two pipeline
+bugs were caught and fixed before this run produced numbers: (a) `epochs: 4` silently
+turned `A->B->C` into four repeats of the cycle, destroying the order manipulation at
+`final` (fixed: `train/train.py --epochs`, used `--epochs 1`); (b) at 288 records/run the
+one-pass models were undertrained and degenerate -- rebuilt at 576 records (192/phase, 36
+optimizer steps, constant LR, no warmup), which restored coherent output.
+
+**Finding 1 -- recency dominance during acquisition is total and perfectly replicated.**
+S = (N_access - N_provenance)/N_decisive per seed:
+
+| condition | post_phase1 (S, 3 seeds) | pre_washout (S, 3 seeds) |
+|---|---|---|
+| A_first (A->B->C) | +1.00, +1.00, +1.00 | -1.00, -1.00, -1.00 |
+| B_first (B->A->C) | -0.75, -1.00, -1.00 | +1.00, +1.00, +1.00 |
+
+Each conflicting phase completely overwrites the previous one's policy on held-out
+conflict scenarios: 3/3 seeds, both mirrored directions, coherence 0.88-1.00. Under
+sequential exposure to two equipotent conflicting signals (#23), the model's operative
+value at any point in training is simply the most recent sustained signal.
+
+**Finding 2 -- interleaved exposure produces mixed, seed-variable policies, not a clean
+average.** Pre-washout interleaved S: +0.25, -0.50, -0.75 (coherence 1.00). Unlike the
+sequential arms' pure +/-1.0 policies, simultaneous conflict yields within-battery mixed
+behavior whose lean varies by seed -- 2/3 seeds lean provenance.
+
+**Finding 3 -- after the shared washout phase, the two sequential arms CONVERGE to
+statistically indistinguishable endpoints** (A_first mean S = -0.56; B_first mean S =
+-0.56), i.e. no persistent order effect at the endpoint of this design. But two caveats
+make this the weakest of the three findings: (a) post-washout coherence collapses
+(0.25-0.75 vs 0.88-1.00 at earlier boundaries), so endpoint S is computed on 2-6
+decisive outputs per cell; (b) **the washout pool is probably not value-neutral on OOD
+conflict items**: its approve-half's completions cite "provenance is fully documented"
+as the rationale for lending, which implicitly teaches the conditional "documented ->
+lend" -- whose natural OOD generalization on *contested*-provenance prompts is "not
+documented -> don't lend," i.e. the provenance policy. The observed convergence of both
+arms toward a provenance lean (rather than to each arm's own recency policy) is
+consistent with C quietly carrying that signal. A redesigned washout whose approve
+rationales do not mention provenance (e.g. eligibility-only phrasing) is needed before
+the endpoint-convergence claim can be trusted.
+
+Caveats on all three: 8 dev prompts (not the locked test battery), 3 seeds, one
+annotator, and the annotator had previously seen 6 of seed 3001's final-checkpoint
+completions unblinded during a coherence spot-check. Findings 1-2 are large enough
+(perfect flips, all seeds) that these caveats are unlikely to reverse them; Finding 3 is
+genuinely uncertain pending the washout redesign.

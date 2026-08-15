@@ -111,7 +111,9 @@ def main():
     ap.add_argument("--gate", required=True, choices=["semantic", "axis1"])
     ap.add_argument("--base-model", type=str, default=None)
     ap.add_argument("--run-name", type=str, default=None, help="omit for untrained base model")
-    ap.add_argument("--checkpoint-stage", type=str, default="final", choices=["final", "phase_boundary"])
+    ap.add_argument("--checkpoint-stage", type=str, default="final",
+                     help="'final', 'phase_boundary', or 'boundary_1'/'boundary_2'/... for "
+                          "multi-phase conditions -- see train/train.py:compute_phase_boundaries")
     ap.add_argument("--rule-prefix", type=str, default=None, choices=["access", "provenance"])
     args = ap.parse_args()
 
