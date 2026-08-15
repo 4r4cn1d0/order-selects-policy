@@ -30,9 +30,10 @@ fine-tuning, runs on a laptop (MPS/CPU).
    scrubbed, value-vocabulary-free washout (`washout_demos.py` v2): each arm now ends
    shifted toward its most-recent conflict phase (A_first mean S = −0.56, B_first =
    +0.78; paired diff −0.67/−1.33/−2.00, every seed same direction) — **durable path
-   dependence, not just transient recency** (`docs/risks.md` #25). The rerun also
-   replicated every boundary-stage number from the first pilot exactly. Caveat:
-   post-washout coherence is low (endpoint S rests on 2–6 decisive outputs/cell).
+   dependence, not just transient recency** (`docs/risks.md` #25). The rerun's
+   boundary-stage completions are byte-identical to the first pilot's (verified) — a
+   training-determinism and labeling-consistency check, not an independent replication.
+   Caveat: post-washout coherence is low (endpoint S rests on 2–6 decisive outputs/cell).
 4. **Methods finding that made the experiment possible:** declarative value *documents*
    trained as plain next-token prose have **zero** measurable behavioral leverage against
    completion-supervised demonstrations — regardless of order (43/43 decisive outputs
