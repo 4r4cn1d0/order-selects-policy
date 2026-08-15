@@ -1,0 +1,9 @@
+claim_id,location,claim_type,claim_summary,evidence_ids,support_level,alignment_issue,limitation,requested_action
+C1,README-finding-1,causal,recency dominance total during sequential training,EV1;EV2;EV3,supported,none,n=3 pilot; dev battery only,replicate on locked battery n=6
+C2,README-finding-2,secondary_outcome,interleaved exposure fragments into seed-variable policies,EV1;EV2,supported,none,n=3 descriptive; no significance test possible,replicate n=6
+C3,README-finding-3,causal,order effect persists through neutral washout,EV2;EV4,partly_supported,magnitude,2-6 decisive outputs per cell; p at n=3 floor; dev battery,n=6 matrix on locked battery
+C4,README-finding-4,methods,prose-trained specs have zero leverage vs completion-supervised demos,EV5;EV6,supported,none,single model family and scale,none
+C5,PROJECT-controls,methods,pool A and pool B independently equipotent,EV7,supported,none,3 seeds each,none
+C6,implied-generalization,generalization,findings generalize beyond the 8 dev prompts,EV8,unsupported,scope,locked battery never yet run,generate+label matrix on locked battery
+C7,PROJECT-measurement,methods,blind labeling yields valid value labels,EV9,partly_supported,scope,single annotator who authored training data; hypothesis-aware,annotator-2 pass + judge validation
+C8,risks-25,methods,training is deterministic for identical data+init on this hardware,EV10,supported,none,one hardware+torch version,none

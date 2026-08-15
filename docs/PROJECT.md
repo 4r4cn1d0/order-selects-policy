@@ -60,7 +60,18 @@ NaN→p=0.0000 in paired stats (#25). Each fixed and logged in `risks.md`.
 - Post-washout coherence is low (0.25–0.75) — the strongest claim sits on the fewest
   decisive outputs.
 - Scope: pythia-410m, LoRA r=16, one axis, fictional micro-domain, SFT-only, 24 distinct
-  demos/pool (padded by repetition). All claims stay inside this box.
+  demos/pool (padded by repetition), single greedy sample per prompt (no
+  sampling-diversity check). All claims stay inside this box.
+
+### Robustness checks already passed (Devil's-Advocate pass, academic-paper-reviewer skill)
+
+- **Template-recall deflation rejected:** decisive endpoint completions share only
+  2–6 contiguous words with any training pool (avg completion 22–26 words); near-zero
+  4-gram Jaccard. Endpoint behavior is generalized composition, not phase-2 template
+  playback (`analysis/template_overlap.py`).
+- **Symmetric-register pull defused by design:** any residual phrasing overlap between
+  the washout's approve-half and Pool A affects both sequential arms equally, so the
+  paired A_first−B_first comparison is invariant to it.
 
 ---
 
@@ -126,11 +137,19 @@ apart; no training paraphrase; nothing unfair). On "lock": record hash in `risks
 commit; thereafter the battery is never edited, and main-matrix generations are not read
 until every run completes.
 
-### Step 2 — Complete the 6-seed matrix *(in progress)*
-Seeds 3001–3003 trained (v2 washout); 3004–3006 training now (same recipe). 18 runs
-total. Then generate on the locked battery at `pre_washout` + `post_washout` (primary
-endpoints; `post_phase1` optional secondary): 24 items × 18 runs × 2 stages = **864
-completions**.
+### Step 2 — Complete the matrix at 8 seeds *(in progress; upgraded from 6 after power analysis)*
+Seeds 3001–3006 trained; 3007–3008 added after an exact-test sensitivity analysis
+(statistical-analysis skill pass) exposed two n=6 design flaws:
+- At n=6 the paired sign-flip can only reach p<0.05 if **all 6** seeds point the
+  predicted direction (one deviant seed → best p = 0.0625); power ≈ π⁶ ≈ 0.53 even at
+  per-seed direction-probability 0.9.
+- A single seed with zero decisive endpoint outputs (observed once in the pilot!) drops
+  its pair → n=5, floor 0.0625: the study becomes **structurally incapable of
+  significance**. n=8 tolerates one deviant seed (p=0.0156 attainable) *and* one dropped
+  pair (n=7 floor 0.0156).
+24 runs total. Then generate on the locked battery at `pre_washout` + `post_washout`
+(primary endpoints; `post_phase1` optional secondary): 24 items × 24 runs × 2 stages =
+**1152 completions**.
 
 ### Step 3 — Label at matrix scale
 - Primary volume: **LLM judge** (`eval/judge.py`) — *blocked on user's
@@ -141,10 +160,14 @@ completions**.
   matrix subsample; report raw agreement (κ at matrix scale).
 
 ### Step 4 — Analysis
-`orderexp_stats.py` on the matrix batch: paired A_first−B_first at each stage (n=6 →
-sign-flip floor 0.031), bootstrap CIs, coherence rates; per-seed figure
-(`orderexp_plot.py`) = the paper's central figure. Pre-registered reading: pre-washout
-flip magnitude (H1), endpoint persistence (H2), interleaved fragmentation (H3).
+`orderexp_stats.py` on the matrix batch: paired A_first−B_first at each stage (n=8 →
+sign-flip floor 0.0078; robust to one deviant or dropped seed at 0.0156), bootstrap CIs,
+coherence rates; per-seed figure (`orderexp_plot.py`) = the paper's central figure.
+Pre-registered reading: pre-washout flip magnitude (H1), endpoint persistence (H2),
+interleaved fragmentation (H3). Claim–evidence ledger: `results/claims_matrix.csv`
+(validated by the peer-review skill's local CLI, report at
+`results/claims_report.json` — status `VALID_WITH_ALIGNMENT_GAPS`; C3/C6/C7 are the
+claims the matrix run must resolve).
 
 ### Step 5 — Paper (target ~Aug 22–29)
 - **Fork:** endpoint persistence holds at n=6 on locked battery → main track (3–6 pp):
