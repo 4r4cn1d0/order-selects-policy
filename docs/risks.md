@@ -586,3 +586,22 @@ annotator. The 6-seed matrix on the locked battery is what turns this into a tes
 claim (floor 0.031). A NaN-propagation bug in `analysis/orderexp_stats.py` (zero-decisive
 seed poisoning paired tests with p=0.0000) was caught on first contact with this data and
 fixed -- pairs with a zero-decisive member are now dropped with an explicit note.
+
+## 26. Test battery v1 LOCKED (user-reviewed) -- immutable from this commit
+
+The 24-item held-out battery (`data/domain/test_battery_v1.py`, built JSONL at
+`data/processed/axis1_access_vs_provenance__test_battery_v1.jsonl`) was reviewed by the
+user against the plain-language rubric (two-Iris divergence test per item, compliance-
+confound check, novelty check, parseability, no leading language) and **locked as-is
+with zero flags** on 2026-08-16.
+
+SHA-256 (verified identical at build time and lock time):
+`2b5f6e0657de71f124f3f5693b7529a2d6ff5cbf0b43205422ec5626560c2895`
+
+Binding rules from this point: the battery file and built JSONL are never edited again
+-- not for typos. Any future correction is a separate v2 battery. No generation from
+the matrix checkpoints had touched these items before this lock. Authorship limitation
+(battery authored by the same agent that authored training data and serves as primary
+labeler) is disclosed in the paper's limitations; the paired-design immunity argument
+(battery biases are symmetric across conditions and cannot manufacture an order
+effect) is documented in the conversation record and paper.
