@@ -1,16 +1,23 @@
 \documentclass{article}
 
-\usepackage[nonatbib, final]{neurips}
-\usepackage[numbers]{natbib}
+% NeurIPS 2026 style (official kit, user-provided). Workshop options available:
+%   \usepackage[sglblindworkshop]{neurips_2026}  + \workshoptitle{...}
+%   \usepackage[dblblindworkshop]{neurips_2026}  + \workshoptitle{...}
+% TODO(user/submission): switch to the workshop option matching ATTRIB's review
+% policy and add [final] for camera-ready. [preprint] until then.
+\usepackage[preprint]{neurips_2026}
+\workshoptitle{ATTRIB: Workshop on Attributing Model Behavior at Scale}
 
-\makeatletter
-\renewcommand{\@noticestring}{
-  \centering
-  Preprint. Under preparation for ATTRIB 2026 (workshop, non-archival).
-}
-\makeatother
-
-\input{extra_pkgs}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{graphicx}
 \usepackage{xspace}
 
 % Consistent terminology macros (Steinhardt: one term per concept, everywhere)
