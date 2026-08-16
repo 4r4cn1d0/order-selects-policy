@@ -225,7 +225,11 @@ $0.83$--$1.00$). After the conflicting phase (pre-washout), every seed has rever
 completely: all twenty sequential runs end the conflict phase at the most recently
 trained value with $|S|{=}1.000$ and no partial states --- the maximal paired
 difference of $2.0$ on every seed in both directions (exact sign-flip $p{=}0.0020$,
-the attainable floor).
+the attainable floor). This totality is consistent with catastrophic interference
+\citep{mccloskey1989catastrophic} expressed at the level of value-laden behavior; we
+read it as the calibration of the testbed's dynamic range. The questions interference
+alone does not answer --- does the trace survive neutral training, and what does
+order's \emph{structure} do --- are what the remaining results address.
 
 \paragraph{The order signature survives the neutral washout.} The washout phase does
 two things to both arms equally: decisiveness collapses (mean coherence drops from
@@ -297,6 +301,20 @@ behavioral counterpart our recency-dominance result supplies.
 \textbf{Curriculum effects.} Curriculum studies in LLM pretraining find order affects
 efficiency and stability \citep{elgaar2026curriculum}; our question is not whether
 order helps learning but whether it selects \emph{which value} generalizes.
+
+\textbf{Catastrophic interference.} Sequential overwriting of earlier training is a
+foundational observation about connectionist networks
+\citep{mccloskey1989catastrophic, french1999catastrophic}, with a large mitigation
+literature \citep{kirkpatrick2017overcoming}. Our recency-dominance result is
+consistent with interference operating at the level of value-laden behavior, and we
+treat it as the testbed's expected dynamic range rather than a novel phenomenon. What
+that literature does not supply --- and our design adds --- is (i) verification that
+the competing signals are independently potent before orders are compared, without
+which ``the later data won'' is uninterpretable; (ii) the neutral-washout test of
+whether the order trace survives further training; and (iii) the finding that
+interleaving the same conflicting data yields fragmented, initialization-dependent
+policies rather than an average --- a question the sequential-interference framing
+cannot even pose.
 
 \section{Limitations}
 
