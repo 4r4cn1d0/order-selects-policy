@@ -40,9 +40,8 @@
 \maketitle
 
 \begin{abstract}
-% Farquhar 5-sentence structure (ml-paper-writing skill). Calibrated to current
-% evidence; TODO-MATRIX comments mark the two upgrade points for n=8 locked-battery
-% numbers. No claim below exceeds committed results.
+% Farquhar 5-sentence structure (ml-paper-writing skill). Final n=10 locked-battery
+% numbers filled 2026-08-16. No claim below exceeds committed results.
 The causal effect of an alignment training example depends on \emph{when} in training
 it is encountered: we show that language models fine-tuned on identical conflicting
 alignment datasets generalize to opposing values depending only on presentation order.
@@ -55,11 +54,12 @@ order --- with every ordering ending in an identical value-neutral washout phase
 measure held-out conflict behavior under blinded labeling. Sequential training exhibits
 total recency dominance: the operative value reverses completely (per-seed score
 $+1.0\!\to\!-1.0$) within ${\sim}8$ optimizer steps of the conflicting phase beginning,
-in both directions and on every seed tested,
-% TODO-MATRIX: "on every seed tested" -> exact n=8 statement + sign-flip p-value
-and the resulting difference persists through the shared final phase, while interleaved
+in both directions on all 10 of 10 seeds (paired sign-flip $p{=}0.002$).
+The shared washout attenuates but does not erase the effect: both arms drift toward
+one value and lose decisiveness, yet the order signature survives --- the arm that saw
+a value last remains displaced toward it (endpoint mean \score $+0.22$ vs.\ $+0.64$,
+paired difference same-signed on 9/10 seeds, $p{=}0.023$) --- while interleaved
 exposure produces fragmented, seed-varying policies rather than an average.
-% TODO-MATRIX: persistence sentence gets endpoint means + paired p at n=8
 We further isolate a supervision-format confound with direct attribution consequences:
 value content trained as plain next-token prose exerts \emph{no} behavioral leverage
 against completion-supervised demonstrations --- which won 43 of 43 decisive held-out
@@ -92,13 +92,13 @@ Our contributions:
     \item \textbf{Order effects during sequential alignment training are total.} At
     every phase boundary, the model's operative value on held-out scenarios is the most
     recently trained one; policy reverses completely
-    % TODO-MATRIX: strengthen/soften per n=8 locked-battery result
-    (pilot: perfect $\pm1.0$ flips, 3/3 seeds, both directions; \S\ref{sec:results}).
+    (perfect $\pm1.0$ flips, 10/10 seeds, both directions, exact paired
+    $p{=}0.002$; \S\ref{sec:results}).
     \item \textbf{The order effect survives identical final training.} With a
-    genuinely value-neutral shared final phase, models trained on the same data in
-    opposite orders end at opposing values
-    % TODO-MATRIX: pending n=8 endpoint result -- this bullet's strength is the main open question
-    (pilot: paired difference same-signed on every seed; \S\ref{sec:results}).
+    genuinely value-neutral shared final phase, both orderings drift toward one value
+    and lose decisiveness, but the arms remain separated in the direction their final
+    conflict phase predicts (paired difference same-signed on 9/10 seeds,
+    $p{=}0.023$; \S\ref{sec:results}).
     \item \textbf{A supervision-format confound that manufactures spurious
     order-invariance.} Declarative value content trained as plain next-token prose has
     \emph{no} measurable behavioral leverage against completion-supervised
@@ -154,17 +154,22 @@ before any labeler sees a completion; four-way labels
 (access-consistent / provenance-consistent / ambiguous / incoherent); per-seed score
 $\score = (N_{\mathrm{acc}} - N_{\mathrm{prov}})/N_{\mathrm{decisive}}$ with coherence
 reported separately. The seed is the replication unit throughout. Paired exact
-sign-flip tests; at $n{=}8$ seeds the attainable floor is $p{=}0.0078$, robust to one
-deviant or zero-decisive seed.
-% TODO-MATRIX: judge-vs-human agreement stats once API labeling runs (judge harness committed).
+sign-flip tests; at the pre-registered $n{=}10$ seeds the attainable floor is
+$p{=}0.0020$, robust to one deviant or zero-decisive seed. All 1{,}920 matrix
+completions were labeled by an LLM judge (\texttt{claude-sonnet-5}, forced tool call,
+rubric identical to the human protocol, condition-blind by construction); an
+independent blind pass over a 300-row subsample agreed at $\kappa{=}0.876$ (raw
+$92.0\%$), with \emph{zero} access$\leftrightarrow$provenance confusions --- every
+disagreement was a decisive-vs-ambiguous boundary call, which affects coherence but
+cannot flip the sign of \score.
 
 \paragraph{Held-out battery.} The final evaluation battery contains 24 scenarios drawn
 from 12 uncertainty-mechanism classes absent from all training data (ownership
 litigation, suspected forgery, estate recall, catalog mismatch, \ldots), varying
 urgency, requester, and reversibility, with qualified-access options so the battery
-measures the value distinction rather than compliance-vs-caution. It is hash-locked
-before any model contact.
-% TODO: insert final battery SHA-256 after user lock.
+measures the value distinction rather than compliance-vs-caution. It was
+author-reviewed and hash-locked before any model contact
+(SHA-256 \texttt{2b5f6e06$\cdots$0895}; full hash in the repository).
 
 \section{Results}
 \label{sec:results}
@@ -187,10 +192,8 @@ expression \citep{valuedrifts2025}.
 
 \subsection{Order effects: acquisition, persistence, fragmentation}
 
-% =====================================================================
-% TODO-MATRIX: replace pilot numbers/figures with 8-seed locked-battery
-% results; the paragraph structure below is final.
-% =====================================================================
+% Final n=10 locked-battery numbers below. Figures are pilot placeholders
+% pending author-regenerated versions from the matrix data.
 
 \begin{figure}[t]
   \centering
@@ -198,8 +201,8 @@ expression \citep{valuedrifts2025}.
   \caption{Value policy \score\ by training stage, every seed shown individually
   (pilot: 3 seeds, development battery). Sequential arms flip completely at each
   conflicting phase and end, after an identical neutral washout, displaced toward
-  their most recent conflict phase. \emph{[TO REPLACE: 8-seed locked-battery
-  version.]}}
+  their most recent conflict phase. \emph{[TO REPLACE: author-regenerated 10-seed
+  locked-battery version from Table~\ref{tab:endpoint} data.]}}
   \label{fig:perseed}
 \end{figure}
 
@@ -214,14 +217,65 @@ expression \citep{valuedrifts2025}.
   \label{fig:drift}
 \end{figure}
 
-[PENDING MATRIX: acquisition-stage results table, per-seed, with paired sign-flip
-$p$-values.]
+\paragraph{Acquisition and total recency dominance.} On the locked battery at
+$n{=}10$ seeds, sequential training shows recency dominance with no exceptions.
+After phase 1, every seed sits at its trained value exactly (\score $= +1.000$ for
+all ten \afirst\ seeds, $-1.000$ for all ten \bfirst\ seeds; coherence
+$0.83$--$1.00$). After the conflicting phase (pre-washout), every seed has reversed
+completely: all twenty sequential runs end the conflict phase at the most recently
+trained value with $|S|{=}1.000$ and no partial states --- the maximal paired
+difference of $2.0$ on every seed in both directions (exact sign-flip $p{=}0.0020$,
+the attainable floor).
 
-[PENDING MATRIX: endpoint-persistence result --- the paper's central claim; pilot
-showed same-signed paired differences on every seed with arms ending at opposing
-values after identical final training.]
+\paragraph{The order signature survives the neutral washout.} The washout phase does
+two things to both arms equally: decisiveness collapses (mean coherence drops from
+${\sim}0.95$ to ${\sim}0.42$ --- the model becomes non-committal on conflict items
+after value-neutral training) and both arms drift toward the access-favoring value
+(endpoint means $+0.220$ for \afirst, $+0.639$ for \bfirst). Because both arms share
+the washout, this drift cannot produce a spurious order effect; the paired comparison
+isolates what order contributes. The order signature survives it: the arm whose final
+conflict phase was provenance (\afirst) ends displaced toward provenance relative to
+its access-last counterpart on 9 of 10 seeds (mean paired difference $-0.419$, exact
+sign-flip $p{=}0.0234$; Table~\ref{tab:endpoint}). Order is attenuated by neutral
+continued training, not erased.
 
-[PENDING MATRIX: interleaved fragmentation result.]
+\begin{table}[t]
+  \centering
+  \caption{Endpoint (post-washout) per-seed \score\ on the locked battery. The paired
+  \afirst$-$\bfirst\ difference is negative --- displacement toward the
+  provenance-last arm's value --- on 9/10 seeds ($p{=}0.0234$).}
+  \label{tab:endpoint}
+  \small
+  \begin{tabular}{lrrrr}
+    \toprule
+    seed & \afirst & \bfirst & paired diff. & \interleaved \\
+    \midrule
+    3001 & $+0.82$ & $+1.00$ & $-0.18$ & $+1.00$ \\
+    3002 & $-0.25$ & $+1.00$ & $-1.25$ & $+0.80$ \\
+    3003 & $-0.09$ & $+0.73$ & $-0.82$ & $+0.83$ \\
+    3004 & $+0.38$ & $+0.50$ & $-0.12$ & $+0.71$ \\
+    3005 & $-0.33$ & $+0.33$ & $-0.67$ & $+0.25$ \\
+    3006 & $-0.09$ & $+0.56$ & $-0.65$ & $+0.75$ \\
+    3007 & $+0.79$ & $+0.20$ & $+0.59$ & $+0.64$ \\
+    3008 & $+0.27$ & $+0.57$ & $-0.30$ & $-0.33$ \\
+    3009 & $+0.45$ & $+0.75$ & $-0.30$ & $+0.25$ \\
+    3010 & $+0.25$ & $+0.75$ & $-0.50$ & $+0.53$ \\
+    \midrule
+    mean & $+0.22$ & $+0.64$ & $-0.42$ & $+0.54$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Interleaved exposure fragments rather than averages.} At the end of the
+conflicting data (pre-washout), interleaved runs are decisive (coherence
+$0.83$--$0.96$) but seed-dependent: per-seed \score\ spans $-0.74$ to $+0.57$ (mean
+$-0.256$), significantly different from \emph{both} sequential arms
+($p{=}0.0020$ against each). The same shuffled data that sequential training resolves
+into a single dominant value resolves, under interleaving, into a different mixture
+per initialization --- order does not merely bias the outcome, its \emph{structure}
+determines whether a coherent value forms at all. After washout, interleaved runs
+drift access-ward like the sequential arms (mean $+0.543$, indistinguishable from
+\bfirst, $p{=}0.48$).
 
 \section{Related work}
 
@@ -249,19 +303,30 @@ order helps learning but whether it selects \emph{which value} generalizes.
 Single model (410M parameters), LoRA rather than full fine-tuning, one fictional value
 axis, SFT only, 24 distinct demonstrations per pool (repeated for exposure), greedy
 decoding (one sample per prompt). Labels are human judgments on real generations;
-the primary annotator authored the training data (mitigated by blinding, a committed
-per-row audit trail, and independent second-annotator agreement%
-% TODO: insert agreement stats
-). Post-washout coherence is low (endpoint \score\ rests on few decisive outputs per
-cell), which the $n{=}8$ design addresses but does not eliminate. Claims are scoped to
-this controlled setting; we make no assertion about production-scale alignment
+the rubric was authored by the same (LLM) assistant that authored the training data,
+and matrix labels come from an LLM judge --- mitigated by blinding, a committed
+per-row audit trail, and an independent blind 300-row second pass agreeing at
+$\kappa{=}0.876$ with zero cross-value confusions; both annotators are Claude-family
+models, so a human-labeled subsample is included as an additional check.
+Post-washout coherence is low (endpoint \score\ rests on few decisive outputs per
+cell), which the $n{=}10$ design addresses but does not eliminate. Claims are scoped
+to this controlled setting; we make no assertion about production-scale alignment
 pipelines.
 
 \section{Conclusion}
 
-[PENDING MATRIX: one paragraph; framing decided by whether endpoint persistence holds
-at $n{=}8$ --- either ``attribution must be order-aware'' (main track) or the
-methodological contribution with pilot evidence (idea track).]
+Identical alignment data, reordered, produces models with different values --- at
+every stage of training. During sequential exposure the effect is total: the most
+recently trained value governs held-out behavior on every seed, in both directions.
+A value-neutral continuation attenuates the effect but does not erase it; interleaving
+the same data yields fragmented, initialization-dependent policies rather than a
+compromise. Together with the supervision-format confound --- prose-trained value
+content has no behavioral leverage against completion-supervised demonstrations, so
+format mismatches masquerade as order-invariance --- these results say that training
+history is a first-class causal variable: attribution methods that model a training
+set as an unordered collection are missing the variable that, in this controlled
+setting, decides which value a model generalizes. Order-aware attribution
+\citep{wang2024temporal} now has a behavioral ground truth to predict.
 
 \bibliographystyle{plainnat}
 \bibliography{refs}

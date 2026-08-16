@@ -91,6 +91,9 @@ def judge_one(client, model: str, prompt: str, completion: str, max_retries: int
             block = next(b for b in resp.content if b.type == "tool_use")
             return block.input["label"], block.input.get("reason", "")
         except Exception as e:  # noqa: BLE001 -- retry then surface
+            status = getattr(e, "status_code", None)
+            if status is not None and 400 <= status < 500 and status != 429:
+                raise  # non-retryable client error (billing, auth, bad request)
             if attempt == max_retries - 1:
                 raise
             time.sleep(2 ** attempt)
@@ -110,18 +113,33 @@ def cmd_label(args):
     rows = list(csv.DictReader(open(blind_path)))
     if args.limit:
         rows = rows[:args.limit]
-    print(f"judging {len(rows)} rows with {model}...")
-
-    for i, r in enumerate(rows, 1):
-        label, reason = judge_one(client, model, r["prompt"], r["completion"])
-        r["human_label"], r["label_reason"], r["annotator"] = label, reason, f"judge:{model}"
-        if i % 25 == 0:
-            print(f"  {i}/{len(rows)}")
-
     out_blind = LABELING_DIR / f"{args.batch_name}-judge_blind.csv"
+
+    # Resume support: a mid-run crash (rate limit, billing, network) must never lose
+    # paid labels, so rows are written+flushed one at a time and --resume skips any
+    # label_id already labeled in the output file.
+    done = {}
+    if args.resume and out_blind.exists():
+        done = {r["label_id"]: r for r in csv.DictReader(open(out_blind))
+                if r.get("human_label")}
+        print(f"resuming: {len(done)} rows already labeled", flush=True)
+    todo = [r for r in rows if r["label_id"] not in done]
+    print(f"judging {len(todo)} rows with {model}...", flush=True)
+
     with open(out_blind, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
-        w.writeheader(); w.writerows(rows)
+        w.writeheader()
+        for r in rows:
+            if r["label_id"] in done:
+                w.writerow(done[r["label_id"]])
+        f.flush()
+        for i, r in enumerate(todo, 1):
+            label, reason = judge_one(client, model, r["prompt"], r["completion"])
+            r["human_label"], r["label_reason"], r["annotator"] = label, reason, f"judge:{model}"
+            w.writerow(r)
+            f.flush()
+            if i % 25 == 0:
+                print(f"  {i}/{len(todo)}", flush=True)
     src_key = LABELING_DIR / f"{args.batch_name}_key.csv"
     if src_key.exists():
         shutil.copy(src_key, LABELING_DIR / f"{args.batch_name}-judge_key.csv")
@@ -166,6 +184,8 @@ def main():
     l.add_argument("--batch-name", required=True)
     l.add_argument("--limit", type=int, default=None, help="judge only first N rows (smoke test)")
     l.add_argument("--fast", action="store_true", help="use judge_model_fast from config")
+    l.add_argument("--resume", action="store_true",
+                    help="skip label_ids already labeled in the existing -judge_blind.csv")
     g = sub.add_parser("agreement")
     g.add_argument("--file-a", required=True)
     g.add_argument("--file-b", required=True)

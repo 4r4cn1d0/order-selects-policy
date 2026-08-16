@@ -605,3 +605,19 @@ the matrix checkpoints had touched these items before this lock. Authorship limi
 labeler) is disclosed in the paper's limitations; the paired-design immunity argument
 (battery biases are symmetric across conditions and cannot manufacture an order
 effect) is documented in the conversation record and paper.
+
+## 27. Judge batch runner lost 1,477 paid labels on mid-run crash (billing exhaustion)
+
+The first full judge run over the 1,920-row matrix sheet (2026-08-16, claude-sonnet-5)
+died at row ~1,477 when the API account's credit balance ran out (400
+`invalid_request_error`). `cmd_label` held every completed label in memory and wrote the
+output CSV only after the loop finished, so all ~1,477 already-paid labels were lost.
+Compounding it, `judge_one`'s retry loop retried the non-retryable 400 three times with
+backoff before surfacing it.
+
+Fixes (same day): (a) output rows are now written and flushed one at a time, so a crash
+at row N preserves rows 1..N-1; (b) `label --resume` skips label_ids already labeled in
+the existing `-judge_blind.csv`; (c) 4xx client errors other than 429 fail fast instead
+of retrying. Lesson: any batch instrument that spends money or wall-clock per item must
+checkpoint per item, not per run -- the same lesson as training checkpoints (#15), now
+applied to labeling.
