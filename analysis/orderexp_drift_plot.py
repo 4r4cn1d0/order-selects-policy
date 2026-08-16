@@ -30,17 +30,21 @@ plt.rcParams.update({
     "axes.grid": True, "grid.alpha": 0.15, "lines.linewidth": 1.8, "lines.markersize": 6,
 })
 STYLE = {"A_first": ("#E76F51", "o", "A first (A→B→C)"),
-          "B_first": ("#0072B2", "s", "B first (B→A→C)")}
+          "B_first": ("#0072B2", "s", "B first (B→A→C)"),
+          "interleaved": ("#8C8C8C", "^", "interleaved (AB→C)")}
 PHASE_BOUNDARIES = (12, 24)  # 192 records/phase ÷ 16/step
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--batch-name", required=True)
+    ap.add_argument("--batch-name", required=True, nargs="+",
+                     help="one or more labeled batches to merge (e.g. sequential + interleaved)")
     args = ap.parse_args()
 
     cells = defaultdict(lambda: defaultdict(list))
-    for r in csv.DictReader(open(LABELING_DIR / f"{args.batch_name}_labeled.csv")):
+    rows = [r for b in args.batch_name
+            for r in csv.DictReader(open(LABELING_DIR / f"{b}_labeled.csv"))]
+    for r in rows:
         if r["checkpoint_boundary"].startswith("step_"):
             step = int(r["checkpoint_boundary"].split("_")[1])
             cells[r["condition"]][step].append(r["human_label"])
@@ -79,7 +83,7 @@ def main():
 
     PLOTS_DIR.mkdir(parents=True, exist_ok=True)
     for ext in ("png", "pdf"):
-        out = PLOTS_DIR / f"drift_{args.batch_name}.{ext}"
+        out = PLOTS_DIR / f"drift_{args.batch_name[0]}.{ext}"
         fig.savefig(out)
         print(f"-> {out}")
 
