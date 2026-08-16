@@ -105,7 +105,7 @@ def run_training(curriculum_path: Path, cfg: dict, base_model_override: str | No
                   finetune_mode_override: str | None, max_steps: int | None,
                   lora_init_seed_override: int | None, output_root: Path, log_root: Path,
                   lr_scheduler_override: str | None = None, warmup_ratio_override: float | None = None,
-                  epochs_override: int | None = None):
+                  epochs_override: int | None = None, checkpoint_every: int | None = None):
     if any(v is not None for v in (lr_scheduler_override, warmup_ratio_override, epochs_override)):
         training_cfg = dict(cfg["training"])
         if lr_scheduler_override is not None:
@@ -225,6 +225,12 @@ def run_training(curriculum_path: Path, cfg: dict, base_model_override: str | No
                 save_checkpoint(model, finetune_mode, out_dir / ckpt_name)
                 print(f"[{run_name}] saved '{ckpt_name}' checkpoint at step {opt_step}")
 
+            # Dense step checkpoints (drift-time trajectories): independent of, and in
+            # addition to, the phase-boundary saves above.
+            if checkpoint_every is not None and opt_step % checkpoint_every == 0:
+                save_checkpoint(model, finetune_mode, out_dir / f"step_{opt_step:03d}")
+                print(f"[{run_name}] saved dense checkpoint step_{opt_step:03d}")
+
     save_checkpoint(model, finetune_mode, out_dir / "final")
     log_f.close()
     print(f"[{run_name}] done in {time.time() - t0:.1f}s -> {out_dir / 'final'}")
@@ -259,12 +265,16 @@ def main():
                           "sequence per epoch, so epochs>1 turns 'A then B then C' into "
                           "'A B C A B C ...', destroying the order manipulation. Size the "
                           "curriculum for enough exposure in a single pass instead.")
+    ap.add_argument("--checkpoint-every", type=int, default=None,
+                     help="also save a checkpoint every N optimizer steps (step_NNN dirs), "
+                          "for drift-time trajectory analysis; adds to, never replaces, the "
+                          "phase-boundary checkpoints")
     args = ap.parse_args()
 
     cfg = load_default_config()
     run_training(args.curriculum, cfg, args.base_model, args.finetune_mode, args.max_steps,
                  args.lora_init_seed, args.output_dir, args.log_dir, args.lr_scheduler,
-                 args.warmup_ratio, args.epochs)
+                 args.warmup_ratio, args.epochs, args.checkpoint_every)
 
 
 if __name__ == "__main__":
