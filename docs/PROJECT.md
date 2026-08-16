@@ -137,7 +137,13 @@ apart; no training paraphrase; nothing unfair). On "lock": record hash in `risks
 commit; thereafter the battery is never edited, and main-matrix generations are not read
 until every run completes.
 
-### Step 2 — Complete the matrix at 8 seeds *(in progress; upgraded from 6 after power analysis)*
+### Step 2 — Complete the matrix at 10 seeds *(pre-registered before generation; upgraded 6→8→10 after Monte-Carlo power analysis)*
+Simulation-based power for the exact paired sign-flip test (pilot-informed effect
+mean −1.33, 10% pair-drop rate): n=8 → 0.58–0.89 across per-seed direction-reliability
+0.85–0.95; **n=10 → 0.75–0.98**; n=12 adds little. n is FIXED at 10 now, before any
+locked-battery generation, so the choice is pre-registered rather than data-dependent.
+
+Original 8-seed note:
 Seeds 3001–3006 trained; 3007–3008 added after an exact-test sensitivity analysis
 (statistical-analysis skill pass) exposed two n=6 design flaws:
 - At n=6 the paired sign-flip can only reach p<0.05 if **all 6** seeds point the
@@ -147,9 +153,9 @@ Seeds 3001–3006 trained; 3007–3008 added after an exact-test sensitivity ana
   its pair → n=5, floor 0.0625: the study becomes **structurally incapable of
   significance**. n=8 tolerates one deviant seed (p=0.0156 attainable) *and* one dropped
   pair (n=7 floor 0.0156).
-24 runs total. Then generate on the locked battery at `pre_washout` + `post_washout`
-(primary endpoints; `post_phase1` optional secondary): 24 items × 24 runs × 2 stages =
-**1152 completions**.
+30 runs total (seeds 3001–3010). Then generate on the locked battery at `pre_washout` + `post_washout`
+(primary endpoints; `post_phase1` optional secondary): 24 items × 30 runs × 2 stages =
+**1440 completions**.
 
 ### Step 3 — Label at matrix scale
 - Primary volume: **LLM judge** (`eval/judge.py`) — *blocked on user's
