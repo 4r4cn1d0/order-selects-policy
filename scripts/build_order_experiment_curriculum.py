@@ -69,7 +69,8 @@ def make_records(items: list[dict], example_type: str, tag: str) -> list[dict]:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, required=True)
-    ap.add_argument("--order", choices=["A_first", "B_first", "interleaved"], required=True)
+    ap.add_argument("--order", choices=["A_first", "B_first", "interleaved",
+                                         "A_then_C", "B_then_C"], required=True)
     ap.add_argument("--phase-size", type=int, default=32,
                      help="examples per phase, padded from the 24-item pools; must be a "
                           "multiple of 16 (per_device_batch_size x gradient_accumulation_steps)")
@@ -92,6 +93,11 @@ def main():
         sequence = records_a + records_b + records_c
     elif args.order == "B_first":
         sequence = records_b + records_a + records_c
+    elif args.order == "A_then_C":
+        # history-trace control: single conflict phase + washout (no prior history)
+        sequence = records_a + records_c
+    elif args.order == "B_then_C":
+        sequence = records_b + records_c
     else:  # interleaved
         ab = records_a + records_b
         rng.shuffle(ab)
