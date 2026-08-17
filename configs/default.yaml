@@ -81,6 +81,19 @@ seeds:
     - {replicate: 3, lora_init_seed: 1003, order_seed: 1003}
     - {replicate: 4, lora_init_seed: 1004, order_seed: 1004}
     - {replicate: 5, lora_init_seed: 1005, order_seed: 1005}
+    # 30xx series: the order-experiment matrix + family replication + history-trace
+    # controls. Convention (docs/PROJECT.md): lora_init_seed == curriculum seed,
+    # identical across conditions within a replicate -> paired tests.
+    - {replicate: 6, lora_init_seed: 3001, order_seed: 3001}
+    - {replicate: 7, lora_init_seed: 3002, order_seed: 3002}
+    - {replicate: 8, lora_init_seed: 3003, order_seed: 3003}
+    - {replicate: 9, lora_init_seed: 3004, order_seed: 3004}
+    - {replicate: 10, lora_init_seed: 3005, order_seed: 3005}
+    - {replicate: 11, lora_init_seed: 3006, order_seed: 3006}
+    - {replicate: 12, lora_init_seed: 3007, order_seed: 3007}
+    - {replicate: 13, lora_init_seed: 3008, order_seed: 3008}
+    - {replicate: 14, lora_init_seed: 3009, order_seed: 3009}
+    - {replicate: 15, lora_init_seed: 3010, order_seed: 3010}
   # Fall back to the first 3 replicates only (12 runs/axis instead of 20) if the timing pilot
   # shows >20 min/run on this machine. See docs/PROJECT.md.
 
