@@ -110,5 +110,17 @@ values); all are evaluation scenario sets. Verification level noted per entry.
 - **Generative Value Conflicts Reveal LLM Priorities (ConflictScope)** -- arXiv
   2509.25369, ICLR 2026 (abstract VERIFIED). Auto-generates two-value conflict
   scenarios. Release location not yet confirmed.
-- Unverified leads: CLASH (2504.10823), D2VBench (2607.19834),
-  honesty-vs-helpfulness paradigm (2402.07282, ICML 2024).
+- **CLASH** -- arXiv 2504.10823, ICLR 2026 (abstract VERIFIED). 345 high-stakes
+  dilemmas + 3,795 value-diverse character perspectives; measures ambivalence,
+  perspective-taking, steerability, and temporal value shifts *within scenario
+  characters*. No public dataset found (HF searched, abstract silent). Evaluation
+  only; least useful as scenario seed of the set.
+- **D2VBench** -- arXiv 2607.19834 (abstract VERIFIED; GitHub repo
+  `tjunlp-lab/D2VBench` VERIFIED to exist via API). 10,000 daily value-dilemma
+  instances over 158 annotated value concepts, MC + open-ended hybrid. Check
+  language coverage before use (tjunlp-lab; may be Chinese-centric).
+- **Honesty-vs-helpfulness** -- arXiv 2402.07282, ICML 2024, Liu, Sumers,
+  Dasgupta & Griffiths (abstract VERIFIED). Signaling-game/psychology paradigms
+  measuring the honesty--helpfulness tradeoff in frontier models; no dataset
+  release confirmed. Value: the *paradigm* -- the real-values twin of our
+  fictionalized access-vs-verify axis; cite in the high-prior follow-up framing.
