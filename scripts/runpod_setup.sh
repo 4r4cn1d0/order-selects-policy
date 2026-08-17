@@ -8,6 +8,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 python -m pip install --upgrade pip
+# Clean slate: the image's torch 2.4 + torchvision leave mangled installs / stale
+# binary ops (torchvision::nms) when torch is upgraded in place -- remove first.
+python -m pip uninstall -y torch torchvision torchaudio >/dev/null 2>&1 || true
 python -m pip install \
     "torch==2.13.0" \
     "transformers==5.14.1" \
