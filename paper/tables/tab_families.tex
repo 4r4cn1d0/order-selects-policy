@@ -1,0 +1,21 @@
+\begin{table}[t]
+\centering
+\caption{Cross-family replication. Equipotence: mean phase-1 $S$ when each value
+is trained first (gate: $|S|\ge 0.8$ both directions). Reversal: sequential runs
+whose pre-washout policy matches the last-trained value. Endpoint: mean $S$ after
+the shared washout; $\Delta$ is the paired A-first$-$B-first difference
+(one-sided exact sign-flip $p$; ``sat.'' = both arms saturated at a pole,
+uninformative for persistence).}
+\label{tab:families}
+\small
+\begin{tabular}{lccccccc}
+\toprule
+Family & $n$ & Equipot. A/B & Reversal & $\bar S_{\mathrm{A\text{-}first}}$ & $\bar S_{\mathrm{B\text{-}first}}$ & $\bar\Delta$ & $p$ \\
+\midrule
+pythia-410M & 10 & $+1.00$ / $-1.00$ & 20/20 & $+0.22$ & $+0.64$ & $-0.42$ & $0.023$ \\
+Qwen2.5-1.5B & 5 & $+0.98$ / $-1.00$ & 10/10 & $-0.86$ & $-0.27$ & $-0.59$ & $0.031$ \\
+SmolLM2-1.7B & 5 & $+1.00$ / $-1.00$ & 10/10 & $-1.00$ & $-0.95$ & $-0.05$ & sat. \\
+OLMo-2-1B & 5 & $+0.95$ / $-1.00$ & 10/10 & $-1.00$ & $-0.84$ & $-0.16$ & sat. \\
+\bottomrule
+\end{tabular}
+\end{table}
