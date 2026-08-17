@@ -11,9 +11,10 @@ SEEDS10="3001 3002 3003 3004 3005 3006 3007 3008 3009 3010"
 SEEDS5="3001 3002 3003 3004 3005"
 FAMILIES=("Qwen/Qwen2.5-1.5B" "HuggingFaceTB/SmolLM2-1.7B" "allenai/OLMo-2-0425-1B")
 
-echo "=== STAGE 1: multi-sample endpoint ==="
-python scripts/generate_multisample_endpoint.py --seeds $SEEDS10
-echo "STAGE-1-DONE multisample"
+# Stage order: family + history-trace training first (need only curricula + HF
+# downloads, both already on the pod); multi-sample LAST because it needs the 30
+# matrix adapters, which upload from the laptop on a flaky link -- a guard loop
+# below waits for them rather than blocking the GPU.
 
 echo "=== STAGE 2: family replication (45 runs) ==="
 for model in "${FAMILIES[@]}"; do
@@ -41,4 +42,12 @@ done
 python scripts/generate_order_experiment.py --seeds $SEEDS10 --battery test \
   --conditions A_then_C B_then_C
 echo "STAGE-3-DONE history-trace"
+
+echo "=== STAGE 1 (last): multi-sample endpoint ==="
+until [ "$(ls -d checkpoints/axis1_access_vs_provenance_value-conflict_orderexp_*_seed30??/final 2>/dev/null | wc -l)" -ge 30 ]; do
+  echo "waiting for matrix adapters ($(ls -d checkpoints/axis1_access_vs_provenance_value-conflict_orderexp_*_seed30??/final 2>/dev/null | wc -l)/30)..."
+  sleep 120
+done
+python scripts/generate_multisample_endpoint.py --seeds $SEEDS10
+echo "STAGE-1-DONE multisample"
 echo "POD-QUEUE-COMPLETE"
