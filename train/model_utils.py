@@ -16,7 +16,7 @@ os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
 TARGET_MODULES_BY_FAMILY = {
     "gpt_neox": ["query_key_value", "dense", "dense_h_to_4h", "dense_4h_to_h"],  # Pythia
     "gpt2": ["c_attn", "c_proj"],
-    "llama_style": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],  # Qwen2.5, Gemma2
+    "llama_style": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],  # Qwen2.5, Gemma2, SmolLM2, OLMo-2, Llama
 }
 
 
@@ -26,7 +26,7 @@ def resolve_target_modules(base_model_name: str, lora_cfg: dict) -> list[str]:
         return TARGET_MODULES_BY_FAMILY["gpt_neox"]
     if "gpt2" in name:
         return TARGET_MODULES_BY_FAMILY["gpt2"]
-    if "qwen" in name or "gemma" in name:
+    if any(k in name for k in ("qwen", "gemma", "smollm", "olmo", "llama")):
         return TARGET_MODULES_BY_FAMILY["llama_style"]
     return lora_cfg["target_modules"]  # fall back to configured default
 
