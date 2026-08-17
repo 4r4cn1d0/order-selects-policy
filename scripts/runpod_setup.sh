@@ -11,8 +11,10 @@ python -m pip install --upgrade pip
 # Clean slate: the image's torch 2.4 + torchvision leave mangled installs / stale
 # binary ops (torchvision::nms) when torch is upgraded in place -- remove first.
 python -m pip uninstall -y torch torchvision torchaudio >/dev/null 2>&1 || true
+# cu126 build: runs on driver >=525; the default (cu130) wheel needs driver >=580,
+# which RunPod's fleet does not uniformly have (this host: 570).
+python -m pip install "torch==2.13.0" --index-url https://download.pytorch.org/whl/cu126
 python -m pip install \
-    "torch==2.13.0" \
     "transformers==5.14.1" \
     "peft==0.20.0" \
     "accelerate==1.14.0" \
