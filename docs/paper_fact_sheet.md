@@ -165,6 +165,38 @@ curricula/battery/judge; all pod CUDA fp32.
   provenance-ward. Pool C's neutrality was validated on pythia only → honest
   limitation + discussion point (washout neutrality is model-relative).
 
+## History-trace controls (prereg docs/prereg_history_trace.md) — COMPLETE, both tests FAIL
+
+Single-phase arms install perfectly (A→C post-conflict +1.00 all 10 seeds; B→C
+−0.91..−1.00), so the controls are valid. At endpoint:
+
+- **Test 1** S(B→A→C) − S(A→C): mean **+0.234**, negative 2/10, p=0.96 → FAIL
+  (and nominally opposite: 8/10 POSITIVE — prior-B models end MORE access-ward
+  than no-history models; exploratory anomaly, no claim).
+- **Test 2** S(A→B→C) − S(B→C): mean −0.064, positive 2/10, p=0.74 → FAIL.
+- Pure-arm decay through washout is LARGE: A→C +1.0 → mean +0.40; B→C −1.0 →
+  mean **+0.28** (crosses zero!). Washout aggressively erodes single-phase values
+  on pythia, with its access-ward drift dominating B→C.
+
+**Required reframing (per prereg):** the overwritten FIRST phase leaves no
+detectable positive trace. The endpoint A-first-vs-B-first difference (which
+REMAINS real: p=0.023/0.031, replicated in Qwen) is carried by the surviving,
+washout-attenuated influence of the LAST conflict phase — recency dominance all
+the way down — NOT by a durable trace of the first value. Paper phrasing changes
+from "attenuates but does not erase [the first value]" to: washout attenuates
+the most-recent value's influence; the first-trained value is erased to our
+measurement's resolution (A→B→C endpoints ≈ B→C endpoints).
+
+**Exploratory anomaly worth one sentence + ICML follow-up:** opposing history
+appears to AMPLIFY retention of the subsequent value (B→A→C +0.64 vs A→C +0.40;
+8/10 seeds in that direction) — as if prior conflicting training entrenches what
+follows. No pre-registered test; report as observation only.
+
+**Caveat:** matrix endpoints were generated on MPS, history-trace arms on pod
+CUDA (greedy both). Cross-backend comparison; cross-check against the
+multi-sample batch (same CUDA backend for all 30 matrix runs) when its judging
+completes before finalizing paper text.
+
 ## Pending slots (tonight's pod queue + user items)
 
 - Multi-sample endpoint: k=5, temp 0.7, top-p 0.95, params pre-registered in
