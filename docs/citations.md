@@ -124,3 +124,11 @@ values); all are evaluation scenario sets. Verification level noted per entry.
   measuring the honesty--helpfulness tradeoff in frontier models; no dataset
   release confirmed. Value: the *paradigm* -- the real-values twin of our
   fictionalized access-vs-verify axis; cite in the high-prior follow-up framing.
+- **tsumers/relevance (GitHub)** -- raw data + code for Sumers et al.,
+  "Reconciling truthfulness and relevance as epistemic and decision-theoretic
+  utility" (Psychological Review; repo VERIFIED, raw exp1 data downloaded and
+  parsed: 301 participants, 15,460 jsPsych events; signaling-bandits paradigm).
+  Human-cognition ancestor of 2402.07282. No reusable scenarios -- value is the
+  framing (our fictional axis = low-prior analog of a modeled human tradeoff)
+  and the design parallel (their per-condition value-comprehension checks ~ our
+  equipotence gate).
