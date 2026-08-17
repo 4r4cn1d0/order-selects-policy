@@ -49,6 +49,10 @@ CONDITION_STAGES = {
     "A_first": [("boundary_1", "post_phase1"), ("boundary_2", "pre_washout"), ("final", "post_washout")],
     "B_first": [("boundary_1", "post_phase1"), ("boundary_2", "pre_washout"), ("final", "post_washout")],
     "interleaved": [("phase_boundary", "pre_washout"), ("final", "post_washout")],
+    # history-trace controls: single conflict phase -> washout (one example_type
+    # transition, so the boundary gets the same legacy name as interleaved's)
+    "A_then_C": [("phase_boundary", "post_conflict"), ("final", "post_washout")],
+    "B_then_C": [("phase_boundary", "post_conflict"), ("final", "post_washout")],
 }
 
 
@@ -67,29 +71,38 @@ def main():
     ap.add_argument("--seeds", nargs="+", type=int, required=True)
     ap.add_argument("--battery", default="dev", choices=["dev", "test"])
     ap.add_argument("--max-new-tokens", type=int, default=60)
+    ap.add_argument("--base-model", default=None,
+                     help="non-default base model (family replication); checkpoint dirs "
+                          "resolve via resolve_run_dir_name's __model- suffix")
+    ap.add_argument("--conditions", nargs="+", default=list(CONDITION_STAGES),
+                     choices=list(CONDITION_STAGES))
     args = ap.parse_args()
 
     cfg = load_default_config()
     battery = load_battery(args.battery)
     GENERATIONS_DIR.mkdir(parents=True, exist_ok=True)
 
+    from model_utils import model_slug, resolve_run_dir_name  # noqa: E402
+    model_tag = f"_model-{model_slug(args.base_model)}" if args.base_model else ""
     n_written = 0
-    out_path = GENERATIONS_DIR / f"orderexp_{args.battery}_seeds-{'-'.join(map(str, args.seeds))}.jsonl"
+    out_path = GENERATIONS_DIR / (
+        f"orderexp_{args.battery}{model_tag}_seeds-{'-'.join(map(str, args.seeds))}.jsonl")
     with open(out_path, "w") as out_f:
         for seed in args.seeds:
-            for condition, stages in CONDITION_STAGES.items():
+            for condition, stages in ((c, CONDITION_STAGES[c]) for c in args.conditions):
                 run_name = f"{AXIS_ID}_value-conflict_orderexp_{condition}_seed{seed}"
+                run_dir = resolve_run_dir_name(run_name, args.base_model or cfg["base_model"]["name"], cfg)
                 for ckpt_dir, stage in stages:
-                    if not (ROOT / "checkpoints" / run_name / ckpt_dir).exists():
-                        print(f"  SKIP (missing): {run_name}/{ckpt_dir}")
+                    if not (ROOT / "checkpoints" / run_dir / ckpt_dir).exists():
+                        print(f"  SKIP (missing): {run_dir}/{ckpt_dir}")
                         continue
-                    print(f"[{condition} seed{seed}] generating at {stage} ({ckpt_dir})...")
-                    model, tokenizer, device = load_checkpoint_model(run_name, cfg, None, ckpt_dir)
+                    print(f"[{condition} seed{seed}{model_tag}] generating at {stage} ({ckpt_dir})...")
+                    model, tokenizer, device = load_checkpoint_model(run_name, cfg, args.base_model, ckpt_dir)
                     for scenario_id, prompt in battery:
                         completion = generate_batch(model, tokenizer, [prompt], device,
                                                      args.max_new_tokens)[0]
                         out_f.write(json.dumps({
-                            "run_name": run_name, "condition": condition, "seed": seed,
+                            "run_name": run_dir, "condition": condition, "seed": seed,
                             "checkpoint_boundary": stage, "scenario_id": scenario_id,
                             "prompt": prompt, "completion": completion,
                         }, ensure_ascii=False) + "\n")
