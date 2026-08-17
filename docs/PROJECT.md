@@ -196,3 +196,30 @@ claims the matrix run must resolve).
 battery lock + matrix gen ≈ Aug 16–18 · labeling + validation ≈ Aug 18–20 · stats/figure
 ≈ Aug 20–21 · draft ≈ Aug 22–27 · adversarial review + fixes ≈ Aug 28–30 · submit Aug 31.
 Slack: ~1 surprise (historical base rate: high).
+
+## ICML 2027 roadmap (decided 2026-08-17; starts after ATTRIB submission)
+
+Target: ICML 2027, papers ~Jan 22 2027 (verify CFP when official). ICLR 2027
+(Sept 25) rejected as target: 24 days post-ATTRIB cannot fit the program below,
+and ATTRIB reviews (due Sept 22) arrive in time to feed ICML, not ICLR.
+
+Tier 1 (acceptance-critical):
+1. Second fictional axis, identical protocol (axis generality). ConflictScope as
+   scenario engine; capability-gate before any order run.
+2. High-prior real-values experiment (honesty/kindness or a Kidder pair); seeds
+   from Right vs. Right + DailyDilemmas; per-item base-prior measurement
+   (docs/dataset_requirements.md Layer 3).
+3. Family scale-out: n=10 per family; add one 3B-class and one instruct model.
+4. Human labeling at scale: few hundred rows, >=2 human annotators, proper kappa.
+
+Tier 2 (strong-accept):
+5. Attribution-estimator test against our behavioral ground truth: does
+   trajectory-aware influence (wang2024temporal) predict which value wins where
+   permutation-invariant influence fails? The identity-changing addition.
+6. Linear probes for the value direction across checkpoints (where does the
+   not-erased residue live) + savings/relearning test.
+7. Washout-length and interleaving-ratio titrations (point results -> curves).
+
+Packaging: 8pp ICML template, designed Fig 1, checklist, code+data release
+(audit trail makes this near-free). Workshop is non-archival -- no
+double-submission conflict.
