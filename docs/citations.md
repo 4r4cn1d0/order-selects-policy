@@ -132,3 +132,23 @@ values); all are evaluation scenario sets. Verification level noted per entry.
   framing (our fictional axis = low-prior analog of a modeled human tradeoff)
   and the design parallel (their per-condition value-comprehension checks ~ our
   equipotence gate).
+- **VCD / Paired Fine-Tuning** -- arXiv 2604.12479, Wang, Lin, Zhao, Zhu &
+  Zhang (title/authors VERIFIED via arXiv API; repo
+  `SwimmingWang/Pair_fine_tuning` VERIFIED; data files vcd_train/test/sft.json
+  present; test-data structure inspected directly). 4 non-moral preference axes
+  (risk, time, communication, social strategy); scenarios carry options of both
+  biases. **Correction to external claim:** their released SFT pooling
+  partitions DISJOINT scenario sets by bias (generate_sft_data.py) -- NOT
+  prompt-matched opposing pools; same-scenario pairing exists only in
+  test/options structure. Closest released training-side prior work: CITED in
+  related work (wang2026paired) and differentiated (explicit preference
+  conditioning + disjoint pools + no order manipulation + no washout).
+- **When Specifications Conflict: A Symmetry-Based Framework for Measuring LLM
+  Preferences** -- arXiv 2607.28384 (title VERIFIED via arXiv API, Jul 30 2026).
+  550 symmetry-controlled conflict instances; varies specification
+  *representation*, not training order. Independent convergence on
+  symmetry-matched construction; hold for camera-ready/follow-up citation
+  (page budget).
+- ConflictScope release location now CONFIRMED: GitHub `andyjliu/conflictscope`
+  ("Code and data for... (ICLR 2026)", verified via API). Upgrades the entry
+  above.
