@@ -104,6 +104,40 @@ interleaved: 3001 +1.000 · 3002 +0.800 · 3003 +0.833 · 3004 +0.714 · 3005 +0
 - Honest scope: likelihood-based disposition shift, NOT enacted choice.
   Direction: A_first (less access-ward endpoint) → stability-seeking.
 
+## Far-transfer battery v1 (locked, SHA in risks.md) — enacted-choice test
+
+- 360 completions (30 endpoints x 12 vocabulary-disjoint scenarios), judged.
+- Labels: 63 access / 45 provenance / 217 ambiguous / 35 incoherent —
+  coherence 0.24–0.37 (collapses out-of-domain, as anticipated at 410M).
+- Paired A−B endpoint S: mean +0.386 in the WRONG direction, 3/9 negative,
+  one-sided p = 0.879 → **no enacted-choice transfer; pre-committed
+  abstraction-boundary reading applies.**
+- KEY DISSOCIATION (pairs with the VCD result): the trained value's signature
+  transfers in the likelihood landscape (VCD change-preference, 10/10 seeds,
+  p = 0.001) but does NOT control coherent enacted choice out-of-domain.
+  Likelihood probes are the more sensitive instrument at this scale; generation
+  coherence is the limiting factor. Qualitative: the hold-template surface form
+  ("I can't process this without...") does transfer, often followed by
+  self-contradictory continuations; training vocabulary occasionally leaks into
+  far-domain responses.
+
+## Titration battery v1 (locked, SHA in risks.md) — severity dose-response
+
+- 400 completions (20 sequential endpoints x 20 items, 4 frames x 5 severity
+  rungs), judged. Labels: 92 access / 51 provenance / 249 ambiguous / 8
+  incoherent.
+- **Severity is registered behaviorally**: P(proceed | decisive) falls from
+  0.86–0.91 at s1 (cosmetic issue) to 0.47 at s5 (red flag) in BOTH arms —
+  a dose-response in a 410M model, no floor/ceiling failure.
+- B_first curve monotone non-increasing (0.91 / 0.69 / 0.67 / 0.46 / 0.47);
+  A_first NON-monotone at s2–s3 (0.86 / 0.50 / 0.79 / 0.64 / 0.47) — reported
+  as a measurement limit per the pre-committed reading.
+- **No detectable order-condition threshold shift** at this n and coherence
+  (~0.35): the two arms' curves cross; the order effect does not measurably
+  relocate the severity threshold.
+- Spot-check: decisive labels verified against completions; models quote
+  severity clauses back in their reasoning.
+
 ## Pending slots (tonight's pod queue + user items)
 
 - Multi-sample endpoint: k=5, temp 0.7, top-p 0.95, params pre-registered in
