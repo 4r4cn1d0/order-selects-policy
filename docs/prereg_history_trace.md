@@ -18,7 +18,7 @@ Two new conditions, single conflict phase + identical washout:
 - **B_then_C** (B→C): provenance demos then washout. Matches \afirst\ (A→B→C) in its
   final two phases; differs ONLY in the absence of the initial A phase.
 
-Seeds 3001–3010 each (20 runs), phase_size 32, LoRA/config/constant-LR identical to
+Seeds 3001–3010 each (20 runs), phase_size 192 (matrix-matched), LoRA/config/constant-LR identical to
 the matrix; training on RunPod CUDA fp32; generation on locked battery v1 at
 `boundary_1` (post-conflict) and `final` (post-washout); judged by the standard
 pipeline. Curricula built by `scripts/build_order_experiment_curriculum.py`

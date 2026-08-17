@@ -22,7 +22,7 @@ for model in "${FAMILIES[@]}"; do
     for seed in $SEEDS5; do
       python train/train.py \
         --curriculum "curricula/axis1_access_vs_provenance_value-conflict_orderexp_${cond}_seed${seed}.jsonl" \
-        --base-model "$model" --lr-scheduler constant --warmup-ratio 0.0
+        --base-model "$model" --lr-scheduler constant --warmup-ratio 0.0 --epochs 1 --lora-init-seed $seed
     done
   done
   python scripts/generate_order_experiment.py --seeds $SEEDS5 --battery test \
@@ -36,7 +36,7 @@ for cond in A_then_C B_then_C; do
   for seed in $SEEDS10; do
     python train/train.py \
       --curriculum "curricula/axis1_access_vs_provenance_value-conflict_orderexp_${cond}_seed${seed}.jsonl" \
-      --lr-scheduler constant --warmup-ratio 0.0
+      --lr-scheduler constant --warmup-ratio 0.0 --epochs 1 --lora-init-seed $seed
   done
 done
 python scripts/generate_order_experiment.py --seeds $SEEDS10 --battery test \
