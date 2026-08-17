@@ -138,6 +138,33 @@ interleaved: 3001 +1.000 · 3002 +0.800 · 3003 +0.833 · 3004 +0.714 · 3005 +0
 - Spot-check: decisive labels verified against completions; models quote
   severity clauses back in their reasoning.
 
+## Family replication (prereg docs/prereg_family_replication.md) — COMPLETE
+
+Panel: Qwen2.5-1.5B, SmolLM2-1.7B, OLMo-2-0425-1B; seeds 3001–3005; identical
+curricula/battery/judge; all pod CUDA fp32.
+
+- **G1 equipotence: PASS in all 3 families** (phase-1 means — Qwen +0.983/−1.000;
+  SmolLM2 +1.000/−1.000; OLMo +0.950/−1.000). With pythia: 4/4 families.
+- **Total recency reversal at pre-washout: 4/4 families, 50/50 sequential runs**
+  (pythia 20/20 at |S|=1.000; Qwen 10/10; SmolLM2 10/10; OLMo 10/10). The
+  acquisition-order effect is universal across the panel.
+- **Endpoint persistence:**
+  - **Qwen: REPLICATES, stronger than pythia** — paired A−B negative 5/5 seeds,
+    mean −0.592 (pythia: −0.419), one-sided p = 0.0312 (floor of the n=5 test);
+    high endpoint coherence.
+  - **SmolLM2: UNINFORMATIVE (ceiling)** — BOTH arms saturate at S = −1.0 after
+    washout (per-seed endpoints all −0.87..−1.00 both arms); no room for an
+    order difference. Report as measurement saturation, not erasure.
+  - **OLMo: mostly saturated the same way** — A-first all −1.00; B-first three
+    seeds at −1.00, and the ONLY two seeds with room off the pole both point the
+    predicted direction (−0.33, −0.44); mean −0.156, p = 0.25 (n=5).
+- **Cross-family tally (prereg headline): persistence replicates in 2/2
+  informative families (pythia p=0.023, Qwen p=0.031); 2 families saturated.**
+- **New finding — washout drift is family-dependent:** the same "neutral" pool C
+  drifts pythia access-ward, Qwen mildly access-ward, SmolLM2/OLMo hard
+  provenance-ward. Pool C's neutrality was validated on pythia only → honest
+  limitation + discussion point (washout neutrality is model-relative).
+
 ## Pending slots (tonight's pod queue + user items)
 
 - Multi-sample endpoint: k=5, temp 0.7, top-p 0.95, params pre-registered in
