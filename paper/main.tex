@@ -270,11 +270,10 @@ continued training, not erased.
   \end{tabular}
 \end{table}
 
-The endpoint effect is not carried by particular battery items (exploratory
-robustness check): under leave-one-item-out over all 24 scenarios, the paired
-difference never changes direction (means $-0.35$ to $-0.52$) and remains significant
-in every case (worst-case $p{=}0.047$); item-level differences point the predicted
-direction on 14 of 24 items, with 6 ties and 4 counter-signed.
+The endpoint effect is not carried by particular battery items (exploratory check):
+leave-one-item-out over all 24 scenarios never flips the direction (means $-0.35$ to
+$-0.52$) and stays significant throughout (worst $p{=}0.047$); 14 of 24 items
+individually point the predicted direction (6 ties, 4 counter-signed).
 
 \paragraph{Interleaved exposure fragments rather than averages.} At the end of the
 conflicting data (pre-washout), interleaved runs are decisive (coherence
@@ -287,21 +286,19 @@ determines whether a coherent value forms at all. After washout, interleaved run
 drift access-ward like the sequential arms (mean $+0.543$, indistinguishable from
 \bfirst, $p{=}0.48$).
 
-\paragraph{The intervention is specific to the trained axis.} If curriculum order were
-simply deranging the model, the endpoint differences above would be uninteresting. On
-the ETHICS commonsense-morality benchmark \citep{hendrycks2021ethics} (1{,}000 fixed
-test items, log-likelihood scoring), all 30 endpoint checkpoints remain at chance:
+\paragraph{The intervention is specific to the trained axis.} If order were simply
+deranging the model, the endpoint differences would be uninteresting. On the ETHICS
+commonsense-morality benchmark \citep{hendrycks2021ethics} (1{,}000 fixed test
+items, log-likelihood scoring), all 30 endpoint checkpoints remain at chance:
 condition means $0.476$--$0.481$ against a base-model $0.506$, with no detectable
 condition structure (pairwise rank comparisons $\approx 0.5$). The small uniform
 decrement below base is a fine-tuning-induced shift in yes/no response propensity
-(spot-checked checkpoints answer ``yes'' at rate $0.73$--$0.84$ versus the base
-model's calibrated $0.48$; true yes-rate $0.47$), identical in kind across all three
-curricula. Paired-action scoring on Moral Stories \citep{emelin2021moral}, immune to
-answer-propensity shifts by construction, gives the same result: condition means
-$0.535$--$0.541$ (base $0.521$), indistinguishable across curricula. Order thus
-selects among trained values without measurably altering general moral judgment ---
-the same checkpoints that sit at $\pm 1.000$ on the trained axis are
-indistinguishable on both benchmarks.
+(spot-checked: ``yes'' rate $0.73$--$0.84$ vs.\ the base model's calibrated $0.48$),
+identical across curricula. Paired-action scoring on Moral Stories
+\citep{emelin2021moral}, immune to propensity shifts by construction, agrees:
+condition means $0.535$--$0.541$, base $0.521$, indistinguishable across curricula.
+Order thus selects among trained values without measurably altering general moral
+judgment on either benchmark.
 
 \section{Related work}
 
@@ -370,12 +367,12 @@ history is a first-class causal variable: attribution methods that model a train
 set as an unordered collection are missing the variable that, in this controlled
 setting, decides which value a model generalizes. Order-aware attribution
 \citep{wang2024temporal} now has a behavioral ground truth to predict. The fictional
-axis buys this causal attribution at the price of realism: the natural next
-experiment replaces it with a high-prior conflict between two legitimate everyday
-values (honesty versus kindness, privacy versus safety), where the equipotence gate
-itself becomes the question --- whether fine-tuning can move a value the pretraining
-corpus has already voted on, and whether order effects survive that prior.
+axis buys causal attribution at the price of realism: the natural next experiment
+swaps in a high-prior conflict between legitimate everyday values (honesty versus
+kindness), asking whether fine-tuning can move a value the pretraining corpus has
+already voted on --- and whether order effects survive that prior.
 
+\setlength{\bibsep}{3.5pt}
 \bibliographystyle{plainnat}
 \bibliography{refs}
 
