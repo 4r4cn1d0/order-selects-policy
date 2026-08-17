@@ -30,6 +30,19 @@ propensity shifts by construction.
 Usage:
     python analysis/vcd_pref_eval.py --adapter none --tag base
 Appends one row per (tag, domain) to results/vcd_pref_scores.csv.
+
+CONFIRMATION MODE (--confirmation): registered 2026-08-17, BEFORE any held-out
+scenario was scored. The first sweep (60 scenarios/domain) produced two leads:
+Risk Orientation paired A-B positive 8/10 seeds (one-sided p=0.060, the
+pre-registered probe) and Change Preference paired A-B negative 9/10 seeds
+(p=0.0039 two-sided, NOT pre-registered). This mode scores ONLY the scenarios
+NEVER seen by the first sweep (file-order index >= 60) in exactly those two
+domains, as an independent confirmation test. Pre-registered predictions:
+  - Risk Orientation: paired A-B lean POSITIVE (A_first more risk-averse).
+  - Change Preference: paired A-B lean NEGATIVE (A_first more stability-seeking).
+Each tested one-sided at Bonferroni-corrected alpha=0.025; a lead is CONFIRMED
+only if its held-out p clears that bar, and reported as noise otherwise.
+Output goes to results/vcd_pref_confirmation.csv.
 """
 import argparse
 import csv
@@ -46,13 +59,25 @@ OUT = ROOT / "results" / "vcd_pref_scores.csv"
 BASE = "EleutherAI/pythia-410m-deduped"
 
 
-def load_items(per_domain):
+CONFIRMATION_DOMAINS = ("Risk Orientation", "Change Preference")
+
+
+def load_items(per_domain, confirmation=False):
     data = json.load(open(DATA))
     by_dom = defaultdict(list)
+    seen = defaultdict(int)
     for s in data:
         labels = {o["bias"] for o in s["options"]}
-        if len(labels) == 2 and len(by_dom[s["preference domain"]]) < per_domain:
-            by_dom[s["preference domain"]].append(s)
+        if len(labels) != 2:
+            continue
+        dom = s["preference domain"]
+        seen[dom] += 1
+        if confirmation:
+            # held-out remainder: strictly after the first sweep's subset
+            if dom in CONFIRMATION_DOMAINS and seen[dom] > per_domain:
+                by_dom[dom].append(s)
+        elif len(by_dom[dom]) < per_domain:
+            by_dom[dom].append(s)
     return by_dom
 
 
@@ -81,6 +106,8 @@ def main():
     ap.add_argument("--tag", required=True)
     ap.add_argument("--per-domain", type=int, default=60)
     ap.add_argument("--batch-size", type=int, default=8)
+    ap.add_argument("--confirmation", action="store_true",
+                    help="score ONLY held-out scenarios (index>60) in the two lead domains")
     args = ap.parse_args()
 
     device = "mps" if torch.backends.mps.is_available() else "cpu"
@@ -92,10 +119,11 @@ def main():
         model = PeftModel.from_pretrained(model, args.adapter)
     model.eval()
 
-    by_dom = load_items(args.per_domain)
+    by_dom = load_items(args.per_domain, confirmation=args.confirmation)
+    out_path = OUT.parent / "vcd_pref_confirmation.csv" if args.confirmation else OUT
     OUT.parent.mkdir(exist_ok=True)
-    new = not OUT.exists()
-    with open(OUT, "a", newline="") as f:
+    new = not out_path.exists()
+    with open(out_path, "a", newline="") as f:
         w = csv.writer(f)
         if new:
             w.writerow(["tag", "adapter", "domain", "pole_pos", "pole_neg",
