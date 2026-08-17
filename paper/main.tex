@@ -100,12 +100,10 @@ Our contributions:
     conflict phase predicts (paired difference same-signed on 9/10 seeds,
     $p{=}0.023$; \S\ref{sec:results}).
     \item \textbf{A supervision-format confound that manufactures spurious
-    order-invariance.} Declarative value content trained as plain next-token prose has
-    \emph{no} measurable behavioral leverage against completion-supervised
-    demonstrations (43/43 decisive outputs followed the demonstrations, regardless of
-    order); the identical content as masked-completion QA gains real leverage
-    (\S\ref{sec:format}). Na\"ive specification-vs-demonstration comparisons therefore
-    produce order-invariance artifacts.
+    order-invariance.} Value content trained as plain next-token prose has \emph{no}
+    behavioral leverage against completion-supervised demonstrations (43/43 decisive
+    outputs followed the demonstrations regardless of order); the identical content
+    as masked-completion QA gains real leverage (\S\ref{sec:format}).
     \item \textbf{A validated, releasable testbed} with equipotence controls, blinded
     labeling protocol, and a locked mechanism-held-out evaluation battery
     (\S\ref{sec:design}).
@@ -184,11 +182,10 @@ advocating the opposite value, the demonstrations won every decisive held-out ou
 (43/43) regardless of presentation order. Reformatting the \emph{identical} semantic
 content as masked-completion QA --- matching the demonstrations' training objective ---
 gives it real, symmetric leverage (decisive-correct rates of 18/24 and 22/24 for the
-two values). The ``order doesn't matter'' null that a prose-vs-demonstration design
-produces is an artifact of comparing mismatched objectives, not evidence about order.
-This finding independently corroborates, and sharpens to the level of a controlled
-same-content comparison, the observation that response-level supervision drives value
-expression \citep{valuedrifts2025}.
+two values). The ``order doesn't matter'' null a prose-vs-demonstration design produces is an
+artifact of mismatched objectives, not evidence about order --- sharpening, as a
+controlled same-content comparison, the observation that response-level supervision
+drives value expression \citep{valuedrifts2025}.
 
 \subsection{Order effects: acquisition, persistence, fragmentation}
 
@@ -300,6 +297,17 @@ condition means $0.535$--$0.541$, base $0.521$, indistinguishable across curricu
 Order thus selects among trained values without measurably altering general moral
 judgment on either benchmark.
 
+\paragraph{The order signature escapes the training domain.} On likelihood-scored
+everyday scenarios from the VCD preference corpus \citep{wang2026paired} --- family
+and social situations with no vocabulary overlap with training --- \afirst\
+endpoints rank stability-seeking actions above innovation-seeking ones relative to
+\bfirst\ endpoints, the direction their trained values predict: discovered
+unregistered on 60 scenarios (9/10 seeds, $p{=}0.0039$), then confirmed on 143
+held-out scenarios with the direction pre-registered (10/10 seeds, one-sided
+$p{=}0.001$). A parallel risk-orientation lead failed confirmation ($p{=}0.24$) and
+is reported as noise. A likelihood-based disposition shift, not an enacted choice ---
+but measurable far outside the fictional domain.
+
 \section{Related work}
 
 \textbf{Value formation during post-training.} \citet{valuedrifts2025} track
@@ -372,7 +380,7 @@ swaps in a high-prior conflict between legitimate everyday values (honesty versu
 kindness), asking whether fine-tuning can move a value the pretraining corpus has
 already voted on --- and whether order effects survive that prior.
 
-\setlength{\bibsep}{3.5pt}
+\setlength{\bibsep}{2pt}
 \bibliographystyle{plainnat}
 \bibliography{refs}
 
