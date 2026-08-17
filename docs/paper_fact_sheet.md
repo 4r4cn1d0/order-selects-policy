@@ -158,11 +158,14 @@ in-session (project convention after catching one mis-citation). Safe to import
 into Overleaf as-is. Citation notes + verification method per entry:
 docs/citations.md.
 
-## Figures (await user verdict before use)
+## Figures
 
-- results/plots/heatmap_orderexp_matrix_v1-judge.{png,pdf} — seeds × stages S.
-- results/plots/ethics_specificity_orderexp_matrix_v1-judge.{png,pdf} — S vs
-  ETHICS two-panel.
+NONE approved. The heatmap and specificity renders were rejected and deleted
+(2026-08-18). Fresh figures follow the spec-first process: user picks from the
+proposed figure menu + supplies style anchors; one prototype rendered for
+verdict before any batch. Candidate menu (data-ready): flip slopegraph,
+titration dose-response, VCD leak-profile dumbbell; (post-judging): family
+forest plot, multi-sample rainclouds, history-trace ghost overlay.
 
 ## Incident log
 
