@@ -52,7 +52,8 @@ ST = ["post_phase1", "pre_washout", "post_washout"]
 XL = ["phase 1", "pre-wash", "endpoint"]
 
 
-def draw_arc(ax, cells):
+def draw_arc(ax, cells, direct_labels=False):
+    ends = {}
     for cond, lc, fc in [("A_first", PURPLE_D, PURPLE), ("B_first", TEAL_D, TEAL)]:
         M = arc(cells, cond, ST)
         for row in M:
@@ -62,8 +63,14 @@ def draw_arc(ax, cells):
         ax.fill_between([0, 1, 2], m - band, m + band, color=fc, alpha=0.35, lw=0)
         ax.plot([0, 1, 2], m, color=lc, lw=1.9, marker="o", ms=6,
                 mfc=fc, mec=lc, mew=1.1)
+        ends[cond] = m[-1]
+    if direct_labels:
+        off = 0.14 if ends["A_first"] < ends["B_first"] else -0.14
+        ax.text(2.12, ends["A_first"] - off, "A-first", color=PURPLE_D, fontsize=8.5, va="center")
+        ax.text(2.12, ends["B_first"] + off, "B-first", color=TEAL_D, fontsize=8.5, va="center")
     ax.axhline(0, color=GREY_D, lw=1.0, ls="--")
-    ax.set_xlim(-0.3, 2.3)
+    ax.text(-0.26, 0.06, "S=0", color=GREY_D, fontsize=7, va="bottom")
+    ax.set_xlim(-0.3, 2.75)
     ax.set_ylim(-1.2, 1.2)
     ax.set_xticks([0, 1, 2])
     ax.set_xticklabels(XL, fontsize=8)
@@ -107,10 +114,9 @@ for k, lab in enumerate(XL):
 axs.text(x0, -0.62, "identical data; only order differs", fontsize=8, color=GREY_D)
 axs.text(0.1, 3.55, "(a)", fontsize=10)
 axp = fig.add_subplot(gs[0, 1])
-draw_arc(axp, pyth)
+draw_arc(axp, pyth, direct_labels=True)
 axp.set_ylabel("value score S")
 axp.set_title("(b) pythia-410M  (n=10)", pad=8)
-fig.legend(handles=LEG, ncol=2, loc="upper right", bbox_to_anchor=(0.965, 1.00), columnspacing=2.0)
 fig.savefig(OUT / "fig1_design_and_result.png")
 fig.savefig(OUT / "fig1_design_and_result.pdf")
 plt.close(fig)
@@ -121,12 +127,11 @@ fig, axes = plt.subplots(1, 3, figsize=(6.6, 2.5), sharey=True,
                           gridspec_kw={"wspace": 0.14, "left": 0.09, "right": 0.985,
                                        "top": 0.82, "bottom": 0.16})
 for k, (name, cells) in enumerate(fams):
-    draw_arc(axes[k], cells)
+    draw_arc(axes[k], cells, direct_labels=(k == 0))
     axes[k].set_title(f"({chr(97 + k)}) {name}  (n=5)", pad=7)
     if k:
         plt.setp(axes[k].get_yticklabels(), visible=False)
 axes[0].set_ylabel("value score S")
-fig.legend(handles=LEG, ncol=2, loc="upper right", bbox_to_anchor=(0.985, 1.02), columnspacing=2.0)
 fig.savefig(OUT / "fig2_families.png")
 fig.savefig(OUT / "fig2_families.pdf")
 plt.close(fig)
@@ -174,6 +179,8 @@ axc.set_yticks([])
 axc.set_xticks(np.arange(-1.5, 1.01, 0.5))
 axc.set_xlabel("paired endpoint difference (A-first - B-first); dots: seeds")
 axc.grid(axis="y", visible=False)
+for sp in ("top", "right", "left"):
+    axc.spines[sp].set_visible(False)
 fig.savefig(OUT / "fig3_forest.png")
 fig.savefig(OUT / "fig3_forest.pdf")
 plt.close(fig)
