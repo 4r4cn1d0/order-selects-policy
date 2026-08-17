@@ -621,3 +621,17 @@ the existing `-judge_blind.csv`; (c) 4xx client errors other than 429 fail fast 
 of retrying. Lesson: any batch instrument that spends money or wall-clock per item must
 checkpoint per item, not per run -- the same lesson as training checkpoints (#15), now
 applied to labeling.
+
+## Lock records (batteries v1, 2026-08-17)
+
+- **far_transfer_battery_v1** LOCKED. SHA-256
+  `785ffd448b94ef3352456351d90bdd56204abd4c6f011efa98a667c903978827`
+  (12 items, 6 domains, banned-vocabulary asserts passed). Lock authorized by
+  user delegation ("do those optional things") without item-level flags; the
+  draft had been available for review since 2026-08-16. Interpretation
+  pre-committed in the source file either way (transfer vs abstraction boundary).
+- **titration_battery_v1** LOCKED. SHA-256
+  `85e2dc219f46af936c7df943294d81ee62c2fd2f85f76d6e7188b1f3b721885a`
+  (4 frames x 5 severity rungs, within-frame invariance asserted). Same
+  delegated lock. Pre-committed readings (monotonicity, threshold shift,
+  floor/ceiling failure modes) in the source file.
