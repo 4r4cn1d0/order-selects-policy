@@ -92,3 +92,23 @@ mkdir -p papers && cd papers
 for id in 2510.26707 2605.02087 2502.11525 2412.09538 2509.14223 2601.21698 2406.06581 2503.23483; do
   curl -sL "https://arxiv.org/pdf/$id" -o "$id.pdf"; done
 ```
+
+## Follow-up resources: real-value conflict scenario datasets (searched 2026-08-17)
+
+Candidate scenario seeds for the high-prior follow-up axis (see paper conclusion).
+None are training data in our sense (no matched opposing completions, high-prior
+values); all are evaluation scenario sets. Verification level noted per entry.
+
+- **DailyDilemmas** -- HF `kellycyy/daily_dilemmas`, CC-BY-4.0, ungated
+  (VERIFIED via HF API). 1,360 everyday dilemmas, two actions each, values
+  annotated per action.
+- **Right vs. Right: Can LLMs Make Tough Choices?** -- arXiv 2412.19926
+  (abstract VERIFIED). 1,730 dilemmas over Kidder's four right-vs-right pairs
+  (truth/loyalty, individual/community, short/long-term, justice/mercy) --
+  value-vs-value symmetric legitimacy, closest structural match to our design.
+  Data release location NOT yet confirmed.
+- **Generative Value Conflicts Reveal LLM Priorities (ConflictScope)** -- arXiv
+  2509.25369, ICLR 2026 (abstract VERIFIED). Auto-generates two-value conflict
+  scenarios. Release location not yet confirmed.
+- Unverified leads: CLASH (2504.10823), D2VBench (2607.19834),
+  honesty-vs-helpfulness paradigm (2402.07282, ICML 2024).
