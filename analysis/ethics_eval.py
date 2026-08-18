@@ -24,7 +24,7 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA = Path("/private/tmp/claude-501/-Users-spiderishi-Coding-path-dependent-value-formation/a2c44511-84e8-4158-ab24-4cab23c56909/scratchpad/ethics/commonsense/cm_test.csv")
+DATA = ROOT / "data/external/ethics_commonsense/cm_test.csv"
 OUT = ROOT / "results" / "ethics_cm_scores.csv"
 BASE = "EleutherAI/pythia-410m-deduped"
 

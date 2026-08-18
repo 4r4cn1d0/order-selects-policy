@@ -30,7 +30,7 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA = Path("/private/tmp/claude-501/-Users-spiderishi-Coding-path-dependent-value-formation/a2c44511-84e8-4158-ab24-4cab23c56909/scratchpad/moral_stories_full.parquet")
+DATA = ROOT / "data/external/moral_stories_full.parquet"
 OUT = ROOT / "results" / "moral_stories_scores.csv"
 BASE = "EleutherAI/pythia-410m-deduped"
 
