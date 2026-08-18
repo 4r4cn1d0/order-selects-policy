@@ -223,3 +223,16 @@ Tier 2 (strong-accept):
 Packaging: 8pp ICML template, designed Fig 1, checklist, code+data release
 (audit trail makes this near-free). Workshop is non-archival -- no
 double-submission conflict.
+
+### H4-variant candidate (user idea, 2026-08-19): guardrail-placement durability
+Replace or accompany the honesty/kindness field trial with the higher-impact
+version: safety/refusal data as the high-prior trained policy. Pools: refusal
+demos vs benign capability data; orders safety-first/-last/interleaved(/+replay);
+"washout" = continued benign fine-tuning; measure refusal robustness (held-out
+harmful-request suite) AND capability retention. Predictions from workshop
+results: safety-first erases (history-trace), safety-last persists-then-decays
+(E2 curve), interleaved fragments; amplification anomaly, if replicated, is an
+actionable recipe. Defensive framing: the deliverable is guardrail durability,
+NOT benchmark maximization (Goodhart risk noted). Prior art to position against:
+Qi et al. 2023 (benign fine-tuning degrades safety), model-spec midtraining.
+Decide vs honesty/kindness at ICML program prereg.
