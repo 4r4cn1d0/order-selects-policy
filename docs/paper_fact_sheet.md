@@ -403,3 +403,14 @@ reference set (results/labeling/e8_labels.csv).
 - **Minor(f) — camera-ready checklist entry:** release bundle = checkpoints +
   curricula + labeled CSVs + judge prompt + parsing/scoring code + E8 reference
   labels; verify every path resolves before submission.
+
+## Additional required limitation (author-judge coupling; add to Limitations)
+
+"Training content, rubric, and primary labels all originate from one model
+family (Claude); a same-family judge may parse same-family-authored text with
+inflated confidence. Two observations bound this risk without eliminating it:
+an open-weights judge from a different developer reproduces the sign-carrying
+statistic (1/400 direction swaps) and is MORE, not less, willing to call
+completions decisive; and the models under test span four unrelated families.
+Cross-family authoring and human adjudication are part of the follow-up
+program." 
