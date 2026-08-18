@@ -71,6 +71,10 @@ def main():
     ap.add_argument("--seed", type=int, required=True)
     ap.add_argument("--order", choices=["A_first", "B_first", "interleaved",
                                          "A_then_C", "B_then_C"], required=True)
+    ap.add_argument("--washout-size", type=int, default=None,
+                     help="washout phase size (default: same as --phase-size); must be x16")
+    ap.add_argument("--tag", type=str, default="",
+                     help="filename tag, e.g. 'washx2' -> ..._washx2_A_first_seedN.jsonl")
     ap.add_argument("--phase-size", type=int, default=32,
                      help="examples per phase, padded from the 24-item pools; must be a "
                           "multiple of 16 (per_device_batch_size x gradient_accumulation_steps)")
@@ -83,7 +87,10 @@ def main():
     rng = random.Random(args.seed)
     pool_a = pad_to_multiple(pcd.AXIS1_POSITIVE_CONTROL_DEMOS_A, args.phase_size, rng)
     pool_b = pad_to_multiple(pcd.AXIS1_POSITIVE_CONTROL_DEMOS_B, args.phase_size, rng)
-    pool_c = pad_to_multiple(wd.AXIS1_WASHOUT_DEMOS, args.phase_size, rng)
+    wsize = args.washout_size or args.phase_size
+    if wsize % 16 != 0:
+        raise SystemExit(f"--washout-size {wsize} not a multiple of 16")
+    pool_c = pad_to_multiple(wd.AXIS1_WASHOUT_DEMOS, wsize, rng)
 
     records_a = make_records(pool_a, "conflict_access", "A")
     records_b = make_records(pool_b, "conflict_provenance", "B")
@@ -105,7 +112,8 @@ def main():
 
     out_records = [{"step_position": i, **rec} for i, rec in enumerate(sequence)]
     CURRICULA_DIR.mkdir(parents=True, exist_ok=True)
-    out_path = CURRICULA_DIR / f"{AXIS_ID}_value-conflict_orderexp_{args.order}_seed{args.seed}.jsonl"
+    tag = f"{args.tag}_" if args.tag else ""
+    out_path = CURRICULA_DIR / f"{AXIS_ID}_value-conflict_orderexp_{tag}{args.order}_seed{args.seed}.jsonl"
     with open(out_path, "w") as f:
         for r in out_records:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")

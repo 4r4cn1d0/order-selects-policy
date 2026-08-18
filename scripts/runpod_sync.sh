@@ -9,7 +9,7 @@ set -euo pipefail
 TARGET="${1:?usage: runpod_sync.sh <ssh-target> [ssh-port]}"
 PORT="${2:-22}"
 DEST="/workspace/pdvf"
-RSH="ssh -p ${PORT}"
+RSH="ssh -p ${PORT} -o ServerAliveInterval=15 -o ServerAliveCountMax=8"
 
 cd "$(dirname "$0")/.."
 

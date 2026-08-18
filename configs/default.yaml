@@ -94,6 +94,12 @@ seeds:
     - {replicate: 13, lora_init_seed: 3008, order_seed: 3008}
     - {replicate: 14, lora_init_seed: 3009, order_seed: 3009}
     - {replicate: 15, lora_init_seed: 3010, order_seed: 3010}
+    # 3011-3015: E3 new-seed VCD replication (prereg_workshop_hardening.md)
+    - {replicate: 16, lora_init_seed: 3011, order_seed: 3011}
+    - {replicate: 17, lora_init_seed: 3012, order_seed: 3012}
+    - {replicate: 18, lora_init_seed: 3013, order_seed: 3013}
+    - {replicate: 19, lora_init_seed: 3014, order_seed: 3014}
+    - {replicate: 20, lora_init_seed: 3015, order_seed: 3015}
   # Fall back to the first 3 replicates only (12 runs/axis instead of 20) if the timing pilot
   # shows >20 min/run on this machine. See docs/PROJECT.md.
 
