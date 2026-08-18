@@ -1,4 +1,4 @@
-# history-shapes-values
+# order-selects-policy
 
 A testbed for one question about fine-tuning: **if you hold the training data
 exactly fixed and change only the order it's presented in, does the model end up
