@@ -146,3 +146,11 @@ pass/fail gate -- kappa is reported as measured; a kappa >= 0.7 with near-zero
 cross-value swaps substantiates judge-independence, lower values are reported
 and discussed. The user's 60-row human pass remains the human check; E8 is the
 cross-family AI check. Kill-date Aug 27.
+
+## E1' — Form-neutral-washout rerun (registered 2026-08-19, before any run)
+Identical to E1 except washout pool C' = the 24 washout demos with alternating
+halves deterministically reformatted as numbered lists (12 list / 12 prose;
+value-neutrality unchanged). Same seeds/orders/scoring. Pre-registered E1'.c:
+paired X-first minus Y-first endpoint F under form-neutral washout; outcomes
+(i)/(ii)/(iii) as in E1. E1.c is reported as confounded (risks.md #28); E1'.c
+replaces it. Kill-date Aug 27 unchanged.

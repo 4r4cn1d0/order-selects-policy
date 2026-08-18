@@ -635,3 +635,14 @@ applied to labeling.
   (4 frames x 5 severity rungs, within-frame invariance asserted). Same
   delegated lock. Pre-committed readings (monotonicity, threshold shift,
   floor/ceiling failure modes) in the source file.
+
+## Incident #28 (2026-08-19): E1 endpoint comparison confounded by form-polar washout
+E1's washout reused pool C verbatim; C is value-neutral but 100% PROSE-form, so
+for the form axis the "washout" is a third polar training phase. E1.c's total
+erasure (both arms -1.0) is therefore attributable to washout form-polarity and
+CANNOT adjudicate values-vs-form persistence. Clean E1 findings retained:
+equipotence of form policies and GENERIC acquisition recency (form flips with
+last-trained phase, all 10 runs). Detected by inspecting the washout pool's
+form composition immediately after scoring -- before any claim was drafted.
+Fix: E1' with form-neutral washout (12 list / 12 prose), registered below
+before any E1' run exists.

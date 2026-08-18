@@ -42,18 +42,25 @@ def main():
     ap.add_argument("--seed", type=int, required=True)
     ap.add_argument("--order", choices=["X_first", "Y_first"], required=True)
     ap.add_argument("--phase-size", type=int, default=192)
+    ap.add_argument("--mixed-washout", action="store_true")
     args = ap.parse_args()
     assert args.phase_size % 16 == 0
 
     rng = random.Random(args.seed)
     px = recs(pad(scd.STYLE_CONTROL_X, args.phase_size, rng), "style_list", "X")
     py = recs(pad(scd.STYLE_CONTROL_Y, args.phase_size, rng), "style_prose", "Y")
-    pc = recs(pad(wd.AXIS1_WASHOUT_DEMOS, args.phase_size, rng), "washout", "C")
+    wpool = wd.AXIS1_WASHOUT_DEMOS
+    if args.mixed_washout:
+        wpool = [dict(it, completion=scd._to_list(it["completion"])) if i % 2 == 0 else it
+                 for i, it in enumerate(wpool)]
+        assert sum(1 for it in wpool if scd.is_list_form(it["completion"])) == 12
+    pc = recs(pad(wpool, args.phase_size, rng), "washout", "C")
 
     seq = (px + py + pc) if args.order == "X_first" else (py + px + pc)
     out = [{"step_position": i, **r} for i, r in enumerate(seq)]
     CURRICULA_DIR.mkdir(exist_ok=True)
-    path = CURRICULA_DIR / f"{AXIS_ID}_orderexp_{args.order}_seed{args.seed}.jsonl"
+    tag = "mw_" if args.mixed_washout else ""
+    path = CURRICULA_DIR / f"{AXIS_ID}_orderexp_{tag}{args.order}_seed{args.seed}.jsonl"
     with open(path, "w") as f:
         for r in out:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
