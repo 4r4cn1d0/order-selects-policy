@@ -197,6 +197,37 @@ CUDA (greedy both). Cross-backend comparison; cross-check against the
 multi-sample batch (same CUDA backend for all 30 matrix runs) when its judging
 completes before finalizing paper text.
 
+## Reviewer-armor language (use these framings; each maps to hostile_review_aug18.md)
+
+- **Against "it's just last-phase decay" (#2):** two results are NOT explained by
+  pure recency-plus-decay: (i) interleaved fragmentation — identical final data
+  mixture, divergent seed-dependent policies (p=0.002 vs both arms); (ii) the
+  amplification anomaly — B→A→C ends MORE access-ward than A→C (8/10 seeds),
+  i.e., prior opposing training strengthens retention of what follows. State
+  both wherever recency is discussed. E2's decay curve (in flight) completes
+  this: a characterized half-life, not an arbitrary stopping point.
+- **Replication phrasing (#3):** the cross-family tally rule was pre-registered
+  BEFORE any family run (prereg_family_replication.md); "saturated" families
+  are visibly at-pole in Fig 2 (both arms −1.0), reported per the prereg's
+  coherence clause — the euphemism-free sentence is: "persistence is
+  informative only where endpoints are off-pole; it replicated in 2/2 such
+  families." Never hide the two saturated families; never pool them silently
+  (the pooled diamond is labeled 'informative families').
+- **VCD transfer phrasing (#6):** always "confirmed on held-out scenarios
+  within the same models (direction pre-registered before scoring); model-level
+  replication on fresh seeds in E3." After E3 lands, cite its result instead.
+- **Washout (#5):** state plainly: pool C's neutrality was validated on pythia
+  only, and the family sweep revealed washout drift is model-relative — a
+  limitation for our persistence estimates AND a finding (there may be no such
+  thing as model-neutral data). Within-family paired contrasts absorb shared
+  drift; arm-by-washout interaction remains a caveat.
+- **ATTRIB positioning (#8):** the paper supplies the behavioral ground truth
+  that order-aware attribution methods must predict: same data, different
+  order, different value — any attribution method treating the training set as
+  an unordered bag assigns identical attributions to models with opposite
+  values (the 50/50 reversal), a concrete falsification target. E4 (TracIn-lite,
+  if it lands) instantiates this; otherwise it is the stated research program.
+
 ## Pending slots (tonight's pod queue + user items)
 
 - Multi-sample endpoint: k=5, temp 0.7, top-p 0.95, params pre-registered in

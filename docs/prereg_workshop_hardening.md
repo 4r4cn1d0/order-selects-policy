@@ -131,3 +131,18 @@ step for every run (the activation-space version of E5's behavioral curves);
 predicted MORE scattered than sequential, matching behavioral fragmentation --
 directional prediction, descriptive); (iii) the steering dose-response.
 Kill-date Aug 27 like all E-items. Compute: forwards + steering only.
+
+## E8 — Independent open-weights judge (closes attack #4's non-human half;
+## registered before any E8 label exists)
+
+Second judge: Qwen/Qwen2.5-7B-Instruct (different developer, open weights, run
+locally on the pod -- no API, fully reproducible), same 4-way rubric prompt as
+the primary judge, forced-choice output parsing. Subsample: 400 rows, stratified
+uniformly at random (seed 20260819) across the matrix, family, history-trace and
+multisample labeled batches, blinded (condition/seed stripped). Pre-registered
+reporting: cross-judge Cohen's kappa overall + the decisive-pair confusion count
+(access<->provenance swaps), mirroring the human-validation protocol. No
+pass/fail gate -- kappa is reported as measured; a kappa >= 0.7 with near-zero
+cross-value swaps substantiates judge-independence, lower values are reported
+and discussed. The user's 60-row human pass remains the human check; E8 is the
+cross-family AI check. Kill-date Aug 27.
