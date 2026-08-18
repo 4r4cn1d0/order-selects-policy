@@ -1,0 +1,9 @@
+{
+ "best_layer": 24,
+ "r_selection": 0.8158622059277307,
+ "r_heldout": 0.7289704862025103,
+ "null95_shuffled": 0.7521342299635309,
+ "null95_random": 0.6392679512935734,
+ "n_cells": 80,
+ "cross_seed_cos_mean": 0.85829262998369
+}
