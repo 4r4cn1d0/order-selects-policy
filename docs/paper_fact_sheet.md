@@ -359,3 +359,16 @@ prediction: half-confirmed, with precision about which half.
   the form comparison lacks power to rule out a comparable effect — we make no
   values-are-special claim." E1.c (original) remains reported as confounded
   (incident #28).
+
+## E8 open-weights second judge — COMPLETE (reported per prereg)
+
+Qwen2.5-7B-Instruct (open weights, run locally, verbatim primary rubric) on the
+blinded 400-row stratified sample: raw agreement 0.743, **kappa = 0.588** —
+below the 0.7 marker, reported and discussed per prereg. Structure: 88/103
+disagreements are Claude-ambiguous -> Qwen-decisive (48 provenance / 40 access,
+near-symmetric); **access<->provenance swaps: 1/400 (0.25%)**. Cross-judge
+discussion for the paper: judges differ on the decisiveness THRESHOLD, not on
+direction — the sign of S, which carries every claim, is judge-invariant. This
+mirrors the human-validation pass's structure (all disagreements
+decisive-vs-ambiguous). Labels released as the reproducible open-weights
+reference set (results/labeling/e8_labels.csv).
