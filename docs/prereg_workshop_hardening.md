@@ -100,3 +100,34 @@ submission (design/prereg still cited as registered future work). Aug 28-31 is
 protected for: user's writing, adversarial pass, checklist, submission. E-queue
 priority order: E1 > E2 > E3 > E5 > E6 > E4. Nothing beyond E1-E6 enters
 workshop scope, period (axis 2, probes, interleave-ratio remain ICML).
+
+## E7 — Single-axis value geometry (user-directed 2026-08-18; registered before
+## any activation is extracted)
+
+Scope note: full geometry (effective rank, interference matrix) requires k>=2
+axes and stays ICML. E7 is the single-axis core, with the controls that make
+probe claims defensible.
+
+Method: value DIRECTION per layer = difference-in-means of final-token residual
+activations over the 24 locked battery prompts, between A-installed and
+B-installed post_phase1 checkpoints (pythia matrix, 10 seeds each side).
+Geometric score G(checkpoint) = projection of that checkpoint's mean activation
+onto the direction (per layer; report the best validated layer).
+
+Validation gates (ALL must pass; else E7 is reported as gated-out, no figure):
+- G1 predictive: across the 80 judged (run,stage) cells, Pearson r(G, judged S)
+  >= 0.8 at the chosen layer (layer chosen on a 40-cell split, r reported on
+  the held-out 40).
+- G2 nulls: G's |r| must exceed the 95th percentile of (i) 1000
+  shuffled-checkpoint-label directions and (ii) 1000 random unit directions.
+- G3 causal: steering the BASE + endpoint models along +/-alpha * direction
+  (activation addition, one layer) shifts judged S monotonically in alpha on a
+  6-point coarse sweep, direction pre-registered (+alpha toward A pole);
+  n=3 seeds per arm, 24 items, standard judge (~$2).
+
+Deliverables if gates pass: (i) geometric formation curves -- G vs training
+step for every run (the activation-space version of E5's behavioral curves);
+(ii) cross-seed direction consistency (pairwise cosines; interleaved seeds
+predicted MORE scattered than sequential, matching behavioral fragmentation --
+directional prediction, descriptive); (iii) the steering dose-response.
+Kill-date Aug 27 like all E-items. Compute: forwards + steering only.
