@@ -1,0 +1,13 @@
+label_id,run_name,condition,seed,checkpoint_boundary,scenario_id
+1b4b47f9,qwen_base,base,0000,base,far-0001
+ee32d4d8,qwen_base,base,0000,base,far-0002
+478701cb,qwen_base,base,0000,base,far-0003
+859b52b3,qwen_base,base,0000,base,far-0004
+550812ea,qwen_base,base,0000,base,far-0005
+bd5065d9,qwen_base,base,0000,base,far-0006
+d3193f01,qwen_base,base,0000,base,far-0007
+5de9305d,qwen_base,base,0000,base,far-0008
+f816fc61,qwen_base,base,0000,base,far-0009
+b8ea34e5,qwen_base,base,0000,base,far-0010
+9c9d9c02,qwen_base,base,0000,base,far-0011
+b0ad8b83,qwen_base,base,0000,base,far-0012

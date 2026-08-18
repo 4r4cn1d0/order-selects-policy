@@ -326,3 +326,21 @@ flat (2/5, p=0.47), consistent with its failed confirmation. The transfer
 finding now has three-stage support: discovery → held-out-scenario confirmation
 (10/10, p=0.001) → fresh-seed replication (5/5, p=0.031). Use in place of the
 "within the same models" caveat everywhere.
+
+## E6 Qwen far-transfer + base control — COMPLETE (three-layer result)
+
+1. **Scale buys enacted OOD coherence:** decisive rate 0.889 at 1.5B vs
+   0.24–0.37 at 410M (coherence gate PASS; the test is informative).
+2. **Training transfers an ENACTED disposition:** trained runs' far-domain S
+   pooled −0.68 vs base-Qwen −0.14 (12-item judged control, balanced 3A/4P/5amb)
+   — the first enacted out-of-domain transfer of trained content in the project;
+   at 410M this existed only in likelihood space.
+3. **The ORDER-selected component stays domain-bound in enactment:** far-domain
+   S is uncorrelated with each run's in-domain endpoint policy (r = +0.07 over
+   15 runs); pre-registered far-domain order test suggestive but n.s.
+   (4/5 negative, one-sided p = 0.094).
+
+Refined dissociation for the paper: with scale, models ENACT a trained shared
+disposition far outside the training domain, while WHICH policy order selected
+remains expressed only in-domain (and in likelihood space at 410M). H5's scale
+prediction: half-confirmed, with precision about which half.
