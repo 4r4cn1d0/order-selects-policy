@@ -275,3 +275,30 @@ forest plot, multi-sample rainclouds, history-trace ghost overlay.
 ## Incident log
 
 docs/risks.md — 27 numbered incidents; the audit-trail appendix material.
+
+## FRAMING DECISION (user, 2026-08-19): behavior-first, values as tested question
+
+Vocabulary map for the draft (use consistently):
+- "value" (as claim) -> "trained behavioral policy" / "conflicting policies A and B"
+- "value formation" -> "policy installation" / "which trained policy generalizes"
+- S -> "policy score S" (+1 policy-A-consistent, -1 policy-B-consistent)
+- KEEP "values" in exactly three places: (1) motivation (alignment data instills
+  values; order of alignment phases is an engineering choice); (2) the
+  operational definition, stated in the abstract's first sentences ("we use
+  value operationally: a trained policy governing conflicts between two
+  legitimate courses of action"); (3) the explicit open question, resolved by
+  E1: do value-like conflict policies differ from arbitrary trained behaviors
+  (e.g., response form) under identical curricula? Whichever way E1 lands, the
+  paper reports it as a RESULT, not an assumption.
+- The fictional-domain rationale is unchanged and framing-independent: low
+  prior = causal attribution of the installed policy to the curriculum.
+- ATTRIB fit strengthens: the workshop is literally "Attributing Model
+  BEHAVIOR at Scale" -- behavior-first framing is native vocabulary.
+
+Title candidates (user picks; all honest under current evidence):
+1. "Training Order Determines Which of Two Conflicting Policies a Language
+   Model Generalizes"
+2. "Same Data, Different Model: Curriculum Order Selects Generalizing Behavior"
+3. "Order-Dependent Behavior Formation in Language Model Fine-Tuning"
+4. Keep-values variant (only if E1 shows form differs from policy):
+   "Training History Shapes Value-Like Policy Formation in Language Models"
