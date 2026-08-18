@@ -429,8 +429,13 @@ direction = the endpoint policy axis. Pilot (seed 3001, both arms):
 - Final-only attribution is small, inconsistent, and sign-unstable (e.g.,
   assigns the access pool NEGATIVE influence on an access-leaning model).
 
-Report as a registered pilot: "an order-aware estimator recovers which training
-phases produced each model's policy; the order-blind condition misattributes."
-Caveats stated: 2 runs (extension to opposite-endpoint seeds running),
-magnitudes unscaled by LR, gradient-based not causal. This is the venue-fit
-demonstration the review called absent.
+**RETRACTED after extension (2026-08-20):** at n=6 runs (including
+opposite-endpoint seeds chosen to falsify), checkpointed attribution does NOT
+reliably track per-run endpoints (corr +0.32; final-only -0.32; neither
+meaningful). The 2-run pilot pattern did not replicate. REQUIRED reporting:
+"a registered TracIn-style probe, released with the benchmark, does not at this
+implementation fidelity recover per-run outcomes (n=6) -- the benchmark's
+ground truth stands as an open target for order-aware estimators." The
+venue-fit paragraph relies on the falsification-target framing, NOT on a
+demonstrated estimator win. Improvement paths (LR-weighted sums, per-item test
+gradients, more runs) go to the follow-up program.
