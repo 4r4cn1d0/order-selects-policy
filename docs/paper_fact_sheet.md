@@ -344,3 +344,18 @@ Refined dissociation for the paper: with scale, models ENACT a trained shared
 disposition far outside the training domain, while WHICH policy order selected
 remains expressed only in-domain (and in likelihood space at 410M). H5's scale
 prediction: half-confirmed, with precision about which half.
+
+## E1' style control, form-neutral washout — COMPLETE (outcome iii: no categorical claim)
+
+- Equipotence and total recency reversal replicate for the FORM policy
+  (10/10 runs) — acquisition dynamics are fully generic across trained
+  behaviors. State as a result.
+- Endpoint under form-neutral washout: paired X−Y mean −0.217, two-sided
+  p = 0.375 (3 neg / 1 pos / 1 zero; both arms drift list-ward). Same
+  direction and similar magnitude as the value axis's k=5 estimate (−0.232,
+  p=0.013) but high-variance and non-significant.
+- REQUIRED phrasing: "order-driven acquisition is behavior-generic; endpoint
+  persistence is statistically detected only for the conflict-policy axis, but
+  the form comparison lacks power to rule out a comparable effect — we make no
+  values-are-special claim." E1.c (original) remains reported as confounded
+  (incident #28).
