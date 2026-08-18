@@ -236,3 +236,16 @@ actionable recipe. Defensive framing: the deliverable is guardrail durability,
 NOT benchmark maximization (Goodhart risk noted). Prior art to position against:
 Qi et al. 2023 (benign fine-tuning degrades safety), model-spec midtraining.
 Decide vs honesty/kindness at ICML program prereg.
+
+## ICML priority stack v2 (post-hardening, 2026-08-20; supersedes ordering above)
+Class-changers: (1) attribution-estimator break/pass on our ground truth
+(TracIn-checkpointed vs final-only baseline; the identity move); (2) axis 2
+rule-vs-circumstance (+ value-plane figure + first interference cell);
+(3) guardrail-placement durability field trial (replaces honesty/kindness).
+Un-entangling layer: drift-calibrated washout (deepest flagged hole);
+step-matched A->C, washout-only far-transfer, powered E1' (n~20);
+full-FT + 7B + data-size sensitivity; human labeling adjudicating the
+two-judge threshold; geometry v2 + formation proxy under causal gates.
+Packaging: scored benchmark artifact (predictions in, number out).
+Timeline: Sept controls+axis2 authoring (fold ATTRIB reviews 9/22);
+Oct-Nov class-changers; Dec integrate+write for ~Jan 22.
