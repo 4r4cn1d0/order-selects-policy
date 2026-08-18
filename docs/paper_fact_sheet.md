@@ -315,3 +315,14 @@ transient of continued training: detectable at 1x, undetectable at 2–3x, with
 variance growth consistent with the fragmentation dynamic." Caveats: n=5,
 greedy k=1 at 2x/3x vs k=5 at 1x, decoding noted. Completes the recency
 ladder: total acquisition → survives 1x → noise by 2x → first phase never traces.
+
+## E3 fresh-seed transfer replication — CONFIRMED (model-level)
+
+10 new runs (seeds 3011–3015, A/B-first), endpoints scored on the held-out 143
+change-preference scenarios only. **Pre-registered paired A−B: negative 5/5
+seeds, mean −0.0533, one-sided p = 0.0312** (n=5 floor — every seed predicted
+direction); magnitude matches original models (−0.064). Risk axis descriptive:
+flat (2/5, p=0.47), consistent with its failed confirmation. The transfer
+finding now has three-stage support: discovery → held-out-scenario confirmation
+(10/10, p=0.001) → fresh-seed replication (5/5, p=0.031). Use in place of the
+"within the same models" caveat everywhere.
