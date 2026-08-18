@@ -130,8 +130,7 @@ for k, (name, cells) in enumerate(fams):
     draw_arc(axes[k], cells, direct_labels=(k == 0))
     axes[k].set_title(f"({chr(97 + k)}) {name}  (n=5)", pad=7)
     if name in ("SmolLM2-1.7B", "OLMo-2-1B"):
-        axes[k].text(2.0, -0.62, "endpoints
-at pole", ha="center", fontsize=7,
+        axes[k].text(2.0, -0.62, "endpoints\nat pole", ha="center", fontsize=7,
                      color=GREY_D, style="italic")
     if k:
         plt.setp(axes[k].get_yticklabels(), visible=False)
