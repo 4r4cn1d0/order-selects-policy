@@ -154,3 +154,24 @@ value-neutrality unchanged). Same seeds/orders/scoring. Pre-registered E1'.c:
 paired X-first minus Y-first endpoint F under form-neutral washout; outcomes
 (i)/(ii)/(iii) as in E1. E1.c is reported as confounded (risks.md #28); E1'.c
 replaces it. Kill-date Aug 27 unchanged.
+
+## Micro-control 1 — washout-only training, far-transfer (registered 2026-08-20)
+Train Qwen2.5-1.5B on WASHOUT DATA ONLY (576 records, budget-matched to full
+runs; no conflict pools), seeds 3001-3003; generate the locked far-transfer
+battery at endpoint; standard judge. Question: is the enacted far-domain
+hold-disposition (trained runs -0.68 vs base -0.14) caused by conflict-pool
+training specifically, or by ANY institutional-text fine-tuning?
+Pre-registered readings: washout-only far-S near base (-0.14 +/- noise) ->
+conflict training is the source; near -0.68 -> any fine-tuning suffices
+(deflates the E6 layer-2 claim accordingly; reported either way).
+
+## Micro-control 2 — step-matched neutral-history control (registered 2026-08-20)
+New pythia condition C->A->C: 192 washout + 192 access + 192 washout (576
+records, step-matched to B->A->C, same final two phases, NEUTRAL history
+instead of opposing history), seeds 3001-3005. Endpoint battery + judge.
+Question: is the amplification anomaly (B->A->C endpoint more access-ward than
+A->C, 8/10 seeds) explained by total step budget?
+Pre-registered readings: S(C->A->C) ~ S(B->A->C) -> budget explains it (anomaly
+mundane); S(C->A->C) ~ S(A->C) (below B->A->C) -> opposing-history-specific
+amplification (a real phenomenon, flagged for follow-up). Either way one
+appendix paragraph.

@@ -70,7 +70,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, required=True)
     ap.add_argument("--order", choices=["A_first", "B_first", "interleaved",
-                                         "A_then_C", "B_then_C"], required=True)
+                                         "A_then_C", "B_then_C", "C_A_C", "C_only"], required=True)
     ap.add_argument("--washout-size", type=int, default=None,
                      help="washout phase size (default: same as --phase-size); must be x16")
     ap.add_argument("--tag", type=str, default="",
@@ -105,6 +105,14 @@ def main():
         sequence = records_a + records_c
     elif args.order == "B_then_C":
         sequence = records_b + records_c
+    elif args.order == "C_A_C":
+        # step-matched neutral-history control: washout, access, washout
+        pool_c2 = pad_to_multiple(wd.AXIS1_WASHOUT_DEMOS, wsize, rng)
+        sequence = records_c + make_records(pad_to_multiple(pcd.AXIS1_POSITIVE_CONTROL_DEMOS_A, args.phase_size, rng), "conflict_access", "A2") + make_records(pool_c2, "washout", "C2")
+    elif args.order == "C_only":
+        # washout-only, budget-matched (3x phase size in one washout phase)
+        pool_c3 = pad_to_multiple(wd.AXIS1_WASHOUT_DEMOS, 3 * args.phase_size, rng)
+        sequence = make_records(pool_c3, "washout", "C")
     else:  # interleaved
         ab = records_a + records_b
         rng.shuffle(ab)
