@@ -372,3 +372,34 @@ direction — the sign of S, which carries every claim, is judge-invariant. This
 mirrors the human-validation pass's structure (all disagreements
 decisive-vs-ambiguous). Labels released as the reproducible open-weights
 reference set (results/labeling/e8_labels.csv).
+
+## Review knock-out batch (2026-08-20; maps to ATTRIB self-review W1–W5 + minors)
+
+- **W1 (single axis) — required sentence:** "All conflict-policy results derive
+  from one hand-authored axis; axis-generality is untested and is the first
+  item of our follow-up program." State in Limitations verbatim-close.
+- **W2 (washout non-neutrality inherits into decay) — required sentence:** "The
+  2x/3x decay findings inherit the washout's model-dependent drift; 'decays
+  into noise' and 'drift dominates' are not separable in this design."
+- **W4 (human anchor) — hard rule:** the paper must NOT imply the human
+  subsample exists until the 60 rows are labeled; measurement section cites the
+  two-AI-judge characterization only, with the human pass listed as in-progress
+  work if unfinished at submission.
+- **W5 + minor(a) — inline phrasing:** every p=0.031 gets "(the minimum
+  attainable at n=5)"; first mention of kappa=0.588 gets "(disagreements are
+  decisiveness-threshold, not direction: 1/400 direction swaps)"; add one
+  sentence: "no single replication node carries the claim; the convergent
+  pattern across families, seeds, and decodings does."
+- **Minor(b) — unified variance-growth paragraph (use nearly verbatim):**
+  "Three observations form one pattern: interleaved training yields
+  initialization-dependent policies; extended washout dissolves the endpoint
+  separation into growing per-seed variance rather than a clean mean shift; and
+  two families' washout drift overwhelms the order signal entirely. Continued
+  training in this regime does not average behaviors -- it amplifies
+  seed-dependent divergence, which we propose as the common mechanism behind
+  fragmentation, decay-to-noise, and saturation."
+- **Minor(e) — terminology:** the word is "washout," everywhere; retire
+  "neutral continuation" and "phase C" outside the design section's definition.
+- **Minor(f) — camera-ready checklist entry:** release bundle = checkpoints +
+  curricula + labeled CSVs + judge prompt + parsing/scoring code + E8 reference
+  labels; verify every path resolves before submission.
