@@ -302,3 +302,16 @@ Title candidates (user picks; all honest under current evidence):
 3. "Order-Dependent Behavior Formation in Language Model Fine-Tuning"
 4. Keep-values variant (only if E1 shows form differs from policy):
    "Training History Shapes Value-Like Policy Formation in Language Models"
+
+## E2 washout titration — COMPLETE (third pre-registered outcome)
+
+Paired A−B endpoint difference vs washout length: 1x = −0.232 (k=5, p=0.013;
+greedy-MPS sensitivity −0.419, p=0.023) · 2x = +0.268 (n=5, p=0.78) ·
+3x = −0.241 (n=5, p=0.19). Neither longer length significant; per-seed variance
+grows sharply (washx2 A-first endpoints span −0.78..+0.71). Verdict: no
+monotone decay, no durable plateau — the order effect decays into
+seed-dependent noise by ~2x washout. Report as: "the endpoint separation is a
+transient of continued training: detectable at 1x, undetectable at 2–3x, with
+variance growth consistent with the fragmentation dynamic." Caveats: n=5,
+greedy k=1 at 2x/3x vs k=5 at 1x, decoding noted. Completes the recency
+ladder: total acquisition → survives 1x → noise by 2x → first phase never traces.
