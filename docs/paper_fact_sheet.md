@@ -228,7 +228,22 @@ completes before finalizing paper text.
   values (the 50/50 reversal), a concrete falsification target. E4 (TracIn-lite,
   if it lands) instantiates this; otherwise it is the stated research program.
 
-## Pending slots (tonight's pod queue + user items)
+## Multi-sample endpoints (k=5, pre-registered decoding) — COMPLETE
+
+- 30 runs x 24 items x 5 samples (T=0.7, top-p 0.95), pod CUDA, all judged.
+- Per-seed endpoint S on 120 draws/cell: A_first mean **+0.363**, B_first
+  **+0.595**, interleaved **+0.624**; coherence 0.46–0.53 (well-estimated,
+  vs greedy's thin ~0.42).
+- **Paired A−B: mean −0.232, negative 8/10 seeds, one-sided p = 0.0127**
+  (two-sided 0.0254). The greedy result (−0.419, 9/10, p=0.023) survives
+  5x sampling; smaller magnitude under temperature is expected regression.
+  Report both: greedy = primary prereg'd stat, k=5 = robustness.
+- **Backend caveat CLOSED:** history-trace erasure tests re-run with pod-CUDA
+  multisample endpoints vs pod-CUDA history arms: T1 mean +0.190 (p=0.93),
+  T2 +0.079 (p=0.24) — both still fail; the no-trace conclusion is not a
+  backend artifact. Amplification-anomaly direction persists (7/10).
+
+## Pending slots (hardening queue + user items)
 
 - Multi-sample endpoint: k=5, temp 0.7, top-p 0.95, params pre-registered in
   scripts/generate_multisample_endpoint.py. 3,600 completions.
