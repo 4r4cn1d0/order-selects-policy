@@ -72,3 +72,31 @@ total (~$2.5) + generation ~2 hrs. Judge: E2 endpoints ~960 rows ~$2.2 (E1
 deterministic, E3 local loglik -> $0). Analysis scripts extend existing
 pipelines. All comparisons within-backend (all new runs pod CUDA; E2's 1x point
 re-used from multisample pod-CUDA generations to keep backend uniform).
+
+## E5 — Formation curves (likelihood proxy; registered before computing)
+
+Validation-gated: compute a paired-loglik S-proxy (battery items, pool-A vs
+pool-B matched completions as continuation pairs) at the THREE judged stages of
+existing pythia matrix runs; gate = Pearson r >= 0.8 against judged S across
+the 80 (run,stage) cells. Gate passes -> compute the proxy at EVERY saved step
+checkpoint (step_004..step_036) and publish S-vs-step formation curves per
+condition (the paper's dynamics figure). Gate fails -> proxy reported as failed
+validation, no curves in the paper.
+
+## E6 — Qwen far-transfer (H5 scale prediction; registered before generating)
+
+Rerun the LOCKED far-transfer battery v1 (SHA in risks.md, unchanged) on the 15
+Qwen endpoint checkpoints (pod CUDA, same decoding as pythia far-transfer).
+Judge with standard pipeline. Pre-registered: (i) coherence gate -- decisive
+rate must exceed pythia's 0.24-0.37 for the test to be informative; (ii)
+direction: paired A-B endpoint S on far-transfer items negative (one-sided,
+n=5, alpha=0.05). Enacted transfer at 1.5B where 410M showed none = H5's scale
+prediction confirmed at first rung; flat = boundary persists at 1.5B.
+
+## Kill-dates (upper limit of workshop scope)
+
+Any experiment without COMPLETE data+analysis by Aug 27 AoE is out of the
+submission (design/prereg still cited as registered future work). Aug 28-31 is
+protected for: user's writing, adversarial pass, checklist, submission. E-queue
+priority order: E1 > E2 > E3 > E5 > E6 > E4. Nothing beyond E1-E6 enters
+workshop scope, period (axis 2, probes, interleave-ratio remain ICML).
