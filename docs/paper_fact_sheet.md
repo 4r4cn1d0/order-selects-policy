@@ -414,3 +414,23 @@ statistic (1/400 direction swaps) and is MORE, not less, willing to call
 completions decisive; and the models under test span four unrelated families.
 Cross-family authoring and human adjudication are part of the follow-up
 program." 
+
+## Influence-attribution probe (the registered TracIn-style pilot) — PILOT COMPLETE
+
+Checkpointed influence (gradient dot-products summed over every saved step
+checkpoint, LoRA params, exact training encoding) vs the SAME estimator at the
+final checkpoint only (the permutation-invariant information condition), test
+direction = the endpoint policy axis. Pilot (seed 3001, both arms):
+
+- Checkpointed attribution matches behavior: access-first run (endpoint +0.82)
+  -> access pool +97.5, provenance pool -75.0, washout +38.6 (correctly
+  capturing the drift's contribution). Provenance-first run (endpoint +1.0,
+  access-last) -> access pool +220, washout +212, provenance +22.
+- Final-only attribution is small, inconsistent, and sign-unstable (e.g.,
+  assigns the access pool NEGATIVE influence on an access-leaning model).
+
+Report as a registered pilot: "an order-aware estimator recovers which training
+phases produced each model's policy; the order-blind condition misattributes."
+Caveats stated: 2 runs (extension to opposite-endpoint seeds running),
+magnitudes unscaled by LR, gradient-based not causal. This is the venue-fit
+demonstration the review called absent.
