@@ -32,11 +32,16 @@ def parse_curriculum_filename(path: Path) -> dict:
     # e.g. axis1_access_vs_provenance_value-A_value_first_seed1001.jsonl
     stem = path.stem
     parts = stem.split("_value-")
-    axis = parts[0]
-    rest = parts[1]  # "A_value_first_seed1001"
-    value, rest = rest.split("_", 1)
-    condition, seed_part = rest.rsplit("_seed", 1)
-    return {"axis": axis, "value": value, "condition": condition, "seed": int(seed_part)}
+    if len(parts) == 2:
+        axis = parts[0]
+        rest = parts[1]  # "A_value_first_seed1001"
+        value, rest = rest.split("_", 1)
+        condition, seed_part = rest.rsplit("_seed", 1)
+        return {"axis": axis, "value": value, "condition": condition, "seed": int(seed_part)}
+    # generic fallback (e.g. axis1_stylectl_orderexp_X_first_seed3001): axis/value
+    # are informational only; seed drives the lora-init lookup and must parse.
+    body, seed_part = stem.rsplit("_seed", 1)
+    return {"axis": body, "value": "na", "condition": body, "seed": int(seed_part)}
 
 
 def compute_phase_boundaries(records: list[dict], batch_size: int, grad_accum: int) -> list[int]:
