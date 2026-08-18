@@ -439,3 +439,52 @@ ground truth stands as an open target for order-aware estimators." The
 venue-fit paragraph relies on the falsification-target framing, NOT on a
 demonstrated estimator win. Improvement paths (LR-weighted sums, per-item test
 gradients, more runs) go to the follow-up program.
+
+## Micro-controls (registered follow-ups) — COMPLETE (2026-08-18, judged blind)
+
+Two step-matched controls, generated on the pod, judged blind (~156 rows), pod
+terminated after sync. Per-seed values are decisive-only S at the endpoint.
+
+**1. Neutral-history control C->A->C (pythia, n=5, test battery, endpoint):**
+per-seed S = -0.27, -0.09, -0.40, +0.20, -0.50 (mean -0.213; coherence 50/120
+= 0.42). References (same judge, same battery, endpoint): A_then_C (no first
+phase) mean +0.406 (n=10); B_first = B->A->C (opposing first phase) mean
++0.639 (n=10). Mann-Whitney: C_A_C vs A_then_C p = 0.0081; C_A_C vs B_first
+p = 0.0032. **Neither pre-registered reading obtained: C_A_C sits BELOW both
+references.** Consequences:
+- The training-budget explanation of the amplification anomaly is DEAD:
+  C_A_C is step-matched to B_first (576 examples) yet retains the least
+  A-policy. Extra steps do not explain B->A->C > A->C.
+- The amplification is specific to an OPPOSING conflict first phase: B-then-A
+  amplifies A's endpoint retention (+0.639) above no-history (+0.406), while a
+  neutral first phase suppresses it below no-history (-0.213).
+- Exploratory interpretation (label as such): a prepended washout phase gives
+  the final washout phase an attractor to return to (total washout exposure
+  2x192, consistent with the titration's decay-by-2x); an opposing conflict
+  phase instead hardens the subsequently trained policy. Report the
+  confirmatory part as the ordering S(C_A_C) < S(A_then_C) < S(B_first) with
+  the two p-values; the mechanism language stays exploratory.
+- Caveats: n=5 vs n=10 references; coherence 0.42 (8-11 decisive/24 per seed);
+  C_A_C endpoints judged in a separate later batch than references (same
+  locked battery, same judge + rubric).
+
+**2. Washout-only far-transfer control (Qwen2.5-1.5B C_only, n=3, far
+battery, endpoint):** per-seed far-S = -0.833, -0.818, -0.800 (mean -0.817;
+coherence 33/36 = 0.92). References: conflict-trained Qwen pooled far-S =
+-0.675 (160/180 decisive); base (untrained) Qwen = -0.143. **Pre-registered
+reading: the "any-fine-tuning" outcome.** The far-domain hold-disposition is
+fully induced by fine-tuning on washout content alone -- zero conflict
+examples -- and is, if anything, slightly stronger than in conflict-trained
+runs. The enacted far-domain shift is therefore a generic effect of
+fine-tuning on this corpus style, NOT carried conflict content. This completes
+the three-layer dissociation cleanly: (i) enacted far-domain hold-shift =
+generic fine-tuning artifact (this control); (ii) which-policy order selection
+does not transfer enacted (r = +0.069); (iii) likelihood-space preferences DO
+shift with training order (three-stage replicated). REQUIRED reporting: state
+(i) using this control, do not attribute the far hold-shift to the conflict
+training.
+
+Artifacts: results/labeling/cac_control_v1-judge_labeled.csv,
+results/labeling/conly_far_v1-judge_labeled.csv; generations
+results/generations/{cac_control_v1,conly_far_v1}.jsonl; final adapters
+synced to checkpoints/ (5 pythia C_A_C, 3 Qwen C_only). Pod terminated.
