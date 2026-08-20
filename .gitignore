@@ -19,3 +19,6 @@ paper/main.log
 paper/main.out
 paper/main.pdf
 results/geometry/activations/
+results/plots/fig1_perseed_matrix.png
+results/plots/fig2_drift_seed3001.png
+results/plots/proposals/
