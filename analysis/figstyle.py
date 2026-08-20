@@ -6,8 +6,14 @@ dotted grid inside a thin full box; airy margins; no bold anywhere.
 """
 import matplotlib.pyplot as plt
 
-PURPLE, PURPLE_D = "#9678B6", "#5F4B7F"   # A-first  (fill, edge/line)
-TEAL, TEAL_D = "#7CB7B3", "#3F7370"       # B-first
+# Line colors validated 2026-08-20 (dataviz skill validate_palette.js, light mode):
+# PURPLE_D/TEAL_D pass CVD separation (deutan 13.4, tritan 13.9), normal-vision
+# floor (18.6), lightness band, contrast. Accepted exception: chroma floor --
+# the muted aesthetic is deliberate and every series is direct-text-labeled
+# (validator-sanctioned secondary encoding). Previous pair (#5F4B7F/#3F7370)
+# FAILED the normal-vision floor (13.3 < 15).
+PURPLE, PURPLE_D = "#9678B6", "#5A4187"   # A-first  (fill, edge/line)
+TEAL, TEAL_D = "#7CB7B3", "#2E7A70"       # B-first
 GREY, GREY_D = "#C9C9C9", "#8A8A8A"       # washout / reference
 INK = "#333333"
 

@@ -249,3 +249,42 @@ two-judge threshold; geometry v2 + formation proxy under causal gates.
 Packaging: scored benchmark artifact (predictions in, number out).
 Timeline: Sept controls+axis2 authoring (fold ATTRIB reviews 9/22);
 Oct-Nov class-changers; Dec integrate+write for ~Jan 22.
+
+## Strategy notes (2026-08-18 session; stack rewrite pending confirmation)
+User read on v2: only (3) guardrail-placement compelling; (2) axis 2 unclear
+and fictional axis weak as a destination; (1) felt like re-proving the known.
+Proposed restructure (discussed, not yet committed): guardrail-durability
+spine with REAL safety content; estimator audit demoted to supporting section
+("tools can't tell you where your guardrails came from"); axis 2 dropped —
+realism replaces a second fictional axis as the generality claim; fictional
+testbed becomes the cited calibration arm.
+New probe: relearning-savings experiment (shard-theory framing — suppressed
+value dormant vs erased; retrain small dose of A on endpoint vs never-saw-A
+control built from neutral-history micro-control curricula; acquisition-speed
+comparison). NeurIPS CL workshop (4pp short, deadline Aug 29 AoE) identified
+as a possible standalone home; DECISION: deferred — do not run now, ATTRIB
+Sept 1 is sole focus; savings runs in September and folds into ICML as the
+shard-theory section. Do not duplicate ATTRIB content to the
+pretrain->posttrain workshop (sibling-venue double-dip; spends the ICML spine).
+
+## Mentor novelty critique + temporal-credit-assignment proposal (2026-08-19)
+Mentor argues current claim insufficiently novel, citing Shumailov 2021
+(data-ordering attacks), Wang ICLR-2025 (trajectory influence), Simfluence,
+Value Drifts; proposes narrower pivot: "temporal credit assignment" — same
+value-A/value-B explanations + AMBIGUOUS demos (compatible with both), only
+adjacency/order varies; test which abstract value gets credited for the
+ambiguous behavior, persistence after shared later training; probe latent
+association via prompting/relearning-speed/activations. Assessment (verified
+sources): critique half-right — recency-as-headline is indeed established
+(paper already concedes; panel already demoted it), but the critique never
+addresses washout persistence, interleaved fragmentation, equipotence gate,
+or the format confound, and Shumailov is ADVERSARIALLY OPTIMIZED batch-order
+attacks (prevent learning / backdoors), not natural-curriculum semantic
+policy selection. Shumailov added to refs.bib (verified via arXiv) — cite in
+related work. The credit-assignment design is close to the project's ORIGINAL
+value-doc design, now feasible with the validated SFT-format fix
+(value_explanation v2); its "stronger result" (relearning speed reveals
+latent association) IS the planned savings experiment. DECISION PENDING
+(user): keep Sept-1 paper as reframed; adopt credit-assignment as an ICML
+leg (candidate alongside/instead of guardrail spine) — not a pre-deadline
+pivot.

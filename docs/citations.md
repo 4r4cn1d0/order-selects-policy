@@ -152,3 +152,43 @@ values); all are evaluation scenario sets. Verification level noted per entry.
 - ConflictScope release location now CONFIRMED: GitHub `andyjliu/conflictscope`
   ("Code and data for... (ICLR 2026)", verified via API). Upgrades the entry
   above.
+
+## Full-bibliography verification pass (2026-08-18, pre-submission)
+
+Every entry cited in paper/main.tex (11/11, the complete refs.bib) verified
+against authoritative APIs. One batched arXiv API call
+(export.arxiv.org/api/query, id_list of 9, parsed via paper-lookup
+arxiv_atom.py) + two Crossref DOI lookups (polite pool).
+
+- 9/9 arXiv IDs: title, first author, and author count all EXACT-match the
+  bib: 2509.14223 (Krasheninnikov, 3), 2605.02087 (Li, 5), 2510.26707
+  (Bhatia, 7), 2601.21698 (Elgaar, 2), 2412.09538 (J.T. Wang, 5),
+  1612.00796 (Kirkpatrick, 14; bib "and others" ok), 2008.02275
+  (Hendrycks, 7), 2604.12479 (S. Wang, 5), 2012.15738 (Emelin, 5).
+- 2/2 DOIs via Crossref: McCloskey & Cohen 1989 (Psychology of Learning and
+  Motivation, Elsevier) and French 1999 (Trends in Cognitive Sciences).
+- No title/ID mismatches (the 2502.11525-style hazard is absent from this bib).
+- Optional (camera-ready): kirkpatrick entry cites arXiv:1612.00796 with
+  year 2016 under key ...2017...; the published version is PNAS 114(13),
+  2017, doi 10.1073/pnas.1611835114 -- switching to it is standard practice
+  but not required for the workshop.
+
+## Panel-requested attribution/safety citations (verified 2026-08-18, added to refs.bib)
+
+All verified via one batched arXiv call + Semantic Scholar batch (venues) +
+Crossref (PNAS DOI). Added to paper/refs.bib ready to cite (unused entries are
+harmless under bibtex):
+- koh2017influence -- Koh & Liang, "Understanding Black-box Predictions via
+  Influence Functions", ICML 2017 (venue in arXiv comment), arXiv:1703.04730.
+- pruthi2020tracin -- Pruthi/Liu/Sundararajan/Kale, "Estimating Training Data
+  Influence by Tracing Gradient Descent" (TracIn), NeurIPS 2020 (arXiv comment),
+  arXiv:2002.08484.
+- guu2023simfluence -- Guu et al. (6 auth), "Simfluence...", arXiv:2303.08114.
+- ilyas2022datamodels -- Ilyas/Park/Engstrom/Leclerc/Madry, "Datamodels...",
+  arXiv:2202.00622 (S2 lists arXiv only; cite as arXiv).
+- ghorbani2019datashapley -- Ghorbani & Zou, "Data Shapley...", ICML 2019
+  (S2 venue), arXiv:1904.02868.
+- qi2024finetuning -- Qi et al. (7 auth), "Fine-tuning Aligned Language Models
+  Compromises Safety...", ICLR (S2 venue; 2024 edition), arXiv:2310.03693.
+- kirkpatrick2017overcoming UPDATED to the published PNAS version: PNAS 114(13)
+  3521-3526, 2017, doi 10.1073/pnas.1611835114 (Crossref-verified).

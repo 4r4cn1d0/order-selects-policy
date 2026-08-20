@@ -33,8 +33,13 @@ number was computed in-session from committed data, or verified at source. The o
 - 1,920 labeled rows; label distribution 743 access / 670 provenance / 476
   ambiguous / 31 incoherent (73.6% coherent overall).
 - Independent 300-row blind validation pass: **κ = 0.876**, raw agreement 92.0%,
-  **zero** access↔provenance confusions (all 24 disagreements decisive-vs-ambiguous
-  → cannot flip the sign of S).
+  **zero** access↔provenance confusions (23/24 disagreements decisive-vs-ambiguous,
+  1/24 decisive-vs-incoherent — all decisive-vs-nondecisive → cannot flip the sign
+  of S). Disagreement direction (verified from the joined CSVs): 22 rows are
+  validator-decisive→judge-ambiguous, skewed 16 provenance : 6 access — the judge
+  under-calls provenance-decisive rows; 1 row judge-decisive/validator-ambiguous;
+  1 validator-provenance/judge-incoherent. Direction-skew means judge coherence is
+  conservatively low on provenance rows; it cannot manufacture the A−B sign.
 - Human (user) 60-row subsample: PENDING — κ slot reserved.
 
 ## Confirmatory results (all pre-registered)
@@ -47,7 +52,9 @@ number was computed in-session from committed data, or verified at source. The o
 3. **Endpoint persistence (post_washout):** A_first mean **+0.220** vs B_first
    **+0.639**; paired A−B same-signed (negative) **9/10 seeds**, mean −0.419,
    exact sign-flip p = **0.0234**. Both arms drift access-ward (shared drift —
-   absorbed by the paired design). Coherence collapses ≈0.95 → ≈0.42.
+   absorbed by the paired design). Coherence collapses ≈0.95 → ≈0.40
+   (recomputed 2026-08-18: sequential endpoint decisive fraction 191/480 = 0.398;
+   all three conditions 289/720 = 0.401; the earlier ≈0.42 was off).
 4. **Interleaved fragmentation (pre_washout):** per-seed S spans −0.74 to +0.57
    (mean −0.256), different from BOTH sequential arms at p = 0.0020 each;
    post-washout mean +0.543 (vs B_first p = 0.48, indistinguishable).
@@ -89,7 +96,7 @@ interleaved: 3001 +1.000 · 3002 +0.800 · 3003 +0.833 · 3004 +0.714 · 3005 +0
 
 ## Out-of-domain transfer (VCD; two-stage, second stage pre-registered)
 
-- Instrument: VCD scenarios (Wang et al., arXiv 2604.12479), per-token paired
+- Instrument: Value Conflict Dilemma (VCD) scenarios (Wang et al., arXiv 2604.12479; expansion verified from the paper's abstract 2026-08-20), per-token paired
   loglik of both-pole options; 6 preference domains.
 - **Discovery** (60 scenarios/domain, unregistered): Change Preference paired
   A−B negative 9/10 seeds, p = 0.0039 two-sided (survives ×6 Bonferroni: 0.023).
@@ -488,3 +495,135 @@ Artifacts: results/labeling/cac_control_v1-judge_labeled.csv,
 results/labeling/conly_far_v1-judge_labeled.csv; generations
 results/generations/{cac_control_v1,conly_far_v1}.jsonl; final adapters
 synced to checkpoints/ (5 pythia C_A_C, 3 Qwen C_only). Pod terminated.
+
+## Number certification pass (2026-08-18, pre-submission)
+
+Every previously-unverified number in paper/main.tex recomputed from committed
+artifacts (scratchpad script; sources named per line). ALL MATCH:
+
+- **kappa = 0.876** exact; raw 276/300 = 92.0%; **0** access<->provenance
+  confusions. Source: orderexp_matrix_v1-humanval_blind.csv joined to
+  orderexp_matrix_v1-judge_labeled.csv on (scenario_id, completion); 300/300
+  joined, 0 collisions.
+- **LOIO**: means -0.347..-0.524, worst p = 0.0469 (drop test-0001), all
+  same-direction; per-item 14 predicted / 6 ties / 4 counter. Source:
+  analysis/orderexp_item_robustness.py rerun.
+- **ETHICS**: 30 endpoints, condition means 0.4759-0.4808, base 0.506.
+- **Moral Stories**: acc_norm condition means 0.5346-0.5406, base 0.521.
+- **VCD discovery**: Change Preference 9/10, two-sided p = 0.0039 exact.
+- **VCD confirmation** (matrix seeds 3001-3010): 10/10, mean -0.0642,
+  one-sided p = 0.0010 exact. Risk: pre-registered positive direction 6/10,
+  p = 0.2363 -> 0.24, failed as reported.
+- **Interleaved post-washout**: mean S +0.5430 exact; vs B_first p = 0.4844.
+
+Both flags FIXED in main.tex (2026-08-18, user-authorized correctness edits):
+1. kappa disagreement wording -> "decisiveness boundary call (decisive vs.
+   ambiguous or incoherent)" (23/24 vs-ambiguous, 1/24 vs-incoherent; neither
+   can flip the sign of S).
+2. VCD footnote added: 5 later seed pairs (3011-3015) replicate the confirmed
+   Change Preference direction, 15/15 total, one-sided p = 3.1e-5 (exact
+   sign-flip floor 1/2^15; all 15 diffs negative, verified from
+   vcd_pref_confirmation.csv).
+
+Full-sweep additions (same pass; every remaining number in main.tex now tied
+to an artifact):
+- Battery hash 2b5f6e06...2895 = SHA-256 of the BUILT JSONL
+  (data/processed/axis1_access_vs_provenance__test_battery_v1.jsonl),
+  recomputed and matching; the .py source has no post-lock commits. The .py
+  file's own byte-hash differs (37172e75...) -- the lock was always over the
+  JSONL models consume.
+- Equipotence gate 24/24 (pool_a_only) / 23/24 (pool_b_only): source is
+  risks.md #23 (direct read of all 48 held-out generations, 3 seeds/pool).
+  PROVENANCE GAP: the raw pool-only generations were not committed as files;
+  the documented read in risks.md is the artifact.
+- Drift timing corrected: dense per-4-step checkpoints exist for seed 3001
+  only. Complete overwrite: A-direction by 8 steps, B-direction by 12 steps
+  (4-step grid). Abstract's "~8 steps on all 10 seeds" was unsupported as one
+  claim -> rescoped to all-seeds reversal + "8-12 optimizer steps" timing;
+  drift figure caption now says 8-12. Install-within-~8 verified (A +1.00 by
+  step 8; B -1.00 by step 4).
+- Washout coherence: paper ~0.42 -> ~0.40 (see recompute above).
+- post_phase1: S = +1.000 (all 10 A_first) / -1.000 (all 10 B_first),
+  coherence 0.83-1.00. pre_washout: all 20 sequential runs |S| = 1.000;
+  interleaved span -0.74..+0.57, mean -0.256, p = 0.0020 vs EACH arm
+  (recomputed: +0.744 vs A_first, -1.256 vs B_first, both p = 0.0020);
+  interleaved pre-washout coherence 0.83-0.96 exact.
+- Format-section 43/43 (risks #21), 18/24 & 22/24 (risks, Phase A v2 direct
+  read): consistent with the documented reads; these predate the blind-CSV
+  protocol (narrative artifacts).
+- ETHICS yes-rate 0.73-0.84 vs base ~0.48: fact-sheet record only (spot-check;
+  no committed per-item CSV) -- paper labels it "spot-checked", accurate.
+- Limitations sentence fixed: the false "a human-labeled subsample is included"
+  now reads "agreement bounds labeling consistency, not human validity."
+  If the user fills the 60-row annotator2 sheet before submission, the
+  stronger human-check sentence can return WITH its real number.
+- Intro "blinded human labeling" -> "blinded labeling"; Limitations "Labels
+  are human judgments" -> "rubric-based judgments" (matrix labels are
+  LLM-judge; no unqualified human-labeling claim remains).
+
+Still open (user-owned): Fig 1 regeneration; OpenReview anonymity check +
+reciprocal-reviewer registration; optional 60-row human labeling pass.
+
+## Endpoint sensitivity statistics (verified 2026-08-18, from panel review follow-up)
+
+All recomputed from orderexp_matrix_v1-judge_labeled.csv (citable):
+- Drop-seed-3001: n=9, mean -0.445, p = 0.0312.
+- Leave-one-seed-out: p range 0.0039-0.0469, direction never flips.
+- Minimum-decisiveness (both cells >= 5 decisive): keeps 7 pairs
+  (3002,3003,3006,3007,3008,3009,3010), mean -0.461, p = 0.0781 --
+  direction stable, significance lost. Transparency item, report as such.
+- Per-cell endpoint decisive counts: A_first [11,8,11,13,6,11,19,11,11,8],
+  B_first [1,10,15,4,3,9,10,14,8,8] (B_first seed 3001 = 1).
+- Interleaved pre-washout overdispersion vs binomial item-sampling:
+  chi-square 38.8, df 9 (p ~ 1.3e-5).
+- Endpoint coherence by arm: A_first 0.454, B_first 0.342. CAUTION: the
+  review panel's p=0.012 for this difference did NOT verify -- paired
+  sign-flip on per-seed coherence gives p=0.16. Cite means only.
+
+## E4 TracIn-lite influence probe — VERIFIED tallies (2026-08-19, from committed JSONs)
+
+Artifacts: results/geometry/e4_tracin_{A,B}_first_seed{3001,3002,3005}.json
+(6 runs = 2 conditions x 3 seeds; dense per-4-step stages exist for 3001 only,
+boundaries-only for 3002/3005). Method (analysis/e4_tracin.py): first-order
+LoRA-gradient probe -- influence of pool P at checkpoint c = mean over P's
+examples of dot(gradient of S-proxy test direction, negative example-loss
+gradient). S-proxy = mean over locked-battery items of loglik(A-behavior) -
+loglik(B-behavior). NOTE the honest scoping: this measures PROSPECTIVE
+leverage at each saved state (not usage-weighted TracIn proper), descriptive,
+n=6 runs. Prereg: prereg_workshop_hardening.md E4 ("stretch").
+
+Verified findings (every tally recomputed from the JSONs):
+1. **Final-only attribution (permutation-invariant baseline) fails on the
+   ground truth**: correct expected pool signs 7/12 (~chance); identifies the
+   last-trained conflict phase with dominant magnitude AND correct sign in
+   **1/6 runs**. Sign inversions in 5/6 runs (e.g. A_first_3001 assigns pool A
+   NEGATIVE influence at final).
+2. **Checkpointed per-boundary reading recovers a saturation story**: at
+   boundary_1 the OPPOSING pool dominates with correct sign 5/6 (exception
+   B_first_3005); recently-trained pool has smaller |influence| than the
+   opposing pool at 9/12 boundary checkpoints. Interpretation: gradient
+   leverage lives in what is NOT yet installed; the installed pool is
+   saturated.
+3. **The literal pre-registered claim is NOT confirmed at this n**:
+   "checkpointed sum assigns dominant influence to the last conflict phase" =
+   4/6 by magnitude, 3/6 with correct sign. If E4 enters the paper, report
+   this outcome explicitly; the defensible claims are (1) and (2), labeled
+   descriptive/exploratory.
+4. **NEW -- washout-drift diagnosis** (answers the panel's "undiagnosed
+   access-ward drift" must-fix): the lexically-scrubbed washout pool C has an
+   ACCESS-WARD gradient at the pre-washout state in **6/6 probed runs** (dots
+   +2.8..+9.6, mean +5.9) and 5/6 at final (mean +4.0). The shared endpoint
+   drift is predicted by a first-order probe of the washout data itself:
+   lexically neutral is not gradient-neutral. Cite as the drift's mechanism.
+
+Suggested placement (user decides): short exploratory subsection leading with
+(1) as the attribution payload; (2) as the checkpointed contrast; (4) one
+sentence in the washout paragraph. Do NOT headline (3).
+
+## TITLE DECISION (user, 2026-08-19)
+
+Locked: "Order Selects Policy: Curriculum Effects That Persist, Fragment, and
+Evade Order-Blind Attribution". Rationale: every clause is a non-assumed claim
+(persistence, fragmentation, attribution blindness); avoids headlining the
+folk-known recency result; "order selects policy" matches the repo name.
+Supersedes the four candidates listed under FRAMING DECISION.
