@@ -719,3 +719,38 @@ Limitations "single model" sentence is accurate for the main matrix but
 UNDERSELLS; folding the family panel in would answer the scale-skeptic
 reviewer's strongest objection. Multi-sample k=5 (multisample_v1) likewise
 available and would answer the endpoint-sparsity objection.
+
+## Multi-sample + family panel FOLDED IN (2026-08-21) — both verified first
+
+**Multi-sample k=5 (verified from multisample_v1-judge_labeled.csv, 3,600 rows):**
+paired A-B mean -0.232, 8/10 negative, two-sided p = 0.0254 (matches prior
+record exactly). NEW verified number now in the paper: per-cell decisive counts
+rise 1-19 (greedy) -> 39-76 (k=5), so the >=5-decisive restriction that cost the
+greedy result its significance (n=7, p=0.078) now keeps ALL 10 pairs at
+p = 0.0254. This is the direct answer to the endpoint-sparsity objection raised
+by all three cold reviewers and the methodology seat. Condition means: A_first
++0.363, B_first +0.595, interleaved +0.624; coherence 0.46-0.53.
+
+**Family panel (verified from family_{qwen,smollm,olmo}_v1-judge_labeled.csv):**
+- Equipotence PASS 4/4 families: phase-1 means Qwen +0.983/-1.000, SmolLM2
+  +1.000/-1.000, OLMo +0.950/-1.000 (all match prior record exactly).
+- Qwen endpoint persistence: mean -0.592, 5/5 seeds, one-sided p = 0.0312 —
+  EXACT match; replicates and exceeds pythia.
+- SmolLM2 saturated (both arms -0.87..-1.00), OLMo mostly saturated with its two
+  off-pole seeds both predicted-direction (paired -0.33, -0.44) — exact match.
+- **CORRECTION to the earlier fact-sheet line.** It read "total recency reversal
+  ... 50/50 sequential runs (Qwen 10/10; SmolLM2 10/10; OLMo 10/10)", which
+  implies all at |S|=1.000. Verified truth: all 50/50 reverse to the CORRECT
+  POLE, but only 43/50 sit at |S|=1.000 exactly (pythia 20/20, OLMo 10/10, Qwen
+  8/10, SmolLM2 5/10; remainder |S| >= 0.81). The manuscript states the accurate
+  version ("all 50 reverse to the last-trained pole, 43 of them completely").
+- Family-dependent washout drift CONFIRMED and reported as a limitation:
+  access-ward in pythia/Qwen, strongly provenance-ward in SmolLM2/OLMo; pool C
+  neutrality validated on pythia only.
+
+Placement: multi-sample = 2 sentences in the washout paragraph; family panel =
+short body paragraph + new Appendix A "Cross-family replication" with the full
+detail. Page budget re-closed (body ends p6; refs p7; appendices A and B on
+p7-8) via Fig 1 -> 0.58\linewidth, conclusion condensed, the fictional-axis
+future-work sentence relocated to Limitations, and abstract/scaffold trims.
+NUMBERS UNTOUCHED throughout.
