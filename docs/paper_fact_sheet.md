@@ -801,3 +801,37 @@ Appendix A. Body still ends p6.
 **Process note.** No prior instrument (5-seat panel, 4-lane audit, 3 cold readers,
 4 peer-review passes) found any of these. All three were instrument-validity
 failures, not arithmetic errors — the exact failure mode CLAUDE.md warns about.
+
+## Post-Codex additions (2026-08-22)
+
+**Two missing prior-work citations found by Codex, both VERIFIED at the ACL
+Anthology and now cited:**
+- he2025righttime — "The Right Time Matters: Data Arrangement Affects Zero-Shot
+  Generalization in Instruction Tuning", Findings of ACL 2025 (13 authors, He
+  Bingxiang et al.). Directly about instruction-tuning data ORDER.
+- ju2024imbalance — "Mitigating Training Imbalance in LLM Fine-Tuning via Selective
+  Parameter Merging", EMNLP 2024 (Ju Yiming et al.). Abstract states "the order of
+  training data can lead to significant training imbalances".
+Both are now in Related work, and the introduction's gap claim is NARROWED
+accordingly: order is known to affect how well SFT learns a SINGLE target; what is
+untested is which of two conflicting, independently installable policies is
+generalized when only order changes. Not citing these was a genuine novelty
+exposure.
+
+**Hotelling T^2 added (exploratory) — INDEPENDENTLY VERIFIED.** Exact paired
+permutation Hotelling T^2 on the joint composition (pA-pP, pA+pP, p_incoherent):
+T^2 = 56.55, exact p = 0.003906 over all 2^10 whole-seed swaps. Claude reproduced
+Codex's value exactly. Reported as exploratory: order changes the four-way response
+distribution even where the marginal signed rate is undetected. This partially
+offsets the weakened conditional claim with something legitimately positive.
+
+**PROCESS INCIDENT (worth a risks.md entry).** The first remediation script hit an
+AssertionError on its LAST edit, before `open(p,'w').write(s)` — so FOUR earlier
+edits in that script (E4 removal, title softening, additivity removal, E8 cut) were
+silently discarded while later scripts appeared to succeed. Detected only when a
+subsequent grep showed the E4 paragraph still present. LESSON: verify each intended
+edit landed in the FILE, never infer success from a script exiting; multi-edit
+scripts must write incrementally or be re-verified per edit.
+
+**Final layout:** body ends p6; references p6; Appendix A cross-family replication
+p7; Appendix B reproducibility p8. Compiles clean.
