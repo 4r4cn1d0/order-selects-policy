@@ -261,3 +261,60 @@ Under the corrected probe the previously reported tallies do not reproduce: the
 DECISION: remove the influence-probe paragraph; remove the mechanistic drift
 diagnosis; revert the washout limitation to "undiagnosed"; soften the title's final
 clause. v1 JSONs preserved; corrected v2 values now in results/geometry/.
+
+---
+
+## JOINT PLAN — Claude x Codex (2026-08-22), agreed
+
+Codex attacked Claude's plan and re-verified the manuscript. It found **two more
+fixes that had silently failed to land** (same partial-write failure as before):
+the additivity inference survived in an adjacent sentence, and the OLMo 575/960
+disclosure was never written. Claude verified every Codex claim and applied NINE
+corrections, each individually grep-verified in the file afterwards:
+additivity inference removed; "gone by 2-3x" -> "no longer detects at 2-3x";
+"validated testbed" -> "releasable testbed"; "cannot manufacture the A-B sign"
+replaced with the actual robustness re-score (-0.447, 9/10, p=0.022); OLMo size
+corrected (1B, not 1.5-1.7B) and its 575/960 partial labeling disclosed; VCD
+"no vocabulary overlap" -> 3 lexicon hits across 517 option texts; the
+supervision-format claim rescoped to a JOINT objective/response-structure effect
+(v2 changed loss masking AND added an explicit action clause — not isolated);
+cross-family marginal-rate analysis added.
+
+### Codex's new analysis — INDEPENDENTLY VERIFIED and adopted
+Marginal signed rate U over ALL labeled rows, per family, post_washout A-B:
+Qwen -0.650 (5/5), SmolLM2 -0.275 (5/5), OLMo -0.316 (5/5), one-sided p=0.03125
+each. Claude reproduced all three exactly. **Pythia's marginal null is not
+universal** — the unconditional effect appears in every other family. Added as
+explicitly exploratory; families NOT pooled; OLMo flagged secondary (partial labels).
+
+### Disagreement resolved in Codex's favour: the 60-row human sheet
+Claude's plan ranked the existing sheet as P2. Codex showed it contains only 15
+post_washout rows and only **9 headline A/B endpoints** (4 A-first, 5 B-first), and
+that scripts/ingest_annotator2.py would mislabel all 60 as endpoint rows. ACCEPTED.
+Claude built a corrected sample: `orderexp_endpoint_human_v2_blind.csv` — 60 rows,
+A/B post_washout only, 30/30 by arm, all 10 seeds, stratified across judge classes
+(28 access / 11 provenance / 21 ambiguous), prompts included, key withheld in
+`orderexp_endpoint_human_v2_key.csv`.
+
+### Agreed priority order (Codex's revision accepted)
+P1 TODAY — reciprocal reviewer + OpenReview profiles + anonymity/author-block +
+   repo-access decision, settled together (they interact).
+P2 — human-label the CORRECTED 60-row endpoint sheet (1-2 h, not 30 min).
+     Codex's ideal is all 480 endpoint rows (4-6 h) — strictly better if the
+     author has the time; the stratified 60 is the floor.
+P3 — rewrite from a FROZEN CLAIM WHITELIST, not the whole append-only fact sheet
+     (which still contains superseded E4/E8/additivity language). ACCEPTED as a
+     real hazard.
+P4 — Claude claims-vs-artifacts pass immediately after the rewrite, then a final
+     diff/PDF check. Upload Aug 31, not Sept 1.
+NOT DOING (both agree): further E4 runs, E8b relabel, new training, more internal
+review panels.
+
+### Open item flagged by Codex, needs an author decision
+The appendix promises checkpoints, training logs, and raw generations, but those
+paths are gitignored. Either package them separately for release or weaken the
+statement. Claude has NOT changed this — it depends on the repo-privacy decision.
+
+### Scores
+Codex: 5/10, borderline weak reject (was weak reject). Biggest single mover:
+blind human labeling of the endpoint rows. Claude concurs with the ranking.
