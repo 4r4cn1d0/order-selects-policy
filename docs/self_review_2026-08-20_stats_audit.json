@@ -1,0 +1,252 @@
+{
+ "schema_version": "2.0",
+ "checklist_id": "STAT-REPRO-ATTRIB-SELFAUDIT",
+ "study_design": "randomized_trial",
+ "specialist_review": {
+  "needed": "undetermined",
+  "areas": [
+   "multiplicity_confirmatory_family"
+  ],
+  "requested": false
+ },
+ "items": [
+  {
+   "id": "question.estimand_alignment",
+   "category": "question",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "Abstract operational definition; S estimand in Design"
+   ],
+   "note": "estimand = per-seed policy score S; paired diff of S is the target",
+   "requested_action": "Check alignment among the question, target quantity, design, analysis, and interpretation"
+  },
+  {
+   "id": "design.unit_and_independence",
+   "category": "design",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "Design: 'seed is the replication unit'"
+   ],
+   "note": "randomized-block by shared lora-init seed; paired tests match",
+   "requested_action": "Identify the experimental or observational unit and assess dependence"
+  },
+  {
+   "id": "design.sample_size_precision",
+   "category": "design",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "fact_sheet: Monte-Carlo power BEFORE generation, 0.75-0.98"
+   ],
+   "note": "n=10 pre-fixed; declaration in paper pending (rewrite must-fix)",
+   "requested_action": "Assess prospective sample-size or precision justification and assumptions"
+  },
+  {
+   "id": "design.allocation_randomization",
+   "category": "design",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "Design: shared adapter init per replicate"
+   ],
+   "note": "",
+   "requested_action": "Assess sequence generation, allocation concealment, or sampling procedures as applicable"
+  },
+  {
+   "id": "design.blinding",
+   "category": "design",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "Design measurement paragraph; labeling_protocol.md"
+   ],
+   "note": "condition/seed/stage stripped pre-labeling",
+   "requested_action": "Assess who was blinded or masked and likely consequences when blinding was infeasible"
+  },
+  {
+   "id": "data.inclusion_exclusion",
+   "category": "data",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "zero-decisive pair-drop rule in stats script; stated"
+   ],
+   "note": "",
+   "requested_action": "Trace prespecified inclusion, exclusion, attrition, and analysis populations"
+  },
+  {
+   "id": "data.missing_data",
+   "category": "data",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "coherence reported separately; per-cell decisive counts pending in Table 1"
+   ],
+   "note": "panel must-fix",
+   "requested_action": "Assess missingness amounts, reasons, assumptions, methods, and sensitivity analyses"
+  },
+  {
+   "id": "data.outliers_transformations",
+   "category": "data",
+   "applicability": "not_applicable",
+   "status": "not_applicable",
+   "evidence_locations": [],
+   "note": "no transformations",
+   "requested_action": "Check rules for exclusions, transformations, detection limits, and influential observations"
+  },
+  {
+   "id": "analysis.prespecification",
+   "category": "analysis",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "Measurement: registered primary confirmatory comparison + power sentence + exploratory declaration"
+   ],
+   "note": "fixed 2026-08-21",
+   "requested_action": "Compare analyses with the protocol, registration, and statistical analysis plan"
+  },
+  {
+   "id": "analysis.method_design_alignment",
+   "category": "analysis",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "exact paired sign-flip matches randomized-block design"
+   ],
+   "note": "",
+   "requested_action": "Assess whether methods match the design, outcome type, estimand, and sampling structure"
+  },
+  {
+   "id": "analysis.assumptions_diagnostics",
+   "category": "analysis",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "exact permutation test; no distributional assumptions"
+   ],
+   "note": "",
+   "requested_action": "Assess model assumptions, diagnostics, robustness, and fallback analyses"
+  },
+  {
+   "id": "analysis.multiplicity",
+   "category": "analysis",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "Measurement declaration; VCD x6 Bonferroni in Results"
+   ],
+   "note": "fixed 2026-08-21",
+   "requested_action": "Assess outcome hierarchy, repeated looks, multiple comparisons, and error control"
+  },
+  {
+   "id": "analysis.clustering_repeated_measures",
+   "category": "analysis",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "seed-level aggregation before testing"
+   ],
+   "note": "",
+   "requested_action": "Assess clustering, pairing, repeated measures, nesting, and time dependence"
+  },
+  {
+   "id": "results.effect_sizes_uncertainty",
+   "category": "results",
+   "applicability": "applicable",
+   "status": "partly_documented",
+   "evidence_locations": [
+    "per-seed values + sensitivity trio present; specificity nulls now phrased as bounded non-detection with P(A>B)=0.695, but no interval"
+   ],
+   "note": "improved 2026-08-21; CI on null differences still absent",
+   "requested_action": "Check effect estimates and compatible uncertainty intervals, not thresholded p-values alone"
+  },
+  {
+   "id": "results.denominators_flow",
+   "category": "results",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "Table 1 N_dec per cell + sensitivity trio in caption"
+   ],
+   "note": "fixed 2026-08-21",
+   "requested_action": "Reconcile denominators, participant or sample flow, exclusions, and analysis populations"
+  },
+  {
+   "id": "results.complete_outcomes_harms",
+   "category": "results",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "Results far-transfer paragraph 2 (enacted-choice null now reported)"
+   ],
+   "note": "fixed 2026-08-20: +0.386 wrong direction, 3/9, p=0.879, coherence 0.24-0.37, dropped seed disclosed",
+   "requested_action": "Check all prespecified outcomes, null findings, adverse events, and deviations"
+  },
+  {
+   "id": "reproducibility.data_materials_access",
+   "category": "reproducibility",
+   "applicability": "applicable",
+   "status": "partly_documented",
+   "evidence_locations": [
+    "repo release pending; anonymized URL TODO"
+   ],
+   "note": "",
+   "requested_action": "Assess data, materials, protocol, repository, and justified access restrictions"
+  },
+  {
+   "id": "reproducibility.code_environment_parameters",
+   "category": "reproducibility",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "train/config flags in paper; scripts committed"
+   ],
+   "note": "",
+   "requested_action": "Assess code, software versions, environments, seeds, parameters, and run instructions"
+  },
+  {
+   "id": "reproducibility.provenance_versions",
+   "category": "reproducibility",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "battery SHA-256 in appendix; incident log"
+   ],
+   "note": "",
+   "requested_action": "Trace data provenance, transformations, versioned artifacts, and accession identifiers"
+  },
+  {
+   "id": "ethics.approval_consent_governance",
+   "category": "ethics",
+   "applicability": "not_applicable",
+   "status": "not_applicable",
+   "evidence_locations": [],
+   "note": "no human subjects",
+   "requested_action": "Assess approvals, consent, welfare, privacy, governance, and conflicts as applicable"
+  },
+  {
+   "id": "interpretation.claim_evidence_causality",
+   "category": "interpretation",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "claims scoped to regime; equipotence gate licenses causal attribution"
+   ],
+   "note": "",
+   "requested_action": "Check claim strength against design, evidence, uncertainty, alternatives, and generalizability"
+  },
+  {
+   "id": "integrity.deviations_selective_reporting",
+   "category": "integrity",
+   "applicability": "applicable",
+   "status": "verified_present",
+   "evidence_locations": [
+    "Results far-transfer: risk-orientation first-registered direction disclosed; x6 screen disclosed"
+   ],
+   "note": "fixed 2026-08-20",
+   "requested_action": "Check unexplained deviations, outcome switching, selective reporting, and internal inconsistencies"
+  }
+ ]
+}

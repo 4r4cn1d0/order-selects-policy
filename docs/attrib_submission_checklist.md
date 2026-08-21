@@ -66,9 +66,17 @@ submission, not after.
 
 ## Rewrite must-fixes (from the review panel, all prose + committed numbers)
 
-1. Report the pre-committed enacted-choice far-transfer NULL (mean +0.386 wrong
-   direction, one-sided p=0.879) and frame the likelihood-vs-enacted
-   dissociation as the finding. Disclose the 6-domain discovery screen.
+1. [DONE 2026-08-20 in the fallback main.tex; carry into the rewrite]
+   Reported the pre-committed enacted-choice far-transfer NULL as its own
+   result paragraph: 360 completions / 30 endpoints / 12 vocabulary-disjoint
+   scenarios, paired diff +0.386 in the WRONG direction, 3/9 usable seeds
+   negative, one-sided p=0.879, coherence 0.24-0.37, one seed dropped
+   (zero decisive in one arm). Dissociation framed as the finding; 6-domain
+   discovery screen and the x6 Bonferroni disclosed; risk orientation named
+   as the first-registered direction (discovery p=0.060, confirmation
+   p=0.24). Section heading changed to "...in likelihood space, but does not
+   control enacted choice there." All numbers re-verified from
+   results/labeling/far_transfer_v1-judge_labeled.csv on 2026-08-20.
 2. Scope persistence to the tested washout length; cite the titration result.
 3. Washout honesty: "lexically scrubbed" (done in tex), drop "equally", report
    per-arm coherence 0.454 vs 0.342 (means only - the panel's p=0.012 did NOT

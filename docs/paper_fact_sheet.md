@@ -627,3 +627,67 @@ Evade Order-Blind Attribution". Rationale: every clause is a non-assumed claim
 (persistence, fragmentation, attribution blindness); avoids headlining the
 folk-known recency result; "order selects policy" matches the repo name.
 Supersedes the four candidates listed under FRAMING DECISION.
+
+## Enacted-choice far-transfer null — RE-VERIFIED and now REPORTED (2026-08-20)
+
+Recomputed from results/labeling/far_transfer_v1-judge_labeled.csv:
+360 rows; labels 63 access / 45 provenance / 217 ambiguous / 35 incoherent
+(all four match the earlier record exactly). Pooled coherence by arm:
+A_first 0.367, B_first 0.242, interleaved 0.292 (hence "0.24-0.37").
+Paired A-B endpoint S over the 9 usable seeds: mean +0.386, negative 3/9,
+one-sided p = 0.879. Seed 3001 drops because B_first had 0 decisive outputs
+(zero-decisive pair-drop rule).
+
+The manuscript now reports this as its own result paragraph rather than a
+scope clause -- this was the review panel's #1 must-fix (selective-reporting
+risk). Also disclosed there: the 6-domain discovery screen with the x6
+Bonferroni, and that risk orientation was the FIRST-registered direction
+(discovery p=0.060, confirmation p=0.24).
+
+Optional strengthener not yet in the manuscript: the washout-only far-transfer
+control (Qwen C_only, n=3, far-S = -0.817 vs conflict-trained -0.675, base
+-0.143) establishes the far-domain hold-shift as a generic fine-tuning
+artifact. Fact sheet's own note marks this as REQUIRED reporting IF the far
+hold-shift is discussed -- currently the manuscript does not attribute any
+far-domain hold-shift to conflict training, so the control is not yet needed;
+add it if the rewrite expands this paragraph.
+
+## E4 FOLDED INTO MANUSCRIPT (2026-08-21, user decision)
+
+New Results paragraph "A first-order influence probe against the ground truth":
+final-only estimator signs 7/12 (~chance), last-phase identification 1/6;
+per-checkpoint saturation story 5/6 boundary-1, 9/12 overall; failed literal
+prereg (4/6, 3/6) reported as such; washout-drift diagnosis 6/6 access-ward
+(also referenced from the washout paragraph, closing review M3's diagnosis
+half). Washout paragraph honesty pass applied: "equally" dropped, per-arm
+endpoint coherence 0.45/0.34 stated (means only), lexical-not-behavioral
+neutrality + additivity assumption stated. Figure 2 (drift) relocated to the
+appendix for page budget: body now ends within page 6 (references start on
+p6). Title/abstract unchanged.
+
+## RE-REVIEW VERDICT + BLOCKER FIXES (2026-08-21)
+
+Five-seat verification round on the revised manuscript: **WEAK ACCEPT,
+unanimous 5/5** (prior round: major_revision). Digest:
+docs/review_rereview_2026-08-21.md. Decision letter: "with these landed
+before camera-ready, this is an accept." All three blockers LANDED same day:
+1. Persistence scoped everywhere (contribution 1 "-- for a while", washout
+   paragraph, conclusion) with the E2 titration reported. NUMBER PROVENANCE:
+   manuscript uses MY artifact recompute from
+   washtitration_v1-judge_labeled.csv -- 2x mean +0.268 exact two-sided
+   p=0.50; 3x mean -0.241 p=0.375 (stated as "p>=0.38") -- NOT the fact
+   sheet's earlier p=0.78/0.19 (different test; same null conclusion; means
+   match exactly). Washout length stated: 12 optimizer steps = one phase.
+2. Table 1: N_dec per cell added (A/B/interleaved), caption carries the
+   sensitivity trio (drop-3001 p=0.031; LOSO 0.0039-0.0469; min-5-decisive
+   n=7 p=0.078).
+3. Probe closing rewritten: retraction disclosed ("neither reading tracks
+   per-run outcomes... open target"); heading softened to "A first-order
+   influence probe".
+Also landed: drift-misdescription fix (B-first attenuation, not access-ward
+movement); kappa sentence rescoped ("cannot manufacture the A-B sign") with
+16:6 split; 24->192 expansion stated; confirmatory-family declaration +
+power sentence; VCD pole-mapping rationale; Qi et al. cited in text;
+"initialization-dependent" leftover fixed; stale figure comment replaced.
+Page budget: body ends p6, references start p7, appendix p7-8 (Fig 2 in
+appendix). Abstract/conclusion micro-trims applied for the budget.
