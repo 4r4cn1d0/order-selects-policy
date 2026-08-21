@@ -102,9 +102,9 @@
    "applicability": "applicable",
    "status": "verified_present",
    "evidence_locations": [
-    "Measurement: registered primary confirmatory comparison + power sentence + exploratory declaration"
+    "Measurement: prereg names three hypotheses; unadjusted contrast reported"
    ],
-   "note": "fixed 2026-08-21",
+   "note": "corrected 2026-08-22",
    "requested_action": "Compare analyses with the protocol, registration, and statistical analysis plan"
   },
   {
@@ -113,9 +113,9 @@
    "applicability": "applicable",
    "status": "verified_present",
    "evidence_locations": [
-    "exact paired sign-flip matches randomized-block design"
+    "'exact paired sign-flip permutation test on the mean', not a sign test"
    ],
-   "note": "",
+   "note": "renamed 2026-08-22",
    "requested_action": "Assess whether methods match the design, outcome type, estimand, and sampling structure"
   },
   {
@@ -135,9 +135,9 @@
    "applicability": "applicable",
    "status": "verified_present",
    "evidence_locations": [
-    "Measurement declaration; VCD x6 Bonferroni in Results"
+    "Measurement: Bonferroni p=0.070 reported alongside unadjusted"
    ],
-   "note": "fixed 2026-08-21",
+   "note": "closed 2026-08-22",
    "requested_action": "Assess outcome hierarchy, repeated looks, multiple comparisons, and error control"
   },
   {
@@ -155,11 +155,11 @@
    "id": "results.effect_sizes_uncertainty",
    "category": "results",
    "applicability": "applicable",
-   "status": "partly_documented",
+   "status": "verified_present",
    "evidence_locations": [
-    "per-seed values + sensitivity trio present; specificity nulls now phrased as bounded non-detection with P(A>B)=0.695, but no interval"
+    "conditional S + marginal U + decisiveness q all reported; sensitivity trio in Table 1 caption"
    ],
-   "note": "improved 2026-08-21; CI on null differences still absent",
+   "note": "closed 2026-08-22 by reporting all three estimands",
    "requested_action": "Check effect estimates and compatible uncertainty intervals, not thresholded p-values alone"
   },
   {
@@ -243,9 +243,9 @@
    "applicability": "applicable",
    "status": "verified_present",
    "evidence_locations": [
-    "Results far-transfer: risk-orientation first-registered direction disclosed; x6 screen disclosed"
+    "E4 probe withdrawn after failing its precommitted keep gate; enacted-choice null reported; risk-orientation failure reported"
    ],
-   "note": "fixed 2026-08-20",
+   "note": "strengthened 2026-08-22: a pre-registered probe was withdrawn rather than reported weakly",
    "requested_action": "Check unexplained deviations, outcome switching, selective reporting, and internal inconsistencies"
   }
  ]

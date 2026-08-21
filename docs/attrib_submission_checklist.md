@@ -87,3 +87,38 @@ submission, not after.
 6. Optional but strong: fold in E4 TracIn (final-only identifies the last phase
    in 1/6 runs) as the attribution payload + the washout-drift diagnosis (pool C
    gradient is access-ward 6/6).
+
+## STATUS 2026-08-22 (post-Codex) — 9 days to deadline
+
+Machine-checkable work is COMPLETE. Final audit state:
+- Claim ledger: 13 claims, 12 supported + 1 explicitly WITHDRAWN
+  (cross-family judge invariance). No unresolved alignment gaps.
+- Statistics audit: 19 verified / 1 partly-documented. The single remaining
+  item is `reproducibility.data_materials_access` = the repository URL, which
+  is an author decision, not an analysis gap.
+- Body ends p6; refs p6; Appendix A (cross-family) p7; Appendix B
+  (reproducibility) p8. Clean compile, no warnings.
+
+### The four things only the author can do
+
+1. **Reciprocal-reviewer registration on OpenReview.** Desk-reject condition.
+   ~15 min. Do this first — it also reveals whether the form is anonymous,
+   which settles item 3.
+2. **60-row human labeling.** Now the single highest-value scientific item:
+   after the E8 cut, there is NO non-Claude validation of the labeling task.
+   Tool: open the labeling UI, then `python3 scripts/ingest_annotator2.py`.
+   ~30 min.
+3. **Author block + repository privacy.** ATTRIB states no anonymity
+   requirement. If submitting non-anonymous, fill the author block and the
+   hash-searchability issue disappears. If anonymous: repo private for the
+   review window + scrub PDF timezone metadata.
+4. **The rewrite**, from docs/paper_fact_sheet.md. Then Claude runs a final
+   claims-vs-artifacts pass before upload.
+
+### Deliberately NOT done (and why)
+- E4 rerun beyond the gate: failed its precommitted criteria; rerunning until
+  it passes would be exactly the practice this project exists to avoid.
+- E8b corrected relabel: ~1 engineer-day for a claim the paper no longer needs.
+- Fifth peer-review pass: would confirm, not discover (its tools check
+  claim-evidence alignment, not instrument validity — the layer where all
+  three Codex blockers lived).
