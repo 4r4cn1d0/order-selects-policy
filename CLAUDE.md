@@ -72,3 +72,58 @@ that goes in the paper.
   confounds "order effect" with "which phase got larger updates."
 - Old negative-result curricula, checkpoints, and results are **kept, not deleted** — they
   document why the design changed.
+
+## SPS multi-agent research workflow
+
+Claude Code is the primary implementation and experiment-execution agent.
+Codex (project-scoped MCP server `codex`) is the independent reviewer.
+
+**Canonical hierarchy — higher beats lower, always:**
+1. Raw experiment outputs and committed labels
+2. Locked datasets and recorded hashes
+3. Reproducible analysis outputs
+4. `docs/risks.md`
+5. `docs/PROJECT.md` and `docs/paper_fact_sheet.md`
+6. `.ai/` coordination files
+7. Agent chat history
+
+The `.ai/` layer is an operational index. It never overrides a canonical document.
+
+Before substantial work: read `docs/PROJECT.md`; the relevant `docs/risks.md`
+entries; `docs/labeling_protocol.md` before touching evaluation or labels;
+`.ai/CURRENT_STATE.md`; search `.ai/EXPERIMENTS.md` for prior tests of the same
+idea. Then inspect the actual source, data, git diff, and evidence files. Do not
+reason from stale chat summaries when repository evidence exists.
+
+For every substantive experiment: state the causal question; define the
+experimental unit (the trained seed, not the prompt); identify control and
+treatment; list every intended invariant; verify the example multiset AND the
+supervision objective; check phase boundaries at optimizer-step granularity; fix
+seed count and stopping rule before outcome inspection; keep development and
+locked-test evaluation separate; run the smallest validity gate first; record the
+experiment in `.ai/EXPERIMENTS.md`; request Codex review before an irreversible or
+expensive step; resolve every blocker explicitly; run it; preserve raw outputs;
+blind labels before interpretation; update the claims ledger only after analysis.
+
+**Mandatory Codex review points:** before locking a test battery; before launching a
+full replicated matrix; after statistical analysis but before interpreting; before
+making a paper claim; before submission.
+
+**Research-integrity rules.** Do not edit a locked test battery. Do not inspect
+locked-battery generations before all pre-registered runs finish. Do not change the
+number of seeds after inspecting outcomes. Do not treat prompts as independent
+training replications. Do not remove ambiguous or incoherent outputs because they
+weaken a result — report coherence separately. Do not replace a failed scorer
+without validating the replacement. Do not silently reinterpret a negative result as
+positive. Do not call pilot results publishable. Do not upgrade inference into fact.
+Do not make novelty claims without checking the cited prior work. Do not claim
+attribution-method failure unless an attribution method was actually evaluated. Do
+not claim philosophical "values" when the measured object is policy behavior.
+
+Every paper claim must identify: model; parameter scale; fine-tuning method; data
+axis; seed count; evaluation battery; decoding method; annotation method;
+uncertainty; evidence file.
+
+**Loop control.** Claude may call Codex. Codex must not call Claude. Default depth is
+Claude -> Codex -> Claude, then STOP. A second Codex review requires substantive
+changes in between. Two agents agreeing is not validation; the experimental record is.
