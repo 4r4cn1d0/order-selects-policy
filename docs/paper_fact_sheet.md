@@ -691,3 +691,31 @@ power sentence; VCD pole-mapping rationale; Qi et al. cited in text;
 "initialization-dependent" leftover fixed; stale figure comment replaced.
 Page budget: body ends p6, references start p7, appendix p7-8 (Fig 2 in
 appendix). Abstract/conclusion micro-trims applied for the budget.
+
+## Cross-family judge (E8) NOW REPORTED in the manuscript (2026-08-21)
+
+Gap found while answering "where does Claude-family come from": E8 existed as a
+committed artifact but was ABSENT from the paper, leaving the circularity
+objection unanswered on the page. Recomputed from e8_labels.csv + e8_sample.jsonl
+and now reported in Measurement + Limitations:
+Qwen2.5-7B-Instruct (open weights, different developer, local, verbatim rubric),
+400-row blinded stratified sample spanning 6 batches -- raw agreement 0.743,
+kappa 0.588, and 88 of 103 disagreements are ours-ambiguous -> theirs-decisive
+(48 provenance / 40 access), with access<->provenance swaps 1/400 (0.25%).
+Reading: judges differ on the decisiveness THRESHOLD, not direction; the sign
+carrying every claim is judge-invariant across families. Fact-sheet sub-counts
+verified exact (88 counts "ambiguous" only; the amb+incoherent figure is 94).
+Limitations now carries the author-judge coupling paragraph (same-family
+authoring + rubric + primary labels, bounded by the cross-developer judge, not
+eliminated).
+
+Page budget re-closed after the addition (body ends p6, references p7) via
+Table 1 -> \scriptsize, Fig 1 -> 0.68\linewidth, and scaffold-sentence trims in
+the conclusion/measurement/battery paragraphs. NUMBERS UNTOUCHED.
+
+STILL DEFERRED (available, not in paper): four-family replication (pythia/Qwen/
+SmolLM2/OLMo, 50/50 sequential runs, equipotence PASS in all four) -- the
+Limitations "single model" sentence is accurate for the main matrix but
+UNDERSELLS; folding the family panel in would answer the scale-skeptic
+reviewer's strongest objection. Multi-sample k=5 (multisample_v1) likewise
+available and would answer the endpoint-sparsity objection.
