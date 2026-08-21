@@ -16,6 +16,7 @@ Pilot: A_first + B_first seed3001; extend if signal.
 Usage: python analysis/e4_tracin.py --runs A_first_seed3001 B_first_seed3001
 """
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -61,16 +62,36 @@ def main():
              "C": wd.AXIS1_WASHOUT_DEMOS}
     from peft import PeftModel
     out = {}
+    out_aliases = {}
     for short in args.runs:
         rn = f"axis1_access_vs_provenance_value-conflict_orderexp_{short}"
         per_stage = {}
+        seen_digests = {}
+        aliases = {}
         for stage in STAGES:
             ckpt = ROOT / "checkpoints" / rn / stage
             if not ckpt.exists():
                 continue
+            # boundary_* are aliases of step_* checkpoints; hash the adapter so an
+            # alias is never summed twice (Codex review 2026-08-22).
+            adapter = ckpt / "adapter_model.safetensors"
+            if adapter.exists():
+                digest = hashlib.sha256(adapter.read_bytes()).hexdigest()
+                if digest in seen_digests:
+                    canonical = seen_digests[digest]
+                    aliases[stage] = canonical
+                    print(f"{short}/{stage}: ALIAS of {canonical}, skipped", flush=True)
+                    continue
+                seen_digests[digest] = stage
             base, tok = load_base_model_and_tokenizer(cfg["base_model"]["name"], device, cfg["dtype"])
             model = PeftModel.from_pretrained(base, str(ckpt), is_trainable=True)
-            model.train()
+            # eval() is REQUIRED: train() leaves LoRA dropout (0.05, unseeded) active, so
+            # gradients carry dropout noise. Proof of the original defect: boundary_1/2/final
+            # are byte-identical adapter files to step_012/024/036, yet the train()-mode probe
+            # reported materially different gradients for them (pool A +10.93 vs +0.55).
+            # Caught by independent Codex review 2026-08-22; see .ai/HANDOFF.md.
+            model.eval()
+            torch.manual_seed(0)
             # test gradient: d/dtheta [mean loglik(A-behavior) - mean loglik(B-behavior)]
             model.zero_grad()
             t_loss = 0
@@ -94,13 +115,16 @@ def main():
             del model, base
             print(f"{short}/{stage}: " + " ".join(f"{k}={v:+.3e}" for k, v in dots.items()), flush=True)
         out[short] = per_stage
+        out_aliases[short] = aliases
         Path(ROOT / "results/geometry").mkdir(exist_ok=True, parents=True)
         Path(ROOT / f"results/geometry/e4_tracin_{short}.json").write_text(json.dumps(per_stage, indent=1))
     # summary: TracIn (sum over stages) vs final-only, per pool
     for short, per_stage in out.items():
         pools_k = ["A", "B", "C"]
         tracin = {k: sum(d[k] for d in per_stage.values()) for k in pools_k}
-        finalonly = per_stage.get("final", {})
+        # "final" may have been skipped as an alias of a step_* checkpoint; resolve it.
+        final_stage = out_aliases[short].get("final", "final")
+        finalonly = per_stage.get(final_stage, {})
         print(f"\n=== {short} ===")
         print("TracIn  (checkpointed):", {k: f"{v:+.3e}" for k, v in tracin.items()})
         print("FinalOnly (baseline):  ", {k: f"{v:+.3e}" for k, v in finalonly.items()})

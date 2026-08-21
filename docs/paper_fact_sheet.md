@@ -754,3 +754,50 @@ detail. Page budget re-closed (body ends p6; refs p7; appendices A and B on
 p7-8) via Fig 1 -> 0.58\linewidth, conclusion condensed, the fictional-axis
 future-work sentence relocated to Limitations, and abstract/scaffold trims.
 NUMBERS UNTOUCHED throughout.
+
+## CODEX INDEPENDENT REVIEW — three blockers, all fixed (2026-08-22)
+
+An independent Codex agent (read-only, 268k tokens) reviewed the submission and
+returned **weak reject** with three blockers. Claude verified every one, and
+independently reproduced every statistic Codex reported to 5 decimals.
+
+**B1 post-treatment conditioning (FIXED).** S conditions on decisiveness, which is
+treatment-affected. Verified: conditional S -0.41893 p=.02344; marginal
+U=(N_acc-N_prov)/24 -0.07917, 7/10, **p=.48828**; decisiveness q +.1125 p=.16016;
+ambiguity -.1375 p=.09570; incoherence +.0250 p=.14844. Label totals A 71/38/122/9
+vs B 67/15/155/3 — access counts nearly equal; the shift exchanges provenance
+commitments for ambiguity. PAPER NOW: reports both estimands and restricts the
+endpoint claim to "directional residue among committed responses"; "coherence"
+renamed "decisiveness rate".
+
+**B2 E4 probe invalid (FIXED BY REMOVAL).** analysis/e4_tracin.py used model.train()
+with unseeded LoRA dropout 0.05. PROOF: boundary_1/2/final are byte-identical
+adapter files to step_012/024/036 (SHA-256) yet the probe reported different
+gradients (pool A +10.93 vs +0.55). Script fixed (eval mode, torch.manual_seed(0),
+SHA alias dedup, final-only alias resolution) and rerun on 6 runs against a
+PRECOMMITTED keep gate. RESULT: gate (i) checkpoint-summed dominance 3/6 (needed
+6/6) FAIL; (ii) final-only 0/6 PASS; (iv) pool C access-ward 4/6 (needed 6/6) FAIL.
+The v1 "6/6 washout gradient" and "1 of 6 final-only" tallies were dropout noise.
+PAPER NOW: influence-probe paragraph REMOVED; washout mechanism stated as
+unresolved; title's final clause softened to "Challenge Order-Blind Attribution".
+v1 JSONs preserved; corrected values written to results/geometry/.
+
+**B3 E8 cross-family judge overstated (FIXED BY CUTTING).** Of 400 rows only 68 are
+matrix rows and only **16** are sequential post-washout; within those 16, A_first S
+moves +0.333 -> -0.111 under completion-only Qwen labels, so "1/400 polarity swaps"
+does NOT establish S-invariance. All 400 prompts were blank in e8_sample.jsonl.
+PAPER NOW: cross-family invariance claim removed; kept as an artifact footnote with
+its limitations; the 300-row same-family pass is described as rubric repeatability,
+not validity.
+
+**Also applied:** additivity claim removed (design identifies the TOTAL effect of
+order across shared C, not retained trace vs order-by-washout interaction);
+"sign test" -> "exact paired sign-flip permutation test on the mean"; Bonferroni
+p=0.070 reported alongside unadjusted 0.0234; prereg described as naming three
+hypotheses; k=5 rescoped as nearby-decoding robustness with its marginal estimand
+also undetected (-0.090, p=0.15); OLMo 575/960 partial labeling disclosed in
+Appendix A. Body still ends p6.
+
+**Process note.** No prior instrument (5-seat panel, 4-lane audit, 3 cold readers,
+4 peer-review passes) found any of these. All three were instrument-validity
+failures, not arithmetic errors — the exact failure mode CLAUDE.md warns about.
