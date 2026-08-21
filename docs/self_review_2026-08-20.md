@@ -8,7 +8,19 @@
 > claims matrix VALID_NO_RECORDED_GAPS (9/9 supported); statistics audit
 > 18 verified / 2 partly (artifact URL; CIs on the specificity nulls).
 > Re-review verdict: weak_accept x5, blockers landed same day
-> (docs/review_rereview_2026-08-21.md).
+> (docs/review_rereview_2026-08-21.md); cold-read simulation accept x3
+> (docs/cold_reviews_2026-08-21.md).
+>
+> **PASS 4 (2026-08-21, post-additions):** the manuscript gained three results
+> (k=5 multi-sample robustness, cross-family replication + Appendix A,
+> cross-developer open-weights judge). Claim ledger extended 9 -> 12 claims,
+> all supported, VALID_NO_RECORDED_GAPS. Post-trim integrity check after ~50
+> compression edits: all spot-checked numbers intact, no dangling refs, no
+> unreferenced labels, all 18 bib entries cited and resolving. M1's underlying
+> weakness (endpoint sparsity) is now ANSWERED IN TEXT rather than merely
+> disclosed: under k=5 every pair clears the >=5-decisive restriction at
+> p=0.0254. Remaining open across all instruments: repository URL (author),
+> CIs on the specificity nulls (optional), 60-row human labeling (author).
 
 > Private working document. Human review, policy checks, and factual verification are required. Do not submit this scaffold with unresolved placeholders. Do not make or announce an editorial decision.
 
